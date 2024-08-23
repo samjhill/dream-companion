@@ -1,4 +1,3 @@
-import React from 'react';
 import DreamList from './components/DreamList';
 import { WakingLife } from './components/WakingLife';
 import { withAuthenticator } from '@aws-amplify/ui-react';
