@@ -1,0 +1,20 @@
+{
+  "dev": {
+    "awscloudformation": {
+      "AuthRoleName": "amplify-dreamcompanion-dev-dc169-authRole",
+      "UnauthRoleArn": "arn:aws:iam::732408661603:role/amplify-dreamcompanion-dev-dc169-unauthRole",
+      "AuthRoleArn": "arn:aws:iam::732408661603:role/amplify-dreamcompanion-dev-dc169-authRole",
+      "Region": "us-east-1",
+      "DeploymentBucketName": "amplify-dreamcompanion-dev-dc169-deployment",
+      "UnauthRoleName": "amplify-dreamcompanion-dev-dc169-unauthRole",
+      "StackName": "amplify-dreamcompanion-dev-dc169",
+      "StackId": "arn:aws:cloudformation:us-east-1:732408661603:stack/amplify-dreamcompanion-dev-dc169/eab21e50-617e-11ef-a9e3-0affd5874411",
+      "AmplifyAppId": "d1ot4alyg9arql"
+    },
+    "categories": {
+      "auth": {
+        "dreamcompaniondc3db111": {}
+      }
+    }
+  }
+}

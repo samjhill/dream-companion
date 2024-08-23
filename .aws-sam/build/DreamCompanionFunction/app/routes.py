@@ -1,0 +1,70 @@
+import json
+from flask import Blueprint, request, jsonify
+from flask_cors import cross_origin
+from flask_jwt_extended import jwt_required, get_jwt_identity
+import boto3
+import os
+import urllib.parse
+
+from dotenv import load_dotenv
+
+load_dotenv()
+
+routes_bp = Blueprint('routes_bp', __name__)
+
+# Initialize S3 client
+s3_client = boto3.client(
+    's3',
+    aws_access_key_id=os.environ['AWS_ACCESS_KEY_ID'],
+    aws_secret_access_key=os.environ['AWS_SECRET_ACCESS_KEY'],
+    region_name=os.environ['AWS_REGION']
+)
+
+@routes_bp.route('/dreams/<phone_number>', methods=['GET'])
+# @jwt_required() TODO
+@cross_origin(supports_credentials=True)
+def get_dreams(phone_number):
+    try:
+        # List all objects in the user's S3 directory
+        response = s3_client.list_objects_v2(
+            Bucket=os.environ['S3_BUCKET_NAME'],
+            Prefix=f'{phone_number}/'
+        )
+
+        print(response)
+
+        if 'Contents' in response:
+            dreams = [{'key': obj['Key']} for obj in response['Contents']]
+            return jsonify(dreams), 200
+        else:
+            return jsonify({"msg": "No dreams found"}), 404
+    except Exception as e:
+        return jsonify({"error": str(e)}), 500
+
+
+@routes_bp.route('/dreams/<phone_number>/<dream_id>', methods=['GET'])
+# @jwt_required() TODO
+@cross_origin(supports_credentials=True)
+def get_dream(phone_number, dream_id):
+    try:
+        # Retrieve the specific dream object from S3
+        key = f'{phone_number}/{dream_id}'
+        response = s3_client.get_object(
+            Bucket=os.environ['S3_BUCKET_NAME'],
+            Key=key
+        )
+
+        dream_content = json.loads(response['Body'].read().decode('utf-8'))
+        
+        to_return = {
+            **dream_content,
+            "response": " ".join(dream_content["response"]),
+            "dream_content": urllib.parse.unquote_plus(dream_content["dreamContent"])
+        }
+        return jsonify(to_return), 200
+
+    except s3_client.exceptions.NoSuchKey:
+        return jsonify({"msg": "Dream not found"}), 404
+    except Exception as e:
+        return jsonify({"error": str(e)}), 500
+

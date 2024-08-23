@@ -1,0 +1,47 @@
+AWSTemplateFormatVersion: '2010-09-09'
+Transform: AWS::Serverless-2016-10-31
+Description: Dream Companion App - A Flask-based application deployed using AWS SAM
+Globals:
+  Function:
+    Timeout: 10
+    Runtime: python3.11
+Resources:
+  DreamCompanionApi:
+    Type: AWS::Serverless::Api
+    Properties:
+      StageName: Prod
+      Auth:
+        Authorizers:
+          CognitoAuthorizer:
+            UserPoolArn: arn:aws:cognito-idp:us-east-1:732408661603:userpool/us-east-1_Pql4fDDds
+  DreamCompanionFunction:
+    Type: AWS::Serverless::Function
+    Properties:
+      Handler: wsgi.handler
+      Runtime: python3.11
+      CodeUri: DreamCompanionFunction
+      Environment:
+        Variables:
+          FLASK_ENV: production
+      Events:
+        DreamCompanionApiEvent:
+          Type: Api
+          Properties:
+            Path: /{proxy+}
+            Method: ANY
+            RestApiId:
+              Ref: DreamCompanionApi
+            Auth:
+              Authorizer: CognitoAuthorizer
+      Policies:
+      - AWSLambdaBasicExecutionRole
+      - Version: '2012-10-17'
+        Statement:
+        - Effect: Allow
+          Action:
+          - s3:GetObject
+          - s3:PutObject
+          - s3:DeleteObject
+          Resource: arn:aws:s3:::dream.storage/*
+    Metadata:
+      SamResourceId: DreamCompanionFunction
