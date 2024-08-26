@@ -57,8 +57,8 @@ const DreamList: React.FC = () => {
         console.error("No phone number");
         return;
       }
-      const url =  "dreammentor-dev.us-east-1.elasticbeanstalk.com:8000";
-      // const url = "localhost:8888"
+      const url =  "dreammentor-dev.us-east-1.elasticbeanstalk.com";
+      // const url = "localhost:8000"
       try {
         const response = await fetch(`http://${url}/api/dreams/${phoneNumber.replace("+", "")}`);
         const data = await response.json();
