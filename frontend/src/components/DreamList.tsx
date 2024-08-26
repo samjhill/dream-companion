@@ -60,7 +60,7 @@ const DreamList: React.FC = () => {
       const url =  "dreammentor-dev.us-east-1.elasticbeanstalk.com";
       // const url = "localhost:8000"
       try {
-        const response = await fetch(`http://${url}/api/dreams/${phoneNumber.replace("+", "")}`);
+        const response = await fetch(`https://${url}/api/dreams/${phoneNumber.replace("+", "")}`);
         const data = await response.json();
 
         let dreamFiles: Dream[] = [];
@@ -69,7 +69,7 @@ const DreamList: React.FC = () => {
           if (key.includes("metadata")) {
             continue;
           }
-          const response = await fetch(`http://${url}/api/dreams/${key}`);
+          const response = await fetch(`https://${url}/api/dreams/${key}`);
           const dreamData: Dream = await response.json();
 
           dreamFiles = [...dreamFiles, dreamData];
