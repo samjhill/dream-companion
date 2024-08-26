@@ -21,9 +21,9 @@ s3_client = boto3.client(
 )
 
 @routes_bp.route('/', methods=['GET'])
-@cross_origin(supports_credentials=True)
-def health_check():
-    return jsonify({"check": "ok"}), 200
+def api_health_check():
+    print("Received health check request")
+    return jsonify({"status": "OK"}), 200
 
 @routes_bp.route('/dreams/<phone_number>', methods=['GET'])
 # @jwt_required() TODO
