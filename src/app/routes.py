@@ -15,9 +15,9 @@ routes_bp = Blueprint('routes_bp', __name__)
 # Initialize S3 client
 s3_client = boto3.client(
     's3',
-    aws_access_key_id=os.environ['AWS_ACCESS_KEY_ID'],
-    aws_secret_access_key=os.environ['AWS_SECRET_ACCESS_KEY'],
-    region_name=os.environ['AWS_REGION']
+    aws_access_key_id=os.getenv('AWS_ACCESS_KEY_ID'),
+    aws_secret_access_key=os.getenv('AWS_SECRET_ACCESS_KEY'),
+    region_name=os.getenv('AWS_REGION')
 )
 
 @routes_bp.route('/', methods=['GET'])
@@ -32,7 +32,7 @@ def get_dreams(phone_number):
     try:
         # List all objects in the user's S3 directory
         response = s3_client.list_objects_v2(
-            Bucket=os.environ['S3_BUCKET_NAME'],
+            Bucket=os.getenv('S3_BUCKET_NAME'),
             Prefix=f'{phone_number}/'
         )
 
@@ -55,7 +55,7 @@ def get_dream(phone_number, dream_id):
         # Retrieve the specific dream object from S3
         key = f'{phone_number}/{dream_id}'
         response = s3_client.get_object(
-            Bucket=os.environ['S3_BUCKET_NAME'],
+            Bucket=os.getenv('S3_BUCKET_NAME'),
             Key=key
         )
 
