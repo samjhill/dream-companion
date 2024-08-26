@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { formatDate } from '../helpers/date';
 import { getUserPhoneNumber } from '../helpers/user';
-
+import Clara from "../assets/clara.jpg";
 import 'ldrs/ring';
 
 interface Dream {
@@ -39,7 +39,11 @@ const DreamContent: React.FC<DreamContentProps> = ({ dream }) => {
 
           <div style={{ backgroundColor: "rgb(47 47 47 / 50%)", padding: ".5rem", marginBottom: ".25rem" }}>
             <h3>Response</h3>
-            <p>{dream.response}</p>
+            <div>
+              <img src={Clara} style={{height: "150px"}} />
+              <p>{dream.response}</p>
+            </div>
+            
           </div>
         </>
       )}
