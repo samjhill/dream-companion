@@ -77,9 +77,8 @@ const DreamList: React.FC = () => {
           const dreamData: Dream = await response.json();
 
           dreamFiles = [...dreamFiles, dreamData];
+          setDreams(dreamFiles.sort((a, b) => new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime()));
         }
-
-        setDreams(dreamFiles.sort((a, b) => new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime()));
       } catch (error) {
         console.error("Error fetching dreams:", error);
       }
