@@ -20,7 +20,7 @@ const DreamContent: React.FC<DreamContentProps> = ({ dream }) => {
 
   return (
     <div
-      style={{ backgroundColor: "rgb(0 0 0 / 50%)", padding: ".25rem", marginBottom: "1rem", borderRadius: "5px" }}
+      style={{ padding: ".25rem", marginBottom: "1rem", borderRadius: "5px" }}
       key={dream.id}
       onClick={() => !isOpen && setIsOpen(true)}
     >
@@ -32,12 +32,12 @@ const DreamContent: React.FC<DreamContentProps> = ({ dream }) => {
       </div>
       {isOpen && (
         <>
-          <div style={{ backgroundColor: "rgb(0 0 0 / 50%)", padding: ".5rem", marginBottom: ".25rem" }}>
+          <div style={{ padding: ".5rem", marginBottom: ".25rem" }}>
             <h3>Your dream</h3>
             <p>{dream.dream_content}</p>
           </div>
 
-          <div style={{ backgroundColor: "rgb(47 47 47 / 50%)", padding: ".5rem", marginBottom: ".25rem" }}>
+          <div style={{ padding: ".5rem", marginBottom: ".25rem" }}>
             <h3>Response</h3>
             <div>
               <img src={Clara} style={{height: "150px"}} />
