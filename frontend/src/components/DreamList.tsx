@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from 'react';
+import { fetchAuthSession } from 'aws-amplify/auth';
 import { formatDate } from '../helpers/date';
 import { getUserPhoneNumber } from '../helpers/user';
 import Clara from "../assets/clara.jpg";
@@ -40,10 +41,10 @@ const DreamContent: React.FC<DreamContentProps> = ({ dream }) => {
           <div style={{ padding: ".5rem", marginBottom: ".25rem" }}>
             <h3>Response</h3>
             <div>
-              <img src={Clara} style={{height: "150px"}} />
+              <img src={Clara} style={{ height: "150px" }} />
               <p>{dream.response}</p>
             </div>
-            
+
           </div>
         </>
       )}
@@ -56,16 +57,19 @@ const DreamList: React.FC = () => {
 
   useEffect(() => {
     const fetchDreams = async () => {
+      const session = await fetchAuthSession();
       const phoneNumber = await getUserPhoneNumber();
       if (!phoneNumber) {
         console.error("No phone number");
         return;
       }
-      const url =  "api.clarasdreamguide.com";
-      // const url = 'dreammentor-dev.us-east-1.elasticbeanstalk.com'
-      // const url = "localhost:8000"
+      const url =  "https://api.clarasdreamguide.com";
+      // const url = 'https://dreammentor-dev.us-east-1.elasticbeanstalk.com'
+      // const url = "http://localhost:8888"
       try {
-        const response = await fetch(`https://${url}/api/dreams/${phoneNumber.replace("+", "")}`);
+        const response = await fetch(`${url}/api/dreams/${phoneNumber.replace("+", "")}`,
+          { headers: { 'Authorization': `Bearer ${session?.tokens?.accessToken}` } }
+        );
         const data = await response.json();
 
         let dreamFiles: Dream[] = [];
@@ -74,7 +78,8 @@ const DreamList: React.FC = () => {
           if (key.includes("metadata")) {
             continue;
           }
-          const response = await fetch(`https://${url}/api/dreams/${key}`);
+          const response = await fetch(`${url}/api/dreams/${key}`,
+            { headers: { 'Authorization': `Bearer ${session?.tokens?.accessToken}` } });
           const dreamData: Dream = await response.json();
 
           dreamFiles = [...dreamFiles, dreamData];

@@ -1,7 +1,8 @@
 import json
 from flask import Blueprint, request, jsonify
 from flask_cors import cross_origin
-from flask_jwt_extended import jwt_required, get_jwt_identity
+from flask_jwt_extended import jwt_required
+
 import boto3
 import os
 import urllib.parse
@@ -26,7 +27,7 @@ def api_health_check():
     return jsonify({"status": "OK"}), 200
 
 @routes_bp.route('/dreams/<phone_number>', methods=['GET'])
-# @jwt_required() TODO
+@jwt_required()
 @cross_origin(supports_credentials=True)
 def get_dreams(phone_number):
     try:
@@ -48,7 +49,7 @@ def get_dreams(phone_number):
 
 
 @routes_bp.route('/dreams/<phone_number>/<dream_id>', methods=['GET'])
-# @jwt_required() TODO
+@jwt_required()
 @cross_origin(supports_credentials=True)
 def get_dream(phone_number, dream_id):
     try:
