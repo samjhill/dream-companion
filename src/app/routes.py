@@ -1,7 +1,8 @@
 import json
 from flask import Blueprint, request, jsonify
-from flask_cors import cross_origin
+from flask_cors import CORS, cross_origin
 from flask_jwt_extended import jwt_required
+from flask_cognito import cognito_auth_required, current_user, current_cognito_jwt
 
 import boto3
 import os
@@ -27,7 +28,7 @@ def api_health_check():
     return jsonify({"status": "OK"}), 200
 
 @routes_bp.route('/dreams/<phone_number>', methods=['GET'])
-@jwt_required()
+# @cognito_auth_required
 @cross_origin(supports_credentials=True)
 def get_dreams(phone_number):
     try:
@@ -49,7 +50,7 @@ def get_dreams(phone_number):
 
 
 @routes_bp.route('/dreams/<phone_number>/<dream_id>', methods=['GET'])
-@jwt_required()
+# @cognito_auth_required
 @cross_origin(supports_credentials=True)
 def get_dream(phone_number, dream_id):
     try:
