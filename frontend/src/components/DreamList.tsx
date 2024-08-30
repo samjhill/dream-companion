@@ -53,7 +53,7 @@ const DreamContent: React.FC<DreamContentProps> = ({ dream }) => {
           <div>
             <h3>Themes</h3>
           <ul>
-            {themes.split("\n").map(theme => <li>{theme.replace("-", "")}</li>)}
+            {themes.split("\n").map(theme => <li key={theme}>{theme.replace("-", "")}</li>)}
           </ul>
           </div>
         </>
