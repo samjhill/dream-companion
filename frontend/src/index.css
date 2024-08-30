@@ -58,6 +58,10 @@ button:focus-visible {
   margin: 0 auto;
 }
 
+.dream-container {
+  background: #80808021;
+}
+
 @media (prefers-color-scheme: light) {
   :root {
     color: #213547;

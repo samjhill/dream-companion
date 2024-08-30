@@ -21,6 +21,7 @@ const DreamContent: React.FC<DreamContentProps> = ({ dream }) => {
 
   return (
     <div
+      className='dream-container'
       style={{ padding: ".25rem", marginBottom: "1rem", borderRadius: "5px" }}
       key={dream.id}
       onClick={() => !isOpen && setIsOpen(true)}
