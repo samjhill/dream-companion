@@ -62,6 +62,11 @@ button:focus-visible {
   background: #80808021;
 }
 
+.profile-pic {
+  border-radius: 100px;
+  border: 2px solid;
+}
+
 @media (prefers-color-scheme: light) {
   :root {
     color: #213547;
