@@ -19,7 +19,8 @@ interface DreamContentProps {
 
 const DreamContent: React.FC<DreamContentProps> = ({ dream }) => {
   const [isOpen, setIsOpen] = useState(false);
-  const title = dream.summary?.split("\n")[0] ?? formatDate(dream.createdAt);
+  const title = dream.summary?.split("\n\n")[0] ?? formatDate(dream.createdAt);
+  const themes =  dream.summary?.split("\n\n")[1];
 
   return (
     <div
@@ -47,7 +48,13 @@ const DreamContent: React.FC<DreamContentProps> = ({ dream }) => {
               <img src={Clara} style={{ height: "150px" }} className="profile-pic" />
               <p>{dream.response}</p>
             </div>
-
+          </div>
+          
+          <div>
+            <h3>Themes</h3>
+          <ul>
+            {themes.split("\n").map(theme => <li>{theme.replace("-", "")}</li>)}
+          </ul>
           </div>
         </>
       )}
