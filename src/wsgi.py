@@ -1,4 +1,4 @@
-from flask import redirect, request
+from flask import Response, redirect, request
 from app import create_app
 from flask_jwt_extended import JWTManager
 from flask_cognito import CognitoAuth
@@ -13,6 +13,11 @@ app.config['JWT_ALGORITHM'] = 'RS256'
 app.config['JWT_SECRET_KEY'] = open('private.pem').read()
 app.config['JWT_PUBLIC_KEY'] = open('public.pem').read()
 
+@app.before_request
+def basic_authentication():
+    if request.method.lower() == 'options':
+        return Response()
+    
 @app.before_request
 def before_request():
     if request.url.startswith('http://'):

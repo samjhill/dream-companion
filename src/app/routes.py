@@ -28,10 +28,11 @@ def api_health_check():
     return jsonify({"status": "OK"}), 200
 
 @routes_bp.route('/dreams/<phone_number>', methods=['GET'])
-# @cognito_auth_required
+@cognito_auth_required
 @cross_origin(supports_credentials=True)
 def get_dreams(phone_number):
     try:
+        print(current_cognito_jwt['username'])
         # List all objects in the user's S3 directory
         response = s3_client.list_objects_v2(
             Bucket=os.getenv('S3_BUCKET_NAME'),
@@ -50,7 +51,7 @@ def get_dreams(phone_number):
 
 
 @routes_bp.route('/dreams/<phone_number>/<dream_id>', methods=['GET'])
-# @cognito_auth_required
+@cognito_auth_required
 @cross_origin(supports_credentials=True)
 def get_dream(phone_number, dream_id):
     try:
