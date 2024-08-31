@@ -20,7 +20,7 @@ interface DreamContentProps {
 const DreamContent: React.FC<DreamContentProps> = ({ dream }) => {
   const [isOpen, setIsOpen] = useState(false);
   const title = dream.summary?.split("\n\n")[0] ?? formatDate(dream.createdAt);
-  const themes =  dream.summary?.split("\n\n")[1];
+  const themes = dream.summary?.split("\n\n")[1];
 
   return (
     <div
@@ -49,13 +49,14 @@ const DreamContent: React.FC<DreamContentProps> = ({ dream }) => {
               <p>{dream.response}</p>
             </div>
           </div>
-          
-          <div>
+
+          {themes ? (<div>
             <h3>Themes</h3>
-          <ul>
-            {themes.split("\n").map(theme => <li key={theme}>{theme.replace("-", "")}</li>)}
-          </ul>
-          </div>
+            <ul>
+              {themes.split("\n").map(theme => <li key={theme}>{theme.replace("-", "")}</li>)}
+            </ul>
+          </div>) : null}
+
         </>
       )}
     </div>
@@ -73,7 +74,7 @@ const DreamList: React.FC = () => {
         console.error("No phone number");
         return;
       }
-      const url =  "https://api.clarasdreamguide.com";
+      const url = "https://api.clarasdreamguide.com";
       // const url = 'https://dreammentor-dev.us-east-1.elasticbeanstalk.com'
       // const url = "http://localhost:8888"
       try {
