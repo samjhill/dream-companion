@@ -19,7 +19,8 @@ interface DreamContentProps {
 
 const DreamContent: React.FC<DreamContentProps> = ({ dream }) => {
   const [isOpen, setIsOpen] = useState(false);
-  const title = dream.summary?.split("\n\n")[0] ?? formatDate(dream.createdAt);
+  const date = formatDate(dream.createdAt);
+  const summary = dream.summary?.split("\n\n")[0];
   const themes = dream.summary?.split("\n\n")[1];
 
   return (
@@ -30,7 +31,7 @@ const DreamContent: React.FC<DreamContentProps> = ({ dream }) => {
       onClick={() => !isOpen && setIsOpen(true)}
     >
       <div style={{ display: "flex" }}>
-        <div style={{ marginLeft: "1rem", marginTop: ".5rem" }}>{title}</div>
+        <div style={{ marginLeft: "1rem", marginTop: ".5rem" }}><p>{summary}</p><p>{date}</p></div>
         <div style={{ marginLeft: "auto" }}>
           <button onClick={() => setIsOpen(!isOpen)}>{isOpen ? "hide" : "show"}</button>
         </div>
