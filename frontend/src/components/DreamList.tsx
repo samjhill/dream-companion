@@ -2,7 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { fetchAuthSession } from 'aws-amplify/auth';
 import { formatDate } from '../helpers/date';
 import { getUserPhoneNumber } from '../helpers/user';
-import Clara from "../assets/clara.jpg";
+
 import 'ldrs/ring';
 
 interface Dream {
@@ -46,7 +46,6 @@ const DreamContent: React.FC<DreamContentProps> = ({ dream }) => {
           <div style={{ padding: ".5rem", marginBottom: ".25rem" }}>
             <h3>Response</h3>
             <div>
-              <img src={Clara} style={{ height: "150px" }} className="profile-pic" />
               <p>{dream.response}</p>
             </div>
           </div>

@@ -64,7 +64,9 @@ button:focus-visible {
 
 .profile-pic {
   border-radius: 100px;
-  border: 2px solid;
+  border: 10px solid;
+  max-width: 250px;
+  margin: 0 auto;
 }
 
 @media (prefers-color-scheme: light) {
