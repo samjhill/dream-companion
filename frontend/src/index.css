@@ -69,6 +69,12 @@ button:focus-visible {
   margin: 0 auto;
 }
 
+.greet-section {
+  background: #00000017;
+  padding: .5rem;
+  margin-top: .5rem;
+}
+
 @media (prefers-color-scheme: light) {
   :root {
     color: #213547;
