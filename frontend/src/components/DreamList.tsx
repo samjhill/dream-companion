@@ -25,7 +25,7 @@ const DreamContent: React.FC<DreamContentProps> = ({ dream }) => {
 
   return (
     <div
-      className='dream-container'
+      className='dream-container dream'
       style={{ padding: ".25rem", marginBottom: "1rem", borderRadius: "5px" }}
       key={dream.id}
       onClick={() => !isOpen && setIsOpen(true)}
@@ -87,7 +87,7 @@ const DreamList: React.FC = () => {
         let dreamFiles: Dream[] = [];
         for (let i = 0; i < data.length; i++) {
           const key = data[i]["key"];
-          if (key.includes("metadata")) {
+          if (key.includes("metadata") || key.includes("themes")) {
             continue;
           }
           const response = await fetch(`${url}/api/dreams/${key}`,

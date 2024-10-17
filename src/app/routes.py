@@ -27,6 +27,22 @@ def api_health_check():
     print("Received health check request")
     return jsonify({"status": "OK"}), 200
 
+@routes_bp.route('/themes/<phone_number>', methods=['GET'])
+@cognito_auth_required
+@cross_origin(supports_credentials=True)
+def get_themes(phone_number):
+    try:
+        print(current_cognito_jwt['username'])
+        response = s3_client.get_object(
+            Bucket=os.getenv('S3_BUCKET_NAME'),
+            Key=f'{phone_number}/themes.txt'
+        )
+
+        print(response)
+        return response['Body'].read(), 200
+    except Exception as e:
+        return jsonify({"error": str(e)}), 500
+    
 @routes_bp.route('/dreams/<phone_number>', methods=['GET'])
 @cognito_auth_required
 @cross_origin(supports_credentials=True)
