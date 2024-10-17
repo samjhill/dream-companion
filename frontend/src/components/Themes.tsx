@@ -25,6 +25,10 @@ export const Themes: React.FC = () => {
         fetchThemes();
     }, []);
 
+    if (!themes) {
+        return null;
+    }
+    
     return (
         <>
             <h2>Themes</h2>
