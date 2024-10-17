@@ -28,8 +28,9 @@ export const Themes: React.FC = () => {
     return (
         <>
             <h2>Themes</h2>
+            <p>Now that I've gotten to know you better, here are the patterns I'm seeing in your dreams, as well as some concrete tasks you can do to work on them in your waking life.</p>
             <ul>
-                {themes.split("\n").map(theme => (<li>{theme}</li>))}
+                {themes.replace(/- /g, "").split("\n").map(theme => theme.split(":")).map(([theme, task]) => <li><strong>{theme}</strong>: {task}</li>)}
             </ul>
         </>
     )
