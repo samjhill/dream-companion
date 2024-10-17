@@ -1,0 +1,45 @@
+.marketing-container {
+    text-align: center;
+    padding: 2rem;
+  }
+  
+  .marketing-header h1 {
+    font-size: 2.5rem;
+    margin-bottom: 1rem;
+  }
+  
+  .marketing-header p {
+    font-size: 1.2rem;
+    margin-bottom: 2rem;
+    text-align: left;
+  }
+  
+  .marketing-content h2 {
+    font-size: 1.5rem;
+    margin-top: 1.5rem;
+  }
+  
+  .marketing-content p {
+    font-size: 1rem;
+    margin-bottom: 1rem;
+    text-align: left;
+  }
+  
+  .cta-button {
+    padding: 0.8rem 1.5rem;
+    background-color: #0073e6;
+    color: white;
+    text-decoration: none;
+    border-radius: 5px;
+    font-size: 1.1rem;
+  }
+  
+  .cta-button:hover {
+    background-color: #005bb5;
+  }
+  
+  .marketing-footer p {
+    margin-top: 1.5rem;
+    font-size: 0.9rem;
+  }
+  
