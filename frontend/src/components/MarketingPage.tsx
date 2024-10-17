@@ -32,7 +32,12 @@ export const MarketingPage: React.FC = () => {
       <footer className="marketing-footer">
         <h2>Already a member?</h2>
         <Button><Link to="/app">Sign in here</Link></Button>
+
+        
       </footer>
+      <div style={{"bottom": "0", marginTop: "8rem"}}>
+            <p>Made with love by <a target="_blank" href="https://github.com/samjhill">Sam Hill</a></p>
+        </div>
     </div>
   );
 };
