@@ -30,7 +30,8 @@ export const MarketingPage: React.FC = () => {
       </section>
 
       <footer className="marketing-footer">
-        <h3>Already a member? <Button><Link to="/app">Sign in here</Link></Button></h3>
+        <h2>Already a member?</h2>
+        <Button><Link to="/app">Sign in here</Link></Button>
       </footer>
     </div>
   );
