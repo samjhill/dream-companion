@@ -2,6 +2,7 @@ import React, { useEffect, useState } from "react";
 import OwlStandard from "../assets/clara-owl-standard.jpg";
 import OwlOverjoyed from "../assets/clara-owl-overjoyed.jpg";
 import OwlSleepy from "../assets/clara-owl-sleepy.jpg";
+import OwlThinking from "../assets/clara-owl-thinking.jpg";
 import { generateRandomNumber } from "../helpers/numbers";
 
 const greetings = [
@@ -28,7 +29,7 @@ const greetings = [
 ];
 
 export const Greet: React.FC = () => {
-    const imageOptions = [OwlStandard, OwlOverjoyed, OwlSleepy];
+    const imageOptions = [OwlStandard, OwlOverjoyed, OwlSleepy, OwlThinking];
     const [randomNumber, setRandomNumber] = useState<number>(0);
     const [randomGreeting, setRandomGreeting] = useState<string>("");
 
