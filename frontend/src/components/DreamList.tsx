@@ -106,7 +106,7 @@ const DreamList: React.FC = () => {
 
   return (
     <div style={{ padding: ".5rem" }}>
-      <h2>Your Dreams</h2>
+      <h2>Dream Journal</h2>
       {dreams.length === 0 && <p>loading...</p>}
       {dreams.map(dream => (
         <DreamContent key={dream.id} dream={dream} />
