@@ -76,6 +76,7 @@ const styles: { [key: string]: React.CSSProperties } = {
     borderRadius: '4px',
     color: '#333',
     fontSize: '12px',
+    transition: 'all .5s ease-out'
   },
   dateLabel: {
     fontWeight: 'bold',
