@@ -35,7 +35,7 @@ export const DreamHeatmap: React.FC<DreamHeatmapProps> = ({ dreams, numberOfDays
 
   return (
     <div>
-      <h2>Heatmap of Dream Activity</h2>
+      <h3>Heatmap of Dream Activity</h3>
       <div style={styles.gridContainer}>
         {days.map((day, index) => {
           const dateStr = format(day, 'yyyy-MM-dd');
