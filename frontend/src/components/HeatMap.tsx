@@ -64,6 +64,7 @@ const styles: { [key: string]: React.CSSProperties } = {
     gap: '5px',
     marginTop: '20px',
     marginBottom: '20px',
+    maxWidth: '420px'
   },
   dayBox: {
     width: '50px',
