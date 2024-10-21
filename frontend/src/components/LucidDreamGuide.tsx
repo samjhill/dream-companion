@@ -67,7 +67,7 @@ export const LucidDreamGuide: React.FC = () => {
         
         
         </div>
-        <h2>Keys to Dreamland</h2>
+        <h2>Today's key to dreamland</h2>
         <p>{randomSleepTip}</p>
         </div>
     )

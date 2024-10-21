@@ -4,6 +4,7 @@ import { formatDate } from '../helpers/date';
 import { getUserPhoneNumber } from '../helpers/user';
 
 import 'ldrs/ring';
+import {DreamHeatmap} from './HeatMap';
 
 interface Dream {
   id: string;
@@ -108,6 +109,7 @@ const DreamList: React.FC = () => {
     <div style={{ padding: ".5rem" }}>
       <h2>Dream Journal</h2>
       {dreams.length === 0 && <p>loading...</p>}
+      <DreamHeatmap dreams={dreams} /> 
       {dreams.map(dream => (
         <DreamContent key={dream.id} dream={dream} />
       ))}
