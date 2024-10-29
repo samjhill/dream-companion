@@ -29,7 +29,7 @@ export const MarketingPage: React.FC = () => {
 
 
         <h2>Discover Your Patterns</h2>
-        <p>I help you recognize recurring themes and offers practical guidance to explore your inner world.</p>
+        <p>I help you recognize recurring themes and offer practical guidance to explore your inner world.</p>
         <img src={Themes} />
         
 
