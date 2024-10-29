@@ -4,7 +4,7 @@
   }
 
   .marketing-container img {
-    max-width: 400px;
+    max-width: 600px;
     border: 5px solid #8080807d;
     padding: 1rem;
     border-radius: 10px;
@@ -27,7 +27,7 @@
   
   .marketing-content h2 {
     font-size: 1.5rem;
-    margin-top: 1.5rem;
+    margin-top: 2.5rem;
   }
   
   .marketing-content p {
