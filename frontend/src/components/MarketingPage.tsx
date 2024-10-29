@@ -1,13 +1,15 @@
 import React from 'react';
 import { Link } from 'react-router-dom';
-import './MarketingPage.css'; // Optional: Add styles as needed
+import './MarketingPage.css';
 import OwlStandard from "../assets/clara-owl-standard.jpg";
+import Heatmap from "../assets/marketing/heatmap.png";
+import Themes from "../assets/marketing/themes.jpg";
 import { Button } from '@aws-amplify/ui-react';
 
 export const MarketingPage: React.FC = () => {
   return (
-    <div className="marketing-container">
-      <header className="marketing-header">
+    <>
+     <header className="marketing-header">
         <h1 style={{"textAlign": "center"}}>Hoot hoot! Welcome.</h1>
         <div style={{display: "flex"}}>
             <img src={OwlStandard} className="profile-pic" />
@@ -15,13 +17,23 @@ export const MarketingPage: React.FC = () => {
         <h1 style={{"textAlign": "center"}}>I'm Clara, the Dream Mentor.</h1>
         <p>I can help you unlock the power of your dreams and gain insights into your waking life.</p>
       </header>
+    <div className="marketing-container">
+     
 
       <section className="marketing-content">
+
+      <h2>Track, Reflect, Grow</h2>
+      <p>Log your dreams, track your progress, and learn from the patterns emerging in your sleep.</p>
+        <img src={Heatmap} />
+        
+
+
         <h2>Discover Your Patterns</h2>
         <p>I help you recognize recurring themes and offers practical guidance to explore your inner world.</p>
+        <img src={Themes} />
+        
 
-        <h2>Track, Reflect, Grow</h2>
-        <p>Log your dreams, track your progress, and learn from the patterns emerging in your sleep.</p>
+        
       </section>
 
       <section>
@@ -39,6 +51,7 @@ export const MarketingPage: React.FC = () => {
             <p>Made with love by <a target="_blank" href="https://github.com/samjhill">Sam Hill</a></p>
         </div>
     </div>
+    </>
   );
 };
 

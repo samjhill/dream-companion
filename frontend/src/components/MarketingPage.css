@@ -2,6 +2,17 @@
     text-align: center;
     padding: 2rem;
   }
+
+  .marketing-container img {
+    max-width: 400px;
+    border: 5px solid #8080807d;
+    padding: 1rem;
+    border-radius: 10px;
+  }
+  .marketing-header {
+    background: #00000017;
+    padding: 2rem;
+  }
   
   .marketing-header h1 {
     font-size: 2.5rem;
