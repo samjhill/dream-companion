@@ -39,6 +39,7 @@ export const MarketingPage: React.FC = () => {
       <section>
         <h2>How to get started</h2>
         <p>Simply send a text message containing your dream to <a href="tel:877-754-1288">877-754-1288</a>.</p>
+        <p>By texting me, you consent to receive SMS updates from Old House Overhaul LLC. Message and data rates may apply. Reply STOP to unsubscribe.</p>
       </section>
 
       <footer className="marketing-footer">
