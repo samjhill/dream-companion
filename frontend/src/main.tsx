@@ -8,6 +8,7 @@ import { BrowserRouter as Router, Route, Routes } from 'react-router-dom';
 import '@aws-amplify/ui-react/styles.css';
 import './index.css';
 import { MarketingPage } from './components/MarketingPage';
+import { SmsConsent } from  './components/SmsConsent';
 
 Amplify.configure(awsExports);
 
@@ -17,7 +18,7 @@ ReactDOM.render(
       <Routes>
         {/* Public route for marketing page */}
         <Route path="/" element={<MarketingPage />} />
-        
+        <Route path="/sms-consent" element={<SmsConsent />} />
         {/* Authenticated routes */}
         <Route 
           path="/app/*" 
