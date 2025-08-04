@@ -11,9 +11,18 @@ def create_app():
     app.config.from_object(Config)
 
     # Enable CORS for the /api routes and allow requests from your frontend
-    CORS(app)
+    CORS(app, origins=['https://clarasdreamguide.com'], supports_credentials=True)
 
     jwt = JWTManager(app)
+
+    # Add CORS headers to all responses
+    @app.after_request
+    def after_request(response):
+        response.headers.add('Access-Control-Allow-Origin', 'https://clarasdreamguide.com')
+        response.headers.add('Access-Control-Allow-Headers', 'Content-Type,Authorization,X-Amz-Date,X-Api-Key,X-Amz-Security-Token')
+        response.headers.add('Access-Control-Allow-Methods', 'GET,POST,PUT,DELETE,OPTIONS')
+        response.headers.add('Access-Control-Allow-Credentials', 'true')
+        return response
 
     with app.app_context():
         app.register_blueprint(auth_bp, url_prefix='/auth')

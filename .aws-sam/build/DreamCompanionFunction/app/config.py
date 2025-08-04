@@ -10,3 +10,5 @@ class Config:
     AWS_ACCESS_KEY_ID = os.environ.get('AWS_ACCESS_KEY_ID')
     AWS_SECRET_ACCESS_KEY = os.environ.get('AWS_SECRET_ACCESS_KEY')
     AWS_REGION = os.environ.get('AWS_REGION') or 'us-east-1'
+    COGNITO_REGION = 'us-east-1'
+    COGNITO_USERPOOL_ID = 'us-east-1_A7pHyJ90V'

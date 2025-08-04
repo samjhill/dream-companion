@@ -13,10 +13,13 @@ Resources:
     Type: AWS::Serverless::Api
     Properties:
       StageName: Prod
-      Auth:
-        Authorizers:
-          CognitoAuthorizer:
-            UserPoolArn: arn:aws:cognito-idp:us-east-1:732408661603:userpool/us-east-1_Pql4fDDds
+      Cors:
+        AllowMethods: "'GET,POST,PUT,DELETE,OPTIONS'"
+        AllowHeaders: "'Content-Type,X-Amz-Date,Authorization,X-Api-Key,X-Amz-Security-Token'"
+        AllowOrigin: "'https://clarasdreamguide.com'"
+        AllowCredentials: "'true'"
+        MaxAge: "'300'"
+
 
   DreamCompanionFunction:
     Type: AWS::Serverless::Function
@@ -27,6 +30,7 @@ Resources:
       Environment:
         Variables:
           FLASK_ENV: production
+          S3_BUCKET_NAME: dream.storage
       Events:
         DreamCompanionApiEvent:
           Type: Api
@@ -34,8 +38,6 @@ Resources:
             Path: /{proxy+}
             Method: ANY
             RestApiId: !Ref DreamCompanionApi
-            Auth:
-              Authorizer: CognitoAuthorizer
       Policies:
         - AWSLambdaBasicExecutionRole
         - Version: "2012-10-17"
@@ -45,5 +47,8 @@ Resources:
                 - "s3:GetObject"
                 - "s3:PutObject"
                 - "s3:DeleteObject"
-              Resource: "arn:aws:s3:::dream.storage/*"
+                - "s3:ListBucket"
+              Resource: 
+                - "arn:aws:s3:::dream.storage/*"
+                - "arn:aws:s3:::dream.storage"
 

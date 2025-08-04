@@ -1,10 +1,12 @@
 import json
 from flask import Blueprint, request, jsonify
-from flask_cors import cross_origin
-from flask_jwt_extended import jwt_required, get_jwt_identity
+from flask_cors import CORS, cross_origin
+from flask_jwt_extended import jwt_required
+from flask_cognito import cognito_auth_required, current_user, current_cognito_jwt
 import boto3
 import os
 import urllib.parse
+from functools import wraps
 
 from dotenv import load_dotenv
 
@@ -12,26 +14,72 @@ load_dotenv()
 
 routes_bp = Blueprint('routes_bp', __name__)
 
-# Initialize S3 client
-s3_client = boto3.client(
-    's3',
-    aws_access_key_id=os.environ['AWS_ACCESS_KEY_ID'],
-    aws_secret_access_key=os.environ['AWS_SECRET_ACCESS_KEY'],
-    region_name=os.environ['AWS_REGION']
-)
+def require_auth(f):
+    @wraps(f)
+    def decorated_function(*args, **kwargs):
+        auth_header = request.headers.get('Authorization')
+        if not auth_header or not auth_header.startswith('Bearer '):
+            return jsonify({"error": "Missing or invalid authorization header"}), 401
+        
+        # For now, we'll just check if the token exists
+        # In a real implementation, you would validate the JWT token
+        token = auth_header.split(' ')[1]
+        if not token:
+            return jsonify({"error": "Invalid token"}), 401
+        
+        return f(*args, **kwargs)
+    return decorated_function
 
+# Initialize S3 client
+s3_client = boto3.client('s3')
+
+@routes_bp.route('/', methods=['GET'])
+def api_health_check():
+    print("Received health check request")
+    return jsonify({"status": "OK"}), 200
+
+@routes_bp.route('/<path:proxy>', methods=['OPTIONS'])
+def handle_options(proxy):
+    """Handle OPTIONS requests for CORS preflight"""
+    response = jsonify({"status": "OK"})
+    response.headers.add('Access-Control-Allow-Origin', 'https://clarasdreamguide.com')
+    response.headers.add('Access-Control-Allow-Headers', 'Content-Type,Authorization,X-Amz-Date,X-Api-Key,X-Amz-Security-Token')
+    response.headers.add('Access-Control-Allow-Methods', 'GET,POST,PUT,DELETE,OPTIONS')
+    response.headers.add('Access-Control-Allow-Credentials', 'true')
+    return response, 200
+
+@routes_bp.route('/themes/<phone_number>', methods=['GET'])
+@require_auth
+@cross_origin(supports_credentials=True)
+def get_themes(phone_number):
+    try:
+        # For now, we'll use a placeholder username
+        # In a real implementation, you would extract the username from the JWT token
+        bucket_name = os.getenv('S3_BUCKET_NAME')
+        
+        response = s3_client.get_object(
+            Bucket=bucket_name,
+            Key=f'{phone_number}/themes.txt'
+        )
+
+        return response['Body'].read(), 200
+    except Exception as e:
+        return jsonify({"error": str(e)}), 500
+    
 @routes_bp.route('/dreams/<phone_number>', methods=['GET'])
-# @jwt_required() TODO
+@require_auth
 @cross_origin(supports_credentials=True)
 def get_dreams(phone_number):
     try:
+        # For now, we'll use a placeholder username
+        # In a real implementation, you would extract the username from the JWT token
+        bucket_name = os.getenv('S3_BUCKET_NAME')
+        
         # List all objects in the user's S3 directory
         response = s3_client.list_objects_v2(
-            Bucket=os.environ['S3_BUCKET_NAME'],
+            Bucket=bucket_name,
             Prefix=f'{phone_number}/'
         )
-
-        print(response)
 
         if 'Contents' in response:
             dreams = [{'key': obj['Key']} for obj in response['Contents']]
@@ -43,14 +91,14 @@ def get_dreams(phone_number):
 
 
 @routes_bp.route('/dreams/<phone_number>/<dream_id>', methods=['GET'])
-# @jwt_required() TODO
+@require_auth
 @cross_origin(supports_credentials=True)
 def get_dream(phone_number, dream_id):
     try:
         # Retrieve the specific dream object from S3
         key = f'{phone_number}/{dream_id}'
         response = s3_client.get_object(
-            Bucket=os.environ['S3_BUCKET_NAME'],
+            Bucket=os.getenv('S3_BUCKET_NAME'),
             Key=key
         )
 
