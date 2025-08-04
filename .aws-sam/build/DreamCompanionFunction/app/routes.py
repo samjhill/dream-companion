@@ -71,6 +71,10 @@ def get_themes(phone_number):
 @cross_origin(supports_credentials=True)
 def get_dreams(phone_number):
     try:
+        # Get pagination parameters
+        limit = request.args.get('limit', default=10, type=int)
+        offset = request.args.get('offset', default=0, type=int)
+        
         # For now, we'll use a placeholder username
         # In a real implementation, you would extract the username from the JWT token
         bucket_name = os.getenv('S3_BUCKET_NAME')
@@ -82,10 +86,38 @@ def get_dreams(phone_number):
         )
 
         if 'Contents' in response:
-            dreams = [{'key': obj['Key']} for obj in response['Contents']]
-            return jsonify(dreams), 200
+            # Filter out metadata and themes files, sort by creation date (newest first)
+            dream_keys = []
+            for obj in response['Contents']:
+                key = obj['Key']
+                if not key.endswith('metadata') and not key.endswith('themes.txt'):
+                    dream_keys.append({
+                        'key': key,
+                        'lastModified': obj['LastModified']
+                    })
+            
+            # Sort by last modified date (newest first)
+            dream_keys.sort(key=lambda x: x['lastModified'], reverse=True)
+            
+            # Apply pagination
+            total_dreams = len(dream_keys)
+            paginated_dreams = dream_keys[offset:offset + limit]
+            
+            return jsonify({
+                'dreams': [{'key': dream['key']} for dream in paginated_dreams],
+                'total': total_dreams,
+                'limit': limit,
+                'offset': offset,
+                'hasMore': offset + limit < total_dreams
+            }), 200
         else:
-            return jsonify({"msg": "No dreams found"}), 404
+            return jsonify({
+                'dreams': [],
+                'total': 0,
+                'limit': limit,
+                'offset': offset,
+                'hasMore': False
+            }), 200
     except Exception as e:
         return jsonify({"error": str(e)}), 500
 
