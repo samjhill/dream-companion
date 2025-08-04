@@ -75,7 +75,8 @@ const DreamList: React.FC = () => {
         console.error("No phone number");
         return;
       }
-      const url = "https://api.clarasdreamguide.com";
+      const url = "https://jj1rq9vx9l.execute-api.us-east-1.amazonaws.com/Prod";
+      // const url = "https://api.clarasdreamguide.com";
       // const url = 'https://dreammentor-dev.us-east-1.elasticbeanstalk.com'
       // const url = "http://localhost:8888"
       try {

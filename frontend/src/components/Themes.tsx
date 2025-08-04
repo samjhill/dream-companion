@@ -23,7 +23,7 @@ export const Themes: React.FC = () => {
                 console.error("No phone number");
                 return;
             }
-            const url = "https://api.clarasdreamguide.com";
+            const url = "https://jj1rq9vx9l.execute-api.us-east-1.amazonaws.com/Prod";
             const response = await fetch(`${url}/api/themes/${phoneNumber.replace("+", "")}`,
                 { headers: { 'Authorization': `Bearer ${session?.tokens?.accessToken}` } }
             );
