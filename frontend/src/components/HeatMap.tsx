@@ -2,7 +2,11 @@ import React from 'react';
 import { format, eachDayOfInterval, subDays, startOfToday } from 'date-fns';
 import { processDreamsForHeatmap } from '../helpers/process-dreams';
 
-// Define a type for the dream data
+// Define types for the dream data
+interface Dream {
+  createdAt: string;
+}
+
 type DreamData = {
   [date: string]: number;
 };
@@ -18,7 +22,7 @@ const getShadingLevel = (dreamCount: number): string => {
 
 // Define the component props type
 interface DreamHeatmapProps {
-  dreams: any;
+  dreams: Dream[];
   numberOfDays?: number;
 }
 

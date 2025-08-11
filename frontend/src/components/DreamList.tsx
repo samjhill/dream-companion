@@ -146,7 +146,7 @@ const DreamList: React.FC = () => {
       }
 
       // Fetch individual dream details
-      let dreamFiles: Dream[] = [];
+      const dreamFiles: Dream[] = [];
       for (let i = 0; i < data.dreams.length; i++) {
         const key = data.dreams[i]["key"];
         
