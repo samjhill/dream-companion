@@ -1,0 +1,365 @@
+/* DemoSMS Component Styles */
+.demo-sms-section {
+  width: 100%;
+  padding: 2.5rem 1rem;
+  background: linear-gradient(135deg, #f8fafc 0%, #e2e8f0 100%);
+}
+
+.demo-sms-container {
+  max-width: 1200px;
+  margin: 0 auto;
+}
+
+.demo-sms-content {
+  display: grid;
+  gap: 2.5rem;
+  align-items: center;
+}
+
+/* Text Content */
+.demo-sms-text {
+  text-align: center;
+  order: 2;
+}
+
+.demo-sms-title {
+  font-size: 2.5rem;
+  font-weight: 600;
+  line-height: 1.1;
+  margin-bottom: 1rem;
+  color: #1e293b;
+  letter-spacing: -0.025em;
+}
+
+.demo-sms-description {
+  font-size: 1.125rem;
+  line-height: 1.6;
+  color: #64748b;
+  margin-bottom: 2rem;
+  max-width: 32rem;
+  margin-left: auto;
+  margin-right: auto;
+}
+
+.demo-sms-actions {
+  display: flex;
+  gap: 1rem;
+  justify-content: center;
+  flex-wrap: wrap;
+}
+
+.demo-sms-btn {
+  display: inline-block;
+  padding: 0.75rem 1.5rem;
+  border-radius: 0.75rem;
+  font-weight: 500;
+  text-decoration: none;
+  transition: all 0.2s ease;
+  border: none;
+  cursor: pointer;
+  font-size: 1rem;
+}
+
+.demo-sms-btn-primary {
+  background: #3b82f6;
+  color: white;
+}
+
+.demo-sms-btn-primary:hover {
+  background: #2563eb;
+  transform: translateY(-1px);
+  box-shadow: 0 4px 12px rgba(59, 130, 246, 0.3);
+}
+
+.demo-sms-btn-secondary {
+  background: white;
+  color: #374151;
+  border: 1px solid #d1d5db;
+}
+
+.demo-sms-btn-secondary:hover {
+  background: #f9fafb;
+  border-color: #9ca3af;
+  transform: translateY(-1px);
+}
+
+/* Phone Frame */
+.demo-sms-phone {
+  order: 1;
+  display: flex;
+  justify-content: center;
+}
+
+.demo-phone-frame {
+  width: 100%;
+  max-width: 380px;
+  border-radius: 2.25rem;
+  border: 1px solid rgba(0, 0, 0, 0.1);
+  box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.25);
+  background: linear-gradient(135deg, #1f2937 0%, #111827 100%);
+  color: white;
+  overflow: hidden;
+  position: relative;
+}
+
+.demo-phone-notch {
+  width: 160px;
+  height: 24px;
+  background: rgba(0, 0, 0, 0.6);
+  border-radius: 9999px;
+  margin: 8px auto 0;
+}
+
+/* Phone Header */
+.demo-phone-header {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  padding: 0.75rem 1rem;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+.demo-avatar {
+  width: 32px;
+  height: 32px;
+  border-radius: 50%;
+  background: linear-gradient(135deg, #818cf8 0%, #a855f7 100%);
+  flex-shrink: 0;
+}
+
+.demo-header-info {
+  display: flex;
+  flex-direction: column;
+  flex: 1;
+}
+
+.demo-contact-name {
+  font-size: 0.875rem;
+  font-weight: 500;
+  color: white;
+}
+
+.demo-contact-status {
+  font-size: 0.75rem;
+  color: rgba(255, 255, 255, 0.6);
+}
+
+.demo-header-actions {
+  margin-left: auto;
+}
+
+.demo-replay-btn {
+  background: none;
+  border: none;
+  color: rgba(255, 255, 255, 0.7);
+  font-size: 0.75rem;
+  text-decoration: underline;
+  cursor: pointer;
+  padding: 0.25rem 0.5rem;
+  border-radius: 0.375rem;
+  transition: all 0.2s ease;
+}
+
+.demo-replay-btn:hover {
+  color: white;
+  background: rgba(255, 255, 255, 0.1);
+}
+
+/* Messages */
+.demo-messages {
+  padding: 1rem;
+  max-height: 540px;
+  overflow: hidden;
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+}
+
+.demo-message {
+  display: flex;
+}
+
+.demo-message-user {
+  justify-content: flex-end;
+}
+
+.demo-message-clara {
+  justify-content: flex-start;
+}
+
+.demo-bubble {
+  max-width: 80%;
+  border-radius: 1rem;
+  padding: 0.75rem 1rem;
+  font-size: 0.95rem;
+  line-height: 1.4;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+  word-wrap: break-word;
+}
+
+.demo-bubble-user {
+  background: #3b82f6;
+  color: white;
+}
+
+.demo-bubble-clara {
+  background: white;
+  color: #1f2937;
+}
+
+/* Typing Indicator */
+.demo-typing-indicator {
+  display: flex;
+  justify-content: flex-start;
+}
+
+.demo-typing-dots {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.25rem;
+}
+
+.demo-typing-dot {
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  background: #9ca3af;
+  animation: typing-pulse 1.4s ease-in-out infinite both;
+}
+
+.demo-typing-dot:nth-child(2) {
+  animation-delay: 0.2s;
+}
+
+.demo-typing-dot:nth-child(3) {
+  animation-delay: 0.4s;
+}
+
+@keyframes typing-pulse {
+  0%, 80%, 100% {
+    opacity: 0.4;
+    transform: scale(0.8);
+  }
+  40% {
+    opacity: 1;
+    transform: scale(1);
+  }
+}
+
+/* Composer */
+.demo-composer {
+  margin-top: 0.5rem;
+  border-top: 1px solid rgba(255, 255, 255, 0.1);
+  padding: 0.75rem 1rem;
+}
+
+.demo-input-area {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  border-radius: 9999px;
+  background: rgba(255, 255, 255, 0.05);
+  padding: 0.75rem 1rem;
+}
+
+.demo-input-placeholder {
+  flex: 1;
+  color: rgba(255, 255, 255, 0.7);
+  font-size: 0.875rem;
+}
+
+.demo-send-btn {
+  background: #3b82f6;
+  color: white;
+  padding: 0.25rem 0.75rem;
+  border-radius: 9999px;
+  font-size: 0.875rem;
+  font-weight: 500;
+}
+
+/* Desktop Layout */
+@media (min-width: 768px) {
+  .demo-sms-section {
+    padding: 4rem 2rem;
+  }
+  
+  .demo-sms-content {
+    grid-template-columns: 1.1fr 0.9fr;
+    gap: 4rem;
+  }
+  
+  .demo-sms-text {
+    text-align: left;
+    order: 1;
+  }
+  
+  .demo-sms-phone {
+    order: 2;
+  }
+  
+  .demo-sms-title {
+    font-size: 3rem;
+  }
+  
+  .demo-sms-actions {
+    justify-content: flex-start;
+  }
+}
+
+@media (min-width: 1024px) {
+  .demo-sms-title {
+    font-size: 3.5rem;
+  }
+  
+  .demo-sms-description {
+    font-size: 1.25rem;
+  }
+}
+
+/* Reduced Motion Support */
+@media (prefers-reduced-motion: reduce) {
+  .demo-typing-dot {
+    animation: none;
+  }
+  
+  .demo-sms-btn:hover {
+    transform: none;
+  }
+}
+
+/* Focus Styles for Accessibility */
+.demo-replay-btn:focus {
+  outline: 2px solid #3b82f6;
+  outline-offset: 2px;
+}
+
+.demo-sms-btn:focus {
+  outline: 2px solid #3b82f6;
+  outline-offset: 2px;
+}
+
+/* Dark mode support */
+@media (prefers-color-scheme: dark) {
+  .demo-sms-section {
+    background: linear-gradient(135deg, #0f172a 0%, #1e293b 100%);
+  }
+  
+  .demo-sms-title {
+    color: #f1f5f9;
+  }
+  
+  .demo-sms-description {
+    color: #94a3b8;
+  }
+  
+  .demo-sms-btn-secondary {
+    background: #334155;
+    color: #e2e8f0;
+    border-color: #475569;
+  }
+  
+  .demo-sms-btn-secondary:hover {
+    background: #475569;
+    border-color: #64748b;
+  }
+}

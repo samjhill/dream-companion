@@ -5,11 +5,15 @@ import OwlStandard from "../assets/clara-owl-standard.jpg";
 import Heatmap from "../assets/marketing/heatmap.png";
 import Themes from "../assets/marketing/themes.jpg";
 import { Button } from '@aws-amplify/ui-react';
+import DemoSMS from './DemoSMS';
 
 export const MarketingPage: React.FC = () => {
   return (
     <>
-     <header className="marketing-header">
+      {/* Hero Section with SMS Demo */}
+      <DemoSMS />
+      
+      <header className="marketing-header">
         <h1 style={{"textAlign": "center"}}>Hoot hoot! Welcome.</h1>
         <div style={{display: "flex"}}>
             <img src={OwlStandard} className="profile-pic" />
