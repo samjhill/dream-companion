@@ -14,7 +14,12 @@ load_dotenv()
 
 routes_bp = Blueprint('routes_bp', __name__)
 
+# Constants
+S3_BUCKET_NAME = os.getenv('S3_BUCKET_NAME')
+FRONTEND_ORIGIN = 'https://clarasdreamguide.com'
+
 def require_auth(f):
+    """Decorator to require authentication for protected routes"""
     @wraps(f)
     def decorated_function(*args, **kwargs):
         auth_header = request.headers.get('Authorization')
@@ -30,11 +35,20 @@ def require_auth(f):
         return f(*args, **kwargs)
     return decorated_function
 
+def add_cors_headers(response):
+    """Add CORS headers to response"""
+    response.headers.add('Access-Control-Allow-Origin', FRONTEND_ORIGIN)
+    response.headers.add('Access-Control-Allow-Headers', 'Content-Type,Authorization,X-Amz-Date,X-Api-Key,X-Amz-Security-Token')
+    response.headers.add('Access-Control-Allow-Methods', 'GET,POST,PUT,DELETE,OPTIONS')
+    response.headers.add('Access-Control-Allow-Credentials', 'true')
+    return response
+
 # Initialize S3 client
 s3_client = boto3.client('s3')
 
 @routes_bp.route('/', methods=['GET'])
 def api_health_check():
+    """Health check endpoint for the API"""
     print("Received health check request")
     return jsonify({"status": "OK"}), 200
 
@@ -42,46 +56,44 @@ def api_health_check():
 def handle_options(proxy):
     """Handle OPTIONS requests for CORS preflight"""
     response = jsonify({"status": "OK"})
-    response.headers.add('Access-Control-Allow-Origin', 'https://clarasdreamguide.com')
-    response.headers.add('Access-Control-Allow-Headers', 'Content-Type,Authorization,X-Amz-Date,X-Api-Key,X-Amz-Security-Token')
-    response.headers.add('Access-Control-Allow-Methods', 'GET,POST,PUT,DELETE,OPTIONS')
-    response.headers.add('Access-Control-Allow-Credentials', 'true')
-    return response, 200
+    return add_cors_headers(response), 200
 
 @routes_bp.route('/themes/<phone_number>', methods=['GET'])
 @require_auth
 @cross_origin(supports_credentials=True)
 def get_themes(phone_number):
+    """Retrieve themes for a specific phone number"""
     try:
-        # For now, we'll use a placeholder username
-        # In a real implementation, you would extract the username from the JWT token
-        bucket_name = os.getenv('S3_BUCKET_NAME')
-        
+        if not S3_BUCKET_NAME:
+            return jsonify({"error": "S3 bucket not configured"}), 500
+            
         response = s3_client.get_object(
-            Bucket=bucket_name,
+            Bucket=S3_BUCKET_NAME,
             Key=f'{phone_number}/themes.txt'
         )
 
         return response['Body'].read(), 200
+    except s3_client.exceptions.NoSuchKey:
+        return jsonify({"error": "Themes not found"}), 404
     except Exception as e:
-        return jsonify({"error": str(e)}), 500
+        return jsonify({"error": f"Failed to retrieve themes: {str(e)}"}), 500
     
 @routes_bp.route('/dreams/<phone_number>', methods=['GET'])
 @require_auth
 @cross_origin(supports_credentials=True)
 def get_dreams(phone_number):
+    """Retrieve paginated list of dreams for a specific phone number"""
     try:
+        if not S3_BUCKET_NAME:
+            return jsonify({"error": "S3 bucket not configured"}), 500
+            
         # Get pagination parameters
         limit = request.args.get('limit', default=10, type=int)
         offset = request.args.get('offset', default=0, type=int)
         
-        # For now, we'll use a placeholder username
-        # In a real implementation, you would extract the username from the JWT token
-        bucket_name = os.getenv('S3_BUCKET_NAME')
-        
         # List all objects in the user's S3 directory
         response = s3_client.list_objects_v2(
-            Bucket=bucket_name,
+            Bucket=S3_BUCKET_NAME,
             Prefix=f'{phone_number}/'
         )
 
@@ -119,18 +131,21 @@ def get_dreams(phone_number):
                 'hasMore': False
             }), 200
     except Exception as e:
-        return jsonify({"error": str(e)}), 500
-
+        return jsonify({"error": f"Failed to retrieve dreams: {str(e)}"}), 500
 
 @routes_bp.route('/dreams/<phone_number>/<dream_id>', methods=['GET'])
 @require_auth
 @cross_origin(supports_credentials=True)
 def get_dream(phone_number, dream_id):
+    """Retrieve a specific dream by ID"""
     try:
+        if not S3_BUCKET_NAME:
+            return jsonify({"error": "S3 bucket not configured"}), 500
+            
         # Retrieve the specific dream object from S3
         key = f'{phone_number}/{dream_id}'
         response = s3_client.get_object(
-            Bucket=os.getenv('S3_BUCKET_NAME'),
+            Bucket=S3_BUCKET_NAME,
             Key=key
         )
 
@@ -144,7 +159,9 @@ def get_dream(phone_number, dream_id):
         return jsonify(to_return), 200
 
     except s3_client.exceptions.NoSuchKey:
-        return jsonify({"msg": "Dream not found"}), 404
+        return jsonify({"error": "Dream not found"}), 404
+    except json.JSONDecodeError:
+        return jsonify({"error": "Invalid dream data format"}), 500
     except Exception as e:
-        return jsonify({"error": str(e)}), 500
+        return jsonify({"error": f"Failed to retrieve dream: {str(e)}"}), 500
 

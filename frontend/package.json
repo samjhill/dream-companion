@@ -1,8 +1,9 @@
 {
-  "name": "frontend",
+  "name": "dream-companion-frontend",
   "private": true,
   "version": "0.0.0",
   "type": "module",
+  "description": "Frontend for the Dream Companion App - a dream journal application",
   "scripts": {
     "dev": "vite",
     "build": "tsc -b && vite build",
@@ -10,26 +11,26 @@
     "preview": "vite preview"
   },
   "dependencies": {
-    "@aws-amplify/ui-react": "^6.2.0",
-    "aws-amplify": "^6.5.2",
-    "date-fns": "^4.1.0",
-    "framer-motion": "^12.23.12",
-    "ldrs": "^1.0.2",
     "react": "^18.3.1",
     "react-dom": "^18.3.1",
-    "react-router-dom": "^6.27.0"
+    "react-router-dom": "^6.27.0",
+    "aws-amplify": "^6.5.2",
+    "@aws-amplify/ui-react": "^6.2.0",
+    "date-fns": "^4.1.0",
+    "framer-motion": "^12.23.12",
+    "ldrs": "^1.0.2"
   },
   "devDependencies": {
-    "@eslint/js": "^9.9.0",
     "@types/react": "^18.3.3",
     "@types/react-dom": "^18.3.0",
     "@vitejs/plugin-react": "^4.3.1",
+    "typescript": "^5.5.4",
+    "vite": "^5.4.1",
     "eslint": "^9.9.0",
+    "@eslint/js": "^9.9.0",
+    "typescript-eslint": "^8.0.1",
     "eslint-plugin-react-hooks": "^5.1.0-rc.0",
     "eslint-plugin-react-refresh": "^0.4.9",
-    "globals": "^15.9.0",
-    "typescript": "^5.5.4",
-    "typescript-eslint": "^8.0.1",
-    "vite": "^5.4.1"
+    "globals": "^15.9.0"
   }
 }

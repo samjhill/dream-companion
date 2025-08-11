@@ -1,39 +1,46 @@
 import { format, parseISO } from 'date-fns';
 
-// Define the type for a Dream object
+/**
+ * Interface for a Dream object with creation date
+ */
 interface Dream {
   createdAt: string;
 }
 
-// Define the type for the dream data
-type DreamData = {
-  [date: string]: number;
-};
+/**
+ * Type for dream data mapping dates to dream counts
+ */
+type DreamData = Record<string, number>;
 
 /**
- * Function to process the array of dreams and return a DreamData object
- * where the keys are the dates and the values are the count of dreams for that day.
+ * Processes an array of dreams and returns a mapping of dates to dream counts
+ * for use in heatmap visualization
  * 
  * @param dreams - Array of dream objects with createdAt property
  * @returns DreamData - Object mapping each date (yyyy-MM-dd) to the number of dreams
+ * 
+ * @example
+ * ```typescript
+ * const dreams = [
+ *   { createdAt: '2024-05-24T10:30:00Z' },
+ *   { createdAt: '2024-05-24T15:45:00Z' },
+ *   { createdAt: '2024-05-25T08:20:00Z' }
+ * ];
+ * const result = processDreamsForHeatmap(dreams);
+ * // Result: { '2024-05-24': 2, '2024-05-25': 1 }
+ * ```
  */
 export const processDreamsForHeatmap = (dreams: Dream[]): DreamData => {
-  // Initialize an empty object to store the dream counts by date
   const dreamData: DreamData = {};
 
-  // Iterate over the dreams array
   dreams.forEach((dream) => {
-    // Parse the createdAt property into a Date object
-    const dreamDate = parseISO(dream.createdAt);
-
-    // Format the date as yyyy-MM-dd
-    const dateStr = format(dreamDate, 'yyyy-MM-dd');
-
-    // Increment the count for that date
-    if (dreamData[dateStr]) {
-      dreamData[dateStr] += 1;
-    } else {
-      dreamData[dateStr] = 1;
+    try {
+      const dreamDate = parseISO(dream.createdAt);
+      const dateStr = format(dreamDate, 'yyyy-MM-dd');
+      
+      dreamData[dateStr] = (dreamData[dateStr] || 0) + 1;
+    } catch (error) {
+      console.warn('Error processing dream date:', dream.createdAt, error);
     }
   });
 

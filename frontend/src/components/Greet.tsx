@@ -1,11 +1,11 @@
 import React, { useEffect, useState } from "react";
 import OwlStandard from "../assets/clara-owl-standard.jpg";
 import OwlOverjoyed from "../assets/clara-owl-overjoyed.jpg";
-import OwlSleepy from "../assets/clara-owl-sleepy.jpg";
+import OwlSleepy from "../assets/clara-owl-thinking.jpg";
 import OwlThinking from "../assets/clara-owl-thinking.jpg";
-import { generateRandomNumber } from "../helpers/numbers";
+import { generateRandomIndex } from "../helpers/numbers";
 
-const greetings = [
+const GREETINGS = [
     "Welcome back! Ready to dive deeper into your dreams and uncover new insights?",
     "Hello again! Let's explore the patterns in your dreams and what they reveal.",
     "Welcome! Ready to continue your journey of self-discovery through your dreams?",
@@ -28,17 +28,18 @@ const greetings = [
     "Hey there! Let's continue your dream exploration and uncover what lies within."
 ];
 
+const OWL_IMAGES = [OwlStandard, OwlOverjoyed, OwlSleepy, OwlThinking];
+
 export const Greet: React.FC = () => {
-    const imageOptions = [OwlStandard, OwlOverjoyed, OwlSleepy, OwlThinking];
     const [randomNumber, setRandomNumber] = useState<number>(0);
     const [randomGreeting, setRandomGreeting] = useState<string>("");
 
     useEffect(() => {
-        setRandomNumber(generateRandomNumber(imageOptions.length));
-        setRandomGreeting(greetings[generateRandomNumber(greetings.length)]);
+        setRandomNumber(generateRandomIndex(OWL_IMAGES.length));
+        setRandomGreeting(GREETINGS[generateRandomIndex(GREETINGS.length)]);
     }, []);
 
-    const randomImage = imageOptions[randomNumber];
+    const randomImage = OWL_IMAGES[randomNumber];
     const greetingParts = randomGreeting.split("!");
 
     return (

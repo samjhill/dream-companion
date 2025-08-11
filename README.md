@@ -1,20 +1,58 @@
 # Dream Companion App
 
-Reads dreams from Dream Mentor
+A dream journal application that helps users track, analyze, and interpret their dreams using AI-powered insights.
 
+## Features
 
+- Dream journaling and tracking
+- AI-powered dream interpretation
+- Theme analysis and patterns
+- Lucid dreaming guidance
+- Waking life integration
+
+## Project Structure
+
+- `frontend/` - React TypeScript frontend application
+- `src/` - Python Flask backend API
+- `template.yml` - AWS SAM deployment configuration
+
+## Development
+
+### Frontend
+
+```bash
+cd frontend
+npm install
+npm run dev
 ```
+
+### Backend
+
+```bash
+# Activate virtual environment
 source venv/bin/activate
-python3 run.py
+
+# Install dependencies
+pip install -r src/requirements.txt
+
+# Run the application
+python3 src/run.py
 ```
 
+## Deployment
 
-Deploy backend
-```
+### Backend
+```bash
 cd src
 eb deploy
 ```
 
-Deploy frontend
+### Frontend
+Automatically deployed on push to main GitHub branch.
 
-automatically deployed on push to main github branch
+## Technologies
+
+- **Frontend**: React, TypeScript, Vite, AWS Amplify
+- **Backend**: Python, Flask, AWS Lambda
+- **Infrastructure**: AWS SAM, S3, Cognito
+

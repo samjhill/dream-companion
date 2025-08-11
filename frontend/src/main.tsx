@@ -1,4 +1,4 @@
-import ReactDOM from 'react-dom';
+import { createRoot } from 'react-dom/client';
 import App from './App';
 import { Amplify } from 'aws-amplify';
 import awsExports from './aws-exports';
@@ -8,11 +8,18 @@ import { BrowserRouter as Router, Route, Routes } from 'react-router-dom';
 import '@aws-amplify/ui-react/styles.css';
 import './index.css';
 import { MarketingPage } from './components/MarketingPage';
-import { SmsConsent } from  './components/SmsConsent';
+import { SmsConsent } from './components/SmsConsent';
 
 Amplify.configure(awsExports);
 
-ReactDOM.render(
+const container = document.getElementById('root');
+if (!container) {
+  throw new Error('Root element not found');
+}
+
+const root = createRoot(container);
+
+root.render(
   <Authenticator.Provider>
     <Router>
       <Routes>
@@ -30,6 +37,5 @@ ReactDOM.render(
         />
       </Routes>
     </Router>
-  </Authenticator.Provider>,
-  document.getElementById('root')
+  </Authenticator.Provider>
 );

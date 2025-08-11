@@ -4,7 +4,7 @@ import { formatDate } from '../helpers/date';
 import { getUserPhoneNumber } from '../helpers/user';
 
 import 'ldrs/ring';
-import {DreamHeatmap} from './HeatMap';
+import { DreamHeatmap } from './HeatMap';
 
 interface Dream {
   id: string;
@@ -35,6 +35,13 @@ const DreamContent: React.FC<DreamContentProps> = ({ dream }) => {
     }
   };
 
+  const handleKeyDown = (e: React.KeyboardEvent) => {
+    if (e.key === 'Enter' || e.key === ' ') {
+      e.preventDefault();
+      handleCardClick();
+    }
+  };
+
   return (
     <div
       className='dream-container dream'
@@ -43,12 +50,7 @@ const DreamContent: React.FC<DreamContentProps> = ({ dream }) => {
       tabIndex={0}
       aria-expanded={isOpen}
       aria-label={`Dream from ${date} - ${summary}`}
-      onKeyDown={(e) => {
-        if (e.key === 'Enter' || e.key === ' ') {
-          e.preventDefault();
-          handleCardClick();
-        }
-      }}
+      onKeyDown={handleKeyDown}
     >
       <div className="dream-header">
         <div className="dream-summary">
@@ -102,7 +104,9 @@ const DreamList: React.FC = () => {
   const [hasMore, setHasMore] = useState(true);
   const [totalDreams, setTotalDreams] = useState(0);
   const [offset, setOffset] = useState(0);
-  const limit = 10;
+  
+  const API_BASE_URL = "https://jj1rq9vx9l.execute-api.us-east-1.amazonaws.com/Prod";
+  const DREAMS_PER_PAGE = 10;
 
   const fetchDreams = async (isLoadMore = false) => {
     try {
@@ -121,11 +125,10 @@ const DreamList: React.FC = () => {
         return;
       }
       
-      const url = "https://jj1rq9vx9l.execute-api.us-east-1.amazonaws.com/Prod";
       const currentOffset = isLoadMore ? offset : 0;
       
       const response = await fetch(
-        `${url}/api/dreams/${phoneNumber.replace("+", "")}?limit=${limit}&offset=${currentOffset}`,
+        `${API_BASE_URL}/api/dreams/${phoneNumber.replace("+", "")}?limit=${DREAMS_PER_PAGE}&offset=${currentOffset}`,
         { headers: { 'Authorization': `Bearer ${session?.tokens?.accessToken}` } }
       );
       
@@ -140,26 +143,32 @@ const DreamList: React.FC = () => {
       setHasMore(data.hasMore);
       
       if (isLoadMore) {
-        setOffset(currentOffset + limit);
+        setOffset(currentOffset + DREAMS_PER_PAGE);
       } else {
-        setOffset(limit);
+        setOffset(DREAMS_PER_PAGE);
       }
 
       // Fetch individual dream details
       const dreamFiles: Dream[] = [];
-      for (let i = 0; i < data.dreams.length; i++) {
-        const key = data.dreams[i]["key"];
+      for (const dream of data.dreams) {
+        const key = dream.key;
         
-        const dreamResponse = await fetch(`${url}/api/dreams/${key}`,
-          { headers: { 'Authorization': `Bearer ${session?.tokens?.accessToken}` } });
-        
-        if (!dreamResponse.ok) {
-          console.warn(`Failed to fetch dream ${key}`);
-          continue;
+        try {
+          const dreamResponse = await fetch(
+            `${API_BASE_URL}/api/dreams/${key}`,
+            { headers: { 'Authorization': `Bearer ${session?.tokens?.accessToken}` } }
+          );
+          
+          if (!dreamResponse.ok) {
+            console.warn(`Failed to fetch dream ${key}`);
+            continue;
+          }
+          
+          const dreamData: Dream = await dreamResponse.json();
+          dreamFiles.push(dreamData);
+        } catch (error) {
+          console.warn(`Error fetching dream ${key}:`, error);
         }
-        
-        const dreamData: Dream = await dreamResponse.json();
-        dreamFiles.push(dreamData);
       }
       
       // Sort by creation date (newest first) and update dreams
@@ -183,6 +192,10 @@ const DreamList: React.FC = () => {
 
   const handleLoadMore = () => {
     fetchDreams(true);
+  };
+
+  const handleRetry = () => {
+    window.location.reload();
   };
 
   useEffect(() => {
@@ -213,7 +226,7 @@ const DreamList: React.FC = () => {
           <p>{error}</p>
           <button 
             className="btn btn-primary"
-            onClick={() => window.location.reload()}
+            onClick={handleRetry}
           >
             Try Again
           </button>
