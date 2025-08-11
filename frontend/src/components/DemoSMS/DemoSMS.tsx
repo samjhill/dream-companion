@@ -43,10 +43,6 @@ export default function DemoSMS() {
               Watch a quick example of Clara turning a raw dream into practical guidance. 
               The real experience happens over SMS or in‑app—this is a lightweight preview.
             </p>
-            <div className="demo-sms-actions">
-              <a href="/app" className="demo-sms-btn demo-sms-btn-primary">Try It Now</a>
-              <a href="#how-it-works" className="demo-sms-btn demo-sms-btn-secondary">How it Works</a>
-            </div>
           </div>
 
           <div className="demo-sms-phone">
