@@ -67,9 +67,7 @@ export const SubscriptionManager: React.FC = () => {
   const [subscriptionStatus, setSubscriptionStatus] = useState<SubscriptionStatus | null>(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
-  const [selectedPlan, setSelectedPlan] = useState<string | null>(null);
   const [processing, setProcessing] = useState(false);
-  const [showStripeCheckout, setShowStripeCheckout] = useState(false);
 
   useEffect(() => {
     fetchSubscriptionStatus();
