@@ -61,7 +61,9 @@
     padding: 2.5rem;
     margin: 3rem 0;
     box-shadow: 0 4px 15px rgba(0, 115, 230, 0.1);
-    min-width: fit-content;
+    width: 100%;
+    max-width: 100%;
+    box-sizing: border-box;
   }
   
   .get-started-section h2 {
@@ -77,7 +79,8 @@
     font-weight: 600;
     margin-bottom: 1.5rem !important;
     text-align: center !important;
-    white-space: nowrap;
+    word-wrap: break-word;
+    overflow-wrap: break-word;
   }
   
   .phone-number {
@@ -90,8 +93,10 @@
     border-radius: 8px;
     border: 2px solid #0073e6;
     transition: all 0.3s ease;
-    white-space: nowrap;
     display: inline-block;
+    word-break: break-all;
+    max-width: 100%;
+    box-sizing: border-box;
   }
   
   .phone-number:hover {
@@ -99,4 +104,112 @@
     color: white;
     transform: scale(1.05);
   }
+  
+/* Mobile responsive styles */
+@media (max-width: 768px) {
+  .get-started-section {
+    padding: 1.5rem;
+    margin: 2rem 0;
+    border-radius: 10px;
+  }
+  
+  .get-started-section h2 {
+    font-size: 1.5rem;
+    margin-bottom: 1rem;
+  }
+  
+  .get-started-text {
+    font-size: 1.1rem !important;
+    margin-bottom: 1rem !important;
+  }
+  
+  .phone-number {
+    font-size: 1.2rem;
+    padding: 0.4rem 0.8rem;
+    display: block;
+    margin: 0.5rem auto;
+    max-width: 280px;
+  }
+}
+
+@media (max-width: 480px) {
+  .get-started-section {
+    padding: 1rem;
+    margin: 1.5rem 0;
+  }
+  
+  .get-started-section h2 {
+    font-size: 1.3rem;
+  }
+  
+  .get-started-text {
+    font-size: 1rem !important;
+  }
+  
+  .phone-number {
+    font-size: 1.1rem;
+    padding: 0.3rem 0.6rem;
+    max-width: 250px;
+  }
+}
+
+/* Mobile responsive styles for overall marketing page */
+@media (max-width: 768px) {
+  .marketing-container {
+    padding: 1rem;
+  }
+  
+  .marketing-container img {
+    max-width: 95%;
+    padding: 0.5rem;
+    border-width: 3px;
+  }
+  
+  .marketing-header {
+    padding: 1.5rem;
+  }
+  
+  .marketing-header h1 {
+    font-size: 2rem;
+  }
+  
+  .marketing-header p {
+    font-size: 1.1rem;
+    text-align: center;
+  }
+  
+  .marketing-content h2 {
+    font-size: 1.3rem;
+    margin-top: 2rem;
+  }
+}
+
+@media (max-width: 480px) {
+  .marketing-container {
+    padding: 0.5rem;
+  }
+  
+  .marketing-container img {
+    max-width: 100%;
+    padding: 0.3rem;
+    border-width: 2px;
+  }
+  
+  .marketing-header {
+    padding: 1rem;
+  }
+  
+  .marketing-header h1 {
+    font-size: 1.8rem;
+  }
+  
+  .marketing-header p {
+    font-size: 1rem;
+  }
+  
+  .marketing-content h2 {
+    font-size: 1.2rem;
+    margin-top: 1.5rem;
+  }
+}
   
