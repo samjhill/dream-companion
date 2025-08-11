@@ -17,6 +17,9 @@ boto3==1.35.3
 botocore==1.35.3
 aws-lambda-wsgi==0.0.6
 
+# Payment processing
+stripe==7.11.0
+
 # Authentication and security
 bcrypt==4.2.0
 cryptography==43.0.0

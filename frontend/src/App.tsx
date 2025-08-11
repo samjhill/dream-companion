@@ -5,6 +5,8 @@ import { Greet } from './components/Greet';
 import { withAuthenticator } from '@aws-amplify/ui-react';
 import { signOut } from 'aws-amplify/auth';
 import { LucidDreamGuide } from './components/LucidDreamGuide';
+import { SubscriptionManager } from './components/SubscriptionManager';
+import { AdvancedDreamAnalysis } from './components/AdvancedDreamAnalysis';
 import { useState } from 'react';
 
 function App() {
@@ -22,8 +24,10 @@ function App() {
     { id: 'overview', label: 'Overview', icon: '🏠' },
     { id: 'dreams', label: 'Dream Journal', icon: '📖' },
     { id: 'themes', label: 'Themes', icon: '🎨' },
+    { id: 'analysis', label: 'Advanced Analysis', icon: '🔍', premium: true },
     { id: 'guide', label: 'Lucid Guide', icon: '✨' },
-    { id: 'waking', label: 'Waking Life', icon: '🌅' }
+    { id: 'waking', label: 'Waking Life', icon: '🌅' },
+    { id: 'premium', label: 'Premium', icon: '💎' }
   ];
 
   const renderSection = () => {
@@ -32,10 +36,14 @@ function App() {
         return <DreamList />;
       case 'themes':
         return <Themes />;
+      case 'analysis':
+        return <AdvancedDreamAnalysis />;
       case 'guide':
         return <LucidDreamGuide />;
       case 'waking':
         return <WakingLife />;
+      case 'premium':
+        return <SubscriptionManager />;
       default:
         return (
           <div className="overview-section">
@@ -59,10 +67,24 @@ function App() {
                 </button>
                 <button 
                   className="btn btn-secondary action-card"
+                  onClick={() => setActiveSection('analysis')}
+                >
+                  <span className="action-icon">🔍</span>
+                  <span>Advanced Analysis</span>
+                </button>
+                <button 
+                  className="btn btn-secondary action-card"
                   onClick={() => setActiveSection('guide')}
                 >
                   <span className="action-icon">✨</span>
                   <span>Lucid Dream Guide</span>
+                </button>
+                <button 
+                  className="btn btn-secondary action-card"
+                  onClick={() => setActiveSection('premium')}
+                >
+                  <span className="action-icon">💎</span>
+                  <span>Premium Features</span>
                 </button>
               </div>
             </div>
@@ -96,12 +118,12 @@ function App() {
           {navigationItems.map((item) => (
             <button
               key={item.id}
-              className={`nav-item ${activeSection === item.id ? 'active' : ''}`}
+              className={`nav-item ${activeSection === item.id ? 'active' : ''} ${item.premium ? 'premium-feature' : ''}`}
               onClick={() => setActiveSection(item.id)}
-              aria-label={`Navigate to ${item.label}`}
             >
               <span className="nav-icon">{item.icon}</span>
               <span className="nav-label">{item.label}</span>
+              {item.premium && <span className="premium-badge">💎</span>}
             </button>
           ))}
         </div>
@@ -109,9 +131,7 @@ function App() {
 
       {/* Main Content */}
       <main className="app-main">
-        <div className="content-container fade-in">
-          {renderSection()}
-        </div>
+        {renderSection()}
       </main>
     </div>
   );

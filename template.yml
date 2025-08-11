@@ -20,7 +20,6 @@ Resources:
         AllowCredentials: "'true'"
         MaxAge: "'300'"
 
-
   DreamCompanionFunction:
     Type: AWS::Serverless::Function
     Properties:
@@ -31,6 +30,7 @@ Resources:
         Variables:
           FLASK_ENV: production
           S3_BUCKET_NAME: dream.storage
+          PREMIUM_TABLE_NAME: dream-companion-premium-users
       Events:
         DreamCompanionApiEvent:
           Type: Api
@@ -51,4 +51,17 @@ Resources:
               Resource: 
                 - "arn:aws:s3:::dream.storage/*"
                 - "arn:aws:s3:::dream.storage"
+            - Effect: "Allow"
+              Action:
+                - "dynamodb:GetItem"
+                - "dynamodb:PutItem"
+                - "dynamodb:DeleteItem"
+                - "dynamodb:UpdateItem"
+                - "dynamodb:Query"
+                - "dynamodb:Scan"
+                - "dynamodb:CreateTable"
+                - "dynamodb:DescribeTable"
+              Resource: 
+                - "arn:aws:dynamodb:*:*:table/dream-companion-premium-users"
+                - "arn:aws:dynamodb:*:*:table/dream-companion-premium-users/*"
 
