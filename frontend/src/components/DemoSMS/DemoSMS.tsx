@@ -14,7 +14,7 @@ function usePrefersReducedMotion() {
 export default function DemoSMS() {
   const reduced = usePrefersReducedMotion();
   const { visible, isTyping, pause, play, restart } = useConversationPlayer(demoScript, {
-    loop: true,
+    loop: false,
     idleLoopDelayMs: 2400,
     reducedMotion: reduced,
   });
