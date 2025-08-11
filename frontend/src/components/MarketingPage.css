@@ -61,6 +61,7 @@
     padding: 2.5rem;
     margin: 3rem 0;
     box-shadow: 0 4px 15px rgba(0, 115, 230, 0.1);
+    min-width: fit-content;
   }
   
   .get-started-section h2 {
@@ -76,6 +77,7 @@
     font-weight: 600;
     margin-bottom: 1.5rem !important;
     text-align: center !important;
+    white-space: nowrap;
   }
   
   .phone-number {
@@ -88,6 +90,8 @@
     border-radius: 8px;
     border: 2px solid #0073e6;
     transition: all 0.3s ease;
+    white-space: nowrap;
+    display: inline-block;
   }
   
   .phone-number:hover {
