@@ -54,3 +54,45 @@
     font-size: 0.9rem;
   }
   
+  .get-started-section {
+    background: linear-gradient(135deg, #f8f9fa 0%, #e9ecef 100%);
+    border: 2px solid #0073e6;
+    border-radius: 15px;
+    padding: 2.5rem;
+    margin: 3rem 0;
+    box-shadow: 0 4px 15px rgba(0, 115, 230, 0.1);
+  }
+  
+  .get-started-section h2 {
+    font-size: 2rem;
+    color: #0073e6;
+    margin-bottom: 1.5rem;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+  }
+  
+  .get-started-text {
+    font-size: 1.3rem !important;
+    font-weight: 600;
+    margin-bottom: 1.5rem !important;
+    text-align: center !important;
+  }
+  
+  .phone-number {
+    color: #0073e6;
+    font-weight: 700;
+    font-size: 1.5rem;
+    text-decoration: none;
+    padding: 0.5rem 1rem;
+    background: rgba(0, 115, 230, 0.1);
+    border-radius: 8px;
+    border: 2px solid #0073e6;
+    transition: all 0.3s ease;
+  }
+  
+  .phone-number:hover {
+    background: #0073e6;
+    color: white;
+    transform: scale(1.05);
+  }
+  
