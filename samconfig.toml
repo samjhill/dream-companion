@@ -5,5 +5,4 @@ resolve_s3 = true
 s3_prefix = "dream-companion"
 region = "us-east-1"
 capabilities = "CAPABILITY_IAM"
-parameter_overrides = "JWTSecret=\"\""
 image_repositories = []

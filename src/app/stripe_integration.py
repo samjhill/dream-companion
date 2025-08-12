@@ -22,9 +22,15 @@ def require_auth(f):
     """Decorator to require authentication for protected routes"""
     @wraps(f)
     def decorated_function(*args, **kwargs):
+        print("DEBUG: Checking authentication...")
         auth_header = request.headers.get('Authorization')
+        print(f"DEBUG: Auth header: {auth_header}")
+        
         if not auth_header or not auth_header.startswith('Bearer '):
+            print("ERROR: Missing or invalid authorization header")
             return jsonify({"error": "Missing or invalid authorization header"}), 401
+        
+        print("DEBUG: Authentication passed")
         return f(*args, **kwargs)
     return decorated_function
 
@@ -34,23 +40,43 @@ def require_auth(f):
 def create_checkout_session():
     """Create a Stripe Checkout session for subscription"""
     try:
+        # Check if Stripe is properly configured
+        if not stripe.api_key:
+            print("ERROR: Stripe API key is not configured")
+            return jsonify({"error": "Stripe is not properly configured"}), 500
+        
         data = request.get_json()
+        if not data:
+            print("ERROR: No JSON data received")
+            return jsonify({"error": "No data received"}), 400
+            
         plan_type = data.get('plan_type')  # 'monthly', 'quarterly', 'yearly'
         phone_number = data.get('phone_number')
         success_url = data.get('success_url', 'https://clarasdreamguide.com/app/premium?success=true')
         cancel_url = data.get('cancel_url', 'https://clarasdreamguide.com/app/premium?canceled=true')
         
+        print(f"Creating checkout session for plan: {plan_type}, phone: {phone_number}")
+        
         if not plan_type or not phone_number:
+            print(f"ERROR: Missing required fields - plan_type: {plan_type}, phone_number: {phone_number}")
             return jsonify({"error": "Missing plan_type or phone_number"}), 400
         
         if plan_type not in SUBSCRIPTION_PRICES:
-            return jsonify({"error": "Invalid plan type"}), 400
+            print(f"ERROR: Invalid plan type: {plan_type}. Available plans: {list(SUBSCRIPTION_PRICES.keys())}")
+            return jsonify({"error": f"Invalid plan type: {plan_type}"}), 400
+        
+        price_id = SUBSCRIPTION_PRICES[plan_type]
+        if not price_id:
+            print(f"ERROR: Price ID not found for plan type: {plan_type}")
+            return jsonify({"error": f"Price ID not configured for plan type: {plan_type}"}), 500
+        
+        print(f"Using price ID: {price_id}")
         
         # Create Stripe Checkout session
         checkout_session = stripe.checkout.Session.create(
             payment_method_types=['card'],
             line_items=[{
-                'price': SUBSCRIPTION_PRICES[plan_type],
+                'price': price_id,
                 'quantity': 1,
             }],
             mode='subscription',
@@ -69,12 +95,18 @@ def create_checkout_session():
             }
         )
         
+        print(f"Successfully created checkout session: {checkout_session.id}")
+        
         return jsonify({
             'session_id': checkout_session.id,
             'checkout_url': checkout_session.url
         }), 200
         
+    except stripe.error.StripeError as e:
+        print(f"Stripe error: {str(e)}")
+        return jsonify({"error": f"Stripe error: {str(e)}"}), 400
     except Exception as e:
+        print(f"Unexpected error: {str(e)}")
         return jsonify({"error": f"Failed to create checkout session: {str(e)}"}), 500
 
 @stripe_bp.route('/create-portal-session', methods=['POST'])
