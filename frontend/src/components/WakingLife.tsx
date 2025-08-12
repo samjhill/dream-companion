@@ -1,7 +1,6 @@
 import React from 'react';
 
 export const WakingLife: React.FC = () => {
-    return null;
     return (
         <div>
             <h3>Waking Life</h3>
