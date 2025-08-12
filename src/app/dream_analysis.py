@@ -78,6 +78,35 @@ PSYCHOLOGICAL_PATTERNS = {
     }
 }
 
+# Basic English stopword set for cleaner theme extraction
+STOPWORDS = set([
+    'a','an','the','and','or','but','if','then','else','when','at','by','for','with','about','against',
+    'between','into','through','during','before','after','above','below','to','from','up','down','in','out',
+    'on','off','over','under','again','further','once','here','there','all','any','both','each','few','more',
+    'most','other','some','such','no','nor','not','only','own','same','so','than','too','very','can','will',
+    'just','don','should','now','is','are','was','were','be','been','being','have','has','had','do','does','did',
+    'of','as','it','its','i','me','my','myself','we','our','ours','ourselves','you','your','yours','yourself',
+    'yourselves','he','him','his','himself','she','her','hers','herself','they','them','their','theirs',
+    'themselves','what','which','who','whom','this','that','these','those','am','because','while','where','why',
+    'how','also','into','out','very','much','many','lot','lots','like','get','got','getting','gotten','go','goes',
+    'going','went','say','says','said','would','could','should','may','might','one','two','three','four','five',
+    'it\'s','im','i\'m','you\'re','we\'re','they\'re','there\'s','here\'s'
+])
+
+def extract_meaningful_words(text: str):
+    """Tokenize text and filter to meaningful words for theme analysis.
+    - Lowercase
+    - Keep alphabetic tokens only
+    - Remove stopwords
+    - Remove very short tokens (length <= 2)
+    """
+    if not text:
+        return []
+    # Extract alphabetic words; ignore numbers/punctuation (hyphens become separators)
+    tokens = re.findall(r"[a-zA-Z]+", text.lower())
+    filtered = [t for t in tokens if len(t) > 2 and t not in STOPWORDS]
+    return filtered
+
 def require_premium(f):
     """Decorator to require premium subscription for protected routes"""
     @wraps(f)
@@ -405,17 +434,19 @@ def generate_personal_insights(dreams):
     else:
         insights.append("You're beginning your dream journey. Regular recording will reveal fascinating patterns over time.")
     
-    # Analyze dream themes
-    themes = []
+    # Analyze dream themes (filter out stopwords/punctuation)
+    themes: list[str] = []
     for dream in dreams:
-        if 'summary' in dream:
-            themes.extend(dream['summary'].lower().split())
-    
+        summary_text = dream.get('summary', '')
+        themes.extend(extract_meaningful_words(summary_text))
+
     theme_counts = Counter(themes)
     common_themes = [theme for theme, count in theme_counts.most_common(10) if count > 1]
-    
+
     if common_themes:
-        insights.append(f"Recurring themes in your dreams include: {', '.join(common_themes[:5])}. These may indicate areas of your life that need attention.")
+        insights.append(
+            f"Recurring themes in your dreams include: {', '.join(common_themes[:5])}. These may indicate areas of your life that need attention."
+        )
     
     # Analyze dream intensity
     total_content_length = sum(len(dream.get('dreamContent', '')) for dream in dreams)
@@ -523,11 +554,10 @@ def analyze_psychological_patterns(dreams):
     }
     
     # Analyze recurring themes
-    all_themes = []
+    all_themes: list[str] = []
     for dream in dreams:
         if 'summary' in dream:
-            themes = dream['summary'].lower().split()
-            all_themes.extend(themes)
+            all_themes.extend(extract_meaningful_words(dream['summary']))
     
     theme_counts = Counter(all_themes)
     recurring_themes = {theme: count for theme, count in theme_counts.items() if count > 1}
