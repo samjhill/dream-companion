@@ -11,16 +11,60 @@ from dotenv import load_dotenv
 # Load environment variables
 load_dotenv()
 
+def load_stripe_secrets():
+    """Load Stripe configuration from AWS Secrets Manager or environment variables"""
+    try:
+        # Try to load from Secrets Manager first
+        secrets_arn = os.getenv('STRIPE_SECRETS_ARN')
+        if secrets_arn:
+            import boto3
+            secrets_client = boto3.client('secretsmanager', region_name='us-east-1')
+            response = secrets_client.get_secret_value(SecretId=secrets_arn)
+            secret_string = response['SecretString']
+            
+            import json
+            secrets = json.loads(secret_string)
+            
+            return {
+                'secret_key': secrets.get('STRIPE_SECRET_KEY'),
+                'webhook_secret': secrets.get('STRIPE_WEBHOOK_SECRET'),
+                'monthly_price_id': secrets.get('STRIPE_MONTHLY_PRICE_ID'),
+                'quarterly_price_id': secrets.get('STRIPE_QUARTERLY_PRICE_ID'),
+                'yearly_price_id': secrets.get('STRIPE_YEARLY_PRICE_ID')
+            }
+        else:
+            # Fallback to environment variables
+            return {
+                'secret_key': os.getenv('STRIPE_SECRET_KEY'),
+                'webhook_secret': os.getenv('STRIPE_WEBHOOK_SECRET'),
+                'monthly_price_id': os.getenv('STRIPE_MONTHLY_PRICE_ID'),
+                'quarterly_price_id': os.getenv('STRIPE_QUARTERLY_PRICE_ID'),
+                'yearly_price_id': os.getenv('STRIPE_YEARLY_PRICE_ID')
+            }
+    except Exception as e:
+        print(f"Warning: Could not load from Secrets Manager: {str(e)}")
+        # Fallback to environment variables
+        return {
+            'secret_key': os.getenv('STRIPE_SECRET_KEY'),
+            'webhook_secret': os.getenv('STRIPE_WEBHOOK_SECRET'),
+            'monthly_price_id': os.getenv('STRIPE_MONTHLY_PRICE_ID'),
+            'quarterly_price_id': os.getenv('STRIPE_QUARTERLY_PRICE_ID'),
+            'yearly_price_id': os.getenv('STRIPE_YEARLY_PRICE_ID')
+        }
+
 def test_stripe_config():
     """Test if Stripe is properly configured"""
     print("Testing Stripe configuration...")
     
+    # Load secrets
+    secrets = load_stripe_secrets()
+    
     # Check environment variables
-    stripe_secret_key = os.getenv('STRIPE_SECRET_KEY')
-    stripe_webhook_secret = os.getenv('STRIPE_WEBHOOK_SECRET')
-    monthly_price_id = os.getenv('STRIPE_MONTHLY_PRICE_ID')
-    quarterly_price_id = os.getenv('STRIPE_QUARTERLY_PRICE_ID')
-    yearly_price_id = os.getenv('STRIPE_YEARLY_PRICE_ID')
+    stripe_secret_key = secrets['secret_key']
+    stripe_webhook_secret = secrets['webhook_secret']
+    monthly_price_id = secrets['monthly_price_id']
+    quarterly_price_id = secrets['quarterly_price_id']
+    yearly_price_id = secrets['yearly_price_id']
     
     print(f"STRIPE_SECRET_KEY: {'✓ Set' if stripe_secret_key else '✗ Missing'}")
     print(f"STRIPE_WEBHOOK_SECRET: {'✓ Set' if stripe_webhook_secret else '✗ Missing'}")
@@ -51,7 +95,9 @@ def test_price_ids():
     """Test if the configured price IDs are valid"""
     print("\nTesting price IDs...")
     
-    stripe_secret_key = os.getenv('STRIPE_SECRET_KEY')
+    secrets = load_stripe_secrets()
+    stripe_secret_key = secrets['secret_key']
+    
     if not stripe_secret_key:
         print("Cannot test price IDs without Stripe secret key")
         return
@@ -59,9 +105,9 @@ def test_price_ids():
     stripe.api_key = stripe_secret_key
     
     price_ids = {
-        'monthly': os.getenv('STRIPE_MONTHLY_PRICE_ID'),
-        'quarterly': os.getenv('STRIPE_QUARTERLY_PRICE_ID'),
-        'yearly': os.getenv('STRIPE_YEARLY_PRICE_ID')
+        'monthly': secrets['monthly_price_id'],
+        'quarterly': secrets['quarterly_price_id'],
+        'yearly': secrets['yearly_price_id']
     }
     
     for plan_type, price_id in price_ids.items():

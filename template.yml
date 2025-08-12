@@ -3,25 +3,6 @@ Transform: AWS::Serverless-2016-10-31
 Description: >-
   Dream Companion App - A Flask-based application deployed using AWS SAM
 
-Parameters:
-  StripeSecretKey:
-    Type: String
-    Description: Stripe secret key for payment processing
-    NoEcho: true
-  StripeWebhookSecret:
-    Type: String
-    Description: Stripe webhook secret for verifying webhook signatures
-    NoEcho: true
-  StripeMonthlyPriceId:
-    Type: String
-    Description: Stripe price ID for monthly subscription
-  StripeQuarterlyPriceId:
-    Type: String
-    Description: Stripe price ID for quarterly subscription
-  StripeYearlyPriceId:
-    Type: String
-    Description: Stripe price ID for yearly subscription
-
 Globals:
   Function:
     Timeout: 10
@@ -50,11 +31,7 @@ Resources:
           FLASK_ENV: production
           S3_BUCKET_NAME: dream.storage
           PREMIUM_TABLE_NAME: dream-companion-premium-users
-          STRIPE_SECRET_KEY: !Ref StripeSecretKey
-          STRIPE_WEBHOOK_SECRET: !Ref StripeWebhookSecret
-          STRIPE_MONTHLY_PRICE_ID: !Ref StripeMonthlyPriceId
-          STRIPE_QUARTERLY_PRICE_ID: !Ref StripeQuarterlyPriceId
-          STRIPE_YEARLY_PRICE_ID: !Ref StripeYearlyPriceId
+          STRIPE_SECRETS_ARN: arn:aws:secretsmanager:us-east-1:732408661603:secret:stripe-jm2Ua6
       Events:
         DreamCompanionApiEvent:
           Type: Api
@@ -88,4 +65,9 @@ Resources:
               Resource: 
                 - "arn:aws:dynamodb:*:*:table/dream-companion-premium-users"
                 - "arn:aws:dynamodb:*:*:table/dream-companion-premium-users/*"
+            - Effect: "Allow"
+              Action:
+                - "secretsmanager:GetSecretValue"
+              Resource: 
+                - "arn:aws:secretsmanager:us-east-1:732408661603:secret:stripe-jm2Ua6"
 

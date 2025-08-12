@@ -2,21 +2,59 @@ from flask import Blueprint, request, jsonify
 from flask_cors import CORS, cross_origin
 import stripe
 import os
+import boto3
 from datetime import datetime, timedelta
 from functools import wraps
 
 stripe_bp = Blueprint('stripe_bp', __name__)
 
-# Initialize Stripe with your secret key
-stripe.api_key = os.getenv('STRIPE_SECRET_KEY')
-STRIPE_WEBHOOK_SECRET = os.getenv('STRIPE_WEBHOOK_SECRET')
+def load_stripe_secrets():
+    """Load Stripe configuration from AWS Secrets Manager"""
+    try:
+        secrets_arn = os.getenv('STRIPE_SECRETS_ARN')
+        if not secrets_arn:
+            print("ERROR: STRIPE_SECRETS_ARN environment variable not set")
+            return False
+        
+        # Create Secrets Manager client
+        secrets_client = boto3.client('secretsmanager', region_name='us-east-1')
+        
+        # Get the secret
+        response = secrets_client.get_secret_value(SecretId=secrets_arn)
+        secret_string = response['SecretString']
+        
+        # Parse the secret (assuming it's JSON)
+        import json
+        secrets = json.loads(secret_string)
+        
+        # Set Stripe configuration
+        stripe.api_key = secrets.get('STRIPE_SECRET_KEY')
+        global STRIPE_WEBHOOK_SECRET, SUBSCRIPTION_PRICES
+        
+        STRIPE_WEBHOOK_SECRET = secrets.get('STRIPE_WEBHOOK_SECRET')
+        SUBSCRIPTION_PRICES = {
+            'monthly': secrets.get('STRIPE_MONTHLY_PRICE_ID'),
+            'quarterly': secrets.get('STRIPE_QUARTERLY_PRICE_ID'),
+            'yearly': secrets.get('STRIPE_YEARLY_PRICE_ID')
+        }
+        
+        print("✅ Stripe secrets loaded successfully from Secrets Manager")
+        return True
+        
+    except Exception as e:
+        print(f"ERROR: Failed to load Stripe secrets: {str(e)}")
+        return False
 
-# Subscription price IDs (create these in your Stripe dashboard)
-SUBSCRIPTION_PRICES = {
-    'monthly': os.getenv('STRIPE_MONTHLY_PRICE_ID'),
-    'quarterly': os.getenv('STRIPE_QUARTERLY_PRICE_ID'),
-    'yearly': os.getenv('STRIPE_YEARLY_PRICE_ID')
-}
+# Initialize Stripe configuration
+if not load_stripe_secrets():
+    # Fallback to environment variables for local development
+    stripe.api_key = os.getenv('STRIPE_SECRET_KEY')
+    STRIPE_WEBHOOK_SECRET = os.getenv('STRIPE_WEBHOOK_SECRET')
+    SUBSCRIPTION_PRICES = {
+        'monthly': os.getenv('STRIPE_MONTHLY_PRICE_ID'),
+        'quarterly': os.getenv('STRIPE_QUARTERLY_PRICE_ID'),
+        'yearly': os.getenv('STRIPE_YEARLY_PRICE_ID')
+    }
 
 def require_auth(f):
     """Decorator to require authentication for protected routes"""
