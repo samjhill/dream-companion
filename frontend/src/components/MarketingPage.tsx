@@ -2,10 +2,10 @@ import React from 'react';
 import { Link } from 'react-router-dom';
 import './MarketingPage.css';
 import OwlStandard from "../assets/clara-owl-standard.jpg";
-import Heatmap from "../assets/marketing/heatmap.png";
 import Themes from "../assets/marketing/themes.jpg";
 import { Button } from '@aws-amplify/ui-react';
 import DemoSMS from './DemoSMS';
+import { MarketingHeatmap } from './MarketingHeatmap';
 
 export const MarketingPage: React.FC = () => {
   return (
@@ -28,7 +28,7 @@ export const MarketingPage: React.FC = () => {
 
       <h2>Track, Reflect, Grow</h2>
       <p>Log your dreams, track your progress, and learn from the patterns emerging in your sleep.</p>
-        <img src={Heatmap} />
+        <MarketingHeatmap />
         
 
 

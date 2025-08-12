@@ -9,6 +9,14 @@
     padding: 1rem;
     border-radius: 10px;
   }
+  
+  /* Special styling for the themes image to maintain the border */
+  .marketing-container img[src*="themes"] {
+    max-width: 80%;
+    border: 5px solid #8080807d;
+    padding: 1rem;
+    border-radius: 10px;
+  }
   .marketing-header {
     background: #00000017;
     padding: 2rem;
@@ -163,6 +171,12 @@
     max-width: 95%;
     padding: 0.5rem;
     border-width: 3px;
+  }
+  
+  /* Ensure the heatmap component is responsive */
+  .marketing-container > div > div {
+    max-width: 100%;
+    overflow-x: auto;
   }
   
   .marketing-header {
