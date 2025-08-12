@@ -2,10 +2,10 @@ import React from 'react';
 import { Link } from 'react-router-dom';
 import './MarketingPage.css';
 import OwlStandard from "../assets/clara-owl-standard.jpg";
-import Themes from "../assets/marketing/themes.jpg";
 import { Button } from '@aws-amplify/ui-react';
 import DemoSMS from './DemoSMS';
 import { HeatmapDemo } from './HeatmapDemo';
+import { MarketingThemes } from './MarketingThemes';
 
 export const MarketingPage: React.FC = () => {
   return (
@@ -34,7 +34,7 @@ export const MarketingPage: React.FC = () => {
 
         <h2>Discover Your Patterns</h2>
         <p>I help you recognize recurring themes and offer practical guidance to explore your inner world.</p>
-        <img src={Themes} />
+        <MarketingThemes />
         
 
         

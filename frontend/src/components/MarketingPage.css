@@ -9,14 +9,6 @@
     padding: 1rem;
     border-radius: 10px;
   }
-  
-  /* Special styling for the themes image to maintain the border */
-  .marketing-container img[src*="themes"] {
-    max-width: 80%;
-    border: 5px solid #8080807d;
-    padding: 1rem;
-    border-radius: 10px;
-  }
   .marketing-header {
     background: #00000017;
     padding: 2rem;
@@ -225,5 +217,113 @@
     font-size: 1.2rem;
     margin-top: 1.5rem;
   }
+}
+
+/* Marketing Themes Component Styles */
+.marketing-themes-section {
+    margin: 2rem 0;
+    padding: 2rem;
+    background: linear-gradient(135deg, #f8f9fa 0%, #e9ecef 100%);
+    border-radius: 15px;
+    border: 2px solid #0073e6;
+    box-shadow: 0 4px 15px rgba(0, 115, 230, 0.1);
+}
+
+.theme-intro {
+    font-size: 1.2rem;
+    color: #495057;
+    margin-bottom: 2rem;
+    text-align: center;
+    font-style: italic;
+    line-height: 1.6;
+}
+
+.themes-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+    gap: 1.5rem;
+    margin-top: 2rem;
+}
+
+.theme-card {
+    background: white;
+    padding: 1.5rem;
+    border-radius: 12px;
+    border: 2px solid #e9ecef;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+    transition: all 0.3s ease;
+    text-align: left;
+}
+
+.theme-card:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 4px 15px rgba(0, 115, 230, 0.15);
+    border-color: #0073e6;
+}
+
+.theme-header {
+    margin-bottom: 1rem;
+}
+
+.theme-title {
+    font-size: 1.3rem;
+    color: #0073e6;
+    margin: 0;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+}
+
+.theme-task {
+    color: #495057;
+    line-height: 1.6;
+    margin: 0;
+    font-size: 1rem;
+}
+
+/* Mobile responsive styles for themes */
+@media (max-width: 768px) {
+    .marketing-themes-section {
+        padding: 1.5rem;
+        margin: 1.5rem 0;
+    }
+    
+    .themes-grid {
+        grid-template-columns: 1fr;
+        gap: 1rem;
+    }
+    
+    .theme-card {
+        padding: 1.2rem;
+    }
+    
+    .theme-title {
+        font-size: 1.2rem;
+    }
+    
+    .theme-intro {
+        font-size: 1.1rem;
+        margin-bottom: 1.5rem;
+    }
+}
+
+@media (max-width: 480px) {
+    .marketing-themes-section {
+        padding: 1rem;
+        margin: 1rem 0;
+    }
+    
+    .theme-card {
+        padding: 1rem;
+    }
+    
+    .theme-title {
+        font-size: 1.1rem;
+    }
+    
+    .theme-intro {
+        font-size: 1rem;
+        margin-bottom: 1rem;
+    }
 }
   
