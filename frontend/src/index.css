@@ -266,9 +266,6 @@ a:hover {
   box-shadow: 0 2px 8px var(--shadow-soft);
   margin-bottom: var(--space-lg);
   border: 1px solid var(--border-light);
-  position: sticky;
-  top: var(--space-md);
-  z-index: var(--z-sticky);
 }
 
 .header-content {
@@ -304,6 +301,9 @@ a:hover {
   margin-bottom: var(--space-lg);
   border: 1px solid var(--border-light);
   overflow: hidden;
+  position: sticky;
+  top: var(--space-md);
+  z-index: var(--z-sticky);
 }
 
 .nav-container {
