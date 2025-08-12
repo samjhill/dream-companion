@@ -1,5 +1,4 @@
 import { useEffect, useState } from "react";
-import { generateRandomNumber } from "../helpers/numbers";
 
 const sleepTips = [
     "Stick to a consistent sleep schedule, even on weekends.",
@@ -57,7 +56,7 @@ export const LucidDreamGuide: React.FC = () => {
     const [randomSleepTip, setRandomSleepTip] = useState<string>("");
 
     useEffect(() => {
-        setRandomSleepTip(sleepTips[generateRandomNumber(sleepTips.length)]);
+        setRandomSleepTip(sleepTips[Math.floor(Math.random() * sleepTips.length)]);
     }, []);
 
 

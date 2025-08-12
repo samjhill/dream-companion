@@ -13,6 +13,20 @@ interface Dream {
 type DreamData = Record<string, number>;
 
 /**
+ * Validates if a dream object has the required properties
+ * @param dream - Dream object to validate
+ * @returns boolean - True if dream is valid
+ */
+const isValidDream = (dream: unknown): dream is Dream => {
+  return (
+    typeof dream === 'object' &&
+    dream !== null &&
+    'createdAt' in dream &&
+    typeof (dream as Dream).createdAt === 'string'
+  );
+};
+
+/**
  * Processes an array of dreams and returns a mapping of dates to dream counts
  * for use in heatmap visualization
  * 
@@ -33,14 +47,30 @@ type DreamData = Record<string, number>;
 export const processDreamsForHeatmap = (dreams: Dream[]): DreamData => {
   const dreamData: DreamData = {};
 
-  dreams.forEach((dream) => {
+  if (!Array.isArray(dreams)) {
+    console.warn('processDreamsForHeatmap: dreams parameter is not an array');
+    return dreamData;
+  }
+
+  dreams.forEach((dream, index) => {
+    if (!isValidDream(dream)) {
+      console.warn(`processDreamsForHeatmap: Invalid dream at index ${index}:`, dream);
+      return;
+    }
+
     try {
       const dreamDate = parseISO(dream.createdAt);
-      const dateStr = format(dreamDate, 'yyyy-MM-dd');
       
+      // Check if date is valid
+      if (isNaN(dreamDate.getTime())) {
+        console.warn(`processDreamsForHeatmap: Invalid date format at index ${index}:`, dream.createdAt);
+        return;
+      }
+      
+      const dateStr = format(dreamDate, 'yyyy-MM-dd');
       dreamData[dateStr] = (dreamData[dateStr] || 0) + 1;
     } catch (error) {
-      console.warn('Error processing dream date:', dream.createdAt, error);
+      console.warn(`processDreamsForHeatmap: Error processing dream at index ${index}:`, dream.createdAt, error);
     }
   });
 

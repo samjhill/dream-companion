@@ -3,7 +3,6 @@ import OwlStandard from "../assets/clara-owl-standard.jpg";
 import OwlOverjoyed from "../assets/clara-owl-overjoyed.jpg";
 import OwlSleepy from "../assets/clara-owl-thinking.jpg";
 import OwlThinking from "../assets/clara-owl-thinking.jpg";
-import { generateRandomIndex } from "../helpers/numbers";
 
 const GREETINGS = [
     "Welcome back! Ready to dive deeper into your dreams and uncover new insights?",
@@ -35,8 +34,8 @@ export const Greet: React.FC = () => {
     const [randomGreeting, setRandomGreeting] = useState<string>("");
 
     useEffect(() => {
-        setRandomNumber(generateRandomIndex(OWL_IMAGES.length));
-        setRandomGreeting(GREETINGS[generateRandomIndex(GREETINGS.length)]);
+        setRandomNumber(Math.floor(Math.random() * OWL_IMAGES.length));
+        setRandomGreeting(GREETINGS[Math.floor(Math.random() * GREETINGS.length)]);
     }, []);
 
     const randomImage = OWL_IMAGES[randomNumber];

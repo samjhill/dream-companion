@@ -9,8 +9,26 @@ import { SubscriptionManager } from './components/SubscriptionManager';
 import { AdvancedDreamAnalysis } from './components/AdvancedDreamAnalysis';
 import { useState } from 'react';
 
+// Constants
+interface NavigationItem {
+  id: 'overview' | 'dreams' | 'themes' | 'analysis' | 'guide' | 'waking' | 'premium';
+  label: string;
+  icon: string;
+  premium?: boolean;
+}
+
+const NAVIGATION_ITEMS: NavigationItem[] = [
+  { id: 'overview', label: 'Overview', icon: '🏠' },
+  { id: 'dreams', label: 'Dream Journal', icon: '📖' },
+  { id: 'themes', label: 'Themes', icon: '🎨' },
+  { id: 'analysis', label: 'Advanced Analysis', icon: '🔍', premium: true },
+  { id: 'guide', label: 'Lucid Guide', icon: '✨' },
+  { id: 'waking', label: 'Waking Life', icon: '🌅' },
+  { id: 'premium', label: 'Premium', icon: '💎' }
+];
+
 function App() {
-  const [activeSection, setActiveSection] = useState('overview');
+  const [activeSection, setActiveSection] = useState<NavigationItem['id']>('overview');
 
   const handleSignOut = async () => {
     try {
@@ -19,16 +37,6 @@ function App() {
       console.error('Error signing out:', error);
     }
   };
-
-  const navigationItems = [
-    { id: 'overview', label: 'Overview', icon: '🏠' },
-    { id: 'dreams', label: 'Dream Journal', icon: '📖' },
-    { id: 'themes', label: 'Themes', icon: '🎨' },
-    { id: 'analysis', label: 'Advanced Analysis', icon: '🔍', premium: true },
-    { id: 'guide', label: 'Lucid Guide', icon: '✨' },
-    { id: 'waking', label: 'Waking Life', icon: '🌅' },
-    { id: 'premium', label: 'Premium', icon: '💎' }
-  ];
 
   const renderSection = () => {
     switch (activeSection) {
@@ -115,7 +123,7 @@ function App() {
       {/* Navigation */}
       <nav className="app-navigation">
         <div className="nav-container">
-          {navigationItems.map((item) => (
+          {NAVIGATION_ITEMS.map((item) => (
             <button
               key={item.id}
               className={`nav-item ${activeSection === item.id ? 'active' : ''} ${item.premium ? 'premium-feature' : ''}`}

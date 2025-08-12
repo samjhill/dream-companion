@@ -2,9 +2,11 @@ import React, { useState, useEffect } from 'react';
 import { fetchAuthSession } from 'aws-amplify/auth';
 import { formatDate } from '../helpers/date';
 import { getUserPhoneNumber } from '../helpers/user';
-
-import 'ldrs/ring';
 import { DreamHeatmap } from './HeatMap';
+
+// Constants
+const API_BASE_URL = "https://jj1rq9vx9l.execute-api.us-east-1.amazonaws.com/Prod";
+const DREAMS_PER_PAGE = 10;
 
 interface Dream {
   id: string;
@@ -104,9 +106,6 @@ const DreamList: React.FC = () => {
   const [hasMore, setHasMore] = useState(true);
   const [totalDreams, setTotalDreams] = useState(0);
   const [offset, setOffset] = useState(0);
-  
-  const API_BASE_URL = "https://jj1rq9vx9l.execute-api.us-east-1.amazonaws.com/Prod";
-  const DREAMS_PER_PAGE = 10;
 
   const fetchDreams = async (isLoadMore = false) => {
     try {

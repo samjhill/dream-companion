@@ -13,3 +13,17 @@ export async function getUserPhoneNumber(): Promise<string | undefined> {
     return undefined;
   }
 }
+
+/**
+ * Retrieves all user attributes from Cognito
+ * @returns Promise<Record<string, string> | undefined> - User attributes or undefined if error
+ */
+export async function getUserAttributes(): Promise<Record<string, string> | undefined> {
+  try {
+    const attributes = await fetchUserAttributes();
+    return attributes as Record<string, string>;
+  } catch (error) {
+    console.error('Error fetching user attributes:', error);
+    return undefined;
+  }
+}

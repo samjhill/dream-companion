@@ -50,8 +50,7 @@ export function useConversationPlayer(script: ScriptLine[] = demoScript, opts: P
     clearTimer();
     step();
     return clearTimer;
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [index, isPlaying]);
+  }, [index, isPlaying, loop, idleLoopDelayMs, script]);
 
   // Pause when tab hidden
   useEffect(() => {

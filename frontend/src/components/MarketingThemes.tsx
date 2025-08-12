@@ -35,12 +35,13 @@ const THEME_GREETINGS = [
 ];
 
 export const MarketingThemes: React.FC = () => {
-    const randomGreeting = THEME_GREETINGS[Math.floor(Math.random() * THEME_GREETINGS.length)];
+    // Use a stable greeting instead of random to avoid unnecessary re-renders
+    const greeting = THEME_GREETINGS[0];
 
     return (
         <div className="marketing-themes-section">
             <div className="themes-content">
-                <p className="theme-intro">{randomGreeting}</p>
+                <p className="theme-intro">{greeting}</p>
                 
                 <div className="themes-grid">
                     {SAMPLE_THEMES.map((item, index) => (

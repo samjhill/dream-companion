@@ -2,26 +2,37 @@ import React, { useState } from 'react';
 import { format, eachDayOfInterval, subDays, startOfToday } from 'date-fns';
 import { processDreamsForHeatmap } from '../helpers/process-dreams';
 
-// Define types for the dream data
+// Constants
+const SHADING_LEVELS = {
+  NO_DREAMS: '#ebedf0',
+  ONE_DREAM: '#9be9a8',
+  TWO_DREAMS: '#40c463',
+  THREE_DREAMS: '#30a14e',
+  FOUR_PLUS_DREAMS: '#216e39'
+} as const;
+
+const DEFAULT_BOX_SIZE = 16;
+const COMPACT_BOX_SIZE = 12;
+const DEFAULT_GAP = 4;
+const COMPACT_GAP = 2;
+
+/**
+ * Interface for dream data structure
+ */
 interface Dream {
   createdAt: string;
 }
 
+/**
+ * Type for mapping dates to dream counts
+ */
 type DreamData = {
   [date: string]: number;
 };
 
-// Function to determine background color based on the number of dreams
-const getShadingLevel = (dreamCount: number): string => {
-  if (dreamCount === 0) return '#ebedf0'; // Lightest color for no dreams
-  if (dreamCount === 1) return '#9be9a8'; // Light green for one dream
-  if (dreamCount === 2) return '#40c463'; // Mid green for two dreams
-  if (dreamCount === 3) return '#30a14e'; // Darker green for three dreams
-  if (dreamCount >= 4) return '#216e39'; // Darkest green for four or more dreams
-  return '#ebedf0'; // Default to light grey
-};
-
-// Define the component props type
+/**
+ * Component props for the DreamHeatmap
+ */
 interface DreamHeatmapProps {
   dreams: Dream[];
   numberOfDays?: number;
@@ -29,6 +40,23 @@ interface DreamHeatmapProps {
   compact?: boolean;
 }
 
+/**
+ * Determines the background color based on the number of dreams
+ * Uses a green color scale similar to GitHub's contribution graph
+ */
+const getShadingLevel = (dreamCount: number): string => {
+  if (dreamCount === 0) return SHADING_LEVELS.NO_DREAMS;
+  if (dreamCount === 1) return SHADING_LEVELS.ONE_DREAM;
+  if (dreamCount === 2) return SHADING_LEVELS.TWO_DREAMS;
+  if (dreamCount === 3) return SHADING_LEVELS.THREE_DREAMS;
+  if (dreamCount >= 4) return SHADING_LEVELS.FOUR_PLUS_DREAMS;
+  return SHADING_LEVELS.NO_DREAMS;
+};
+
+/**
+ * DreamHeatmap component that displays dream activity in a calendar-style heatmap
+ * Shows dream frequency over a specified number of days with color-coded intensity
+ */
 export const DreamHeatmap: React.FC<DreamHeatmapProps> = ({ 
   dreams, 
   numberOfDays = 30, 
@@ -47,8 +75,9 @@ export const DreamHeatmap: React.FC<DreamHeatmapProps> = ({
   // Generate dream data from the provided dreams
   const dreamData: DreamData = processDreamsForHeatmap(dreams);
 
-  const boxSize = compact ? 12 : 16;
-  const gap = compact ? 2 : 4;
+  // Calculate dimensions based on compact mode
+  const boxSize = compact ? COMPACT_BOX_SIZE : DEFAULT_BOX_SIZE;
+  const gap = compact ? COMPACT_GAP : DEFAULT_GAP;
 
   return (
     <div style={styles.container}>
@@ -117,7 +146,7 @@ export const DreamHeatmap: React.FC<DreamHeatmapProps> = ({
   );
 };
 
-// Styles for the component
+// Component styles
 const styles: { [key: string]: React.CSSProperties } = {
   container: {
     textAlign: 'center',

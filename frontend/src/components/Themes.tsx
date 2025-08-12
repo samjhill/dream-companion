@@ -1,7 +1,6 @@
 import { fetchAuthSession } from "aws-amplify/auth";
 import React, { useEffect, useState } from "react";
 import { getUserPhoneNumber } from "../helpers/user";
-import { generateRandomIndex } from "../helpers/numbers";
 
 const THEME_GREETINGS = [
     "After learning more about your dream patterns, I've identified some recurring themes, along with actionable steps you can take to address them in your daily life.",
@@ -57,7 +56,7 @@ export const Themes: React.FC = () => {
 
     useEffect(() => {
         fetchThemes();
-        setRandomNumber(generateRandomIndex(THEME_GREETINGS.length));
+        setRandomNumber(Math.floor(Math.random() * THEME_GREETINGS.length));
     }, []);
 
     if (loading) {
