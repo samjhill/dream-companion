@@ -6,6 +6,7 @@ import boto3
 import os
 import urllib.parse
 from dotenv import load_dotenv
+from .auth import require_cognito_auth, get_cognito_user_info
 
 load_dotenv()
 
@@ -15,22 +16,8 @@ routes_bp = Blueprint('routes_bp', __name__)
 S3_BUCKET_NAME = os.getenv('S3_BUCKET_NAME')
 FRONTEND_ORIGIN = 'https://clarasdreamguide.com'
 
-def require_auth(f):
-    """Decorator to require authentication for protected routes"""
-    @wraps(f)
-    def decorated_function(*args, **kwargs):
-        auth_header = request.headers.get('Authorization')
-        if not auth_header or not auth_header.startswith('Bearer '):
-            return jsonify({"error": "Missing or invalid authorization header"}), 401
-
-        # For now, we'll just check if the token exists
-        # In a real implementation, you would validate the JWT token
-        token = auth_header.split(' ')[1]
-        if not token:
-            return jsonify({"error": "Invalid token"}), 401
-
-        return f(*args, **kwargs)
-    return decorated_function
+# Use the new Cognito authentication decorator
+require_auth = require_cognito_auth
 
 def add_cors_headers(response):
     """Add CORS headers to response"""

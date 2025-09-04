@@ -1,7 +1,8 @@
 import '@testing-library/jest-dom'
-import { expect, afterEach } from 'vitest'
+import { expect, afterEach, vi } from 'vitest'
 import { cleanup } from '@testing-library/react'
 import * as matchers from '@testing-library/jest-dom/matchers'
+import React from 'react'
 
 // Extend Vitest's expect with jest-dom matchers
 expect.extend(matchers)
@@ -44,16 +45,16 @@ vi.mock('aws-amplify', () => ({
 // Mock framer-motion
 vi.mock('framer-motion', () => ({
   motion: {
-    div: ({ children, ...props }: any) => <div {...props}>{children}</div>,
-    span: ({ children, ...props }: any) => <span {...props}>{children}</span>,
-    button: ({ children, ...props }: any) => <button {...props}>{children}</button>,
-    h1: ({ children, ...props }: any) => <h1 {...props}>{children}</h1>,
-    h2: ({ children, ...props }: any) => <h2 {...props}>{children}</h2>,
-    h3: ({ children, ...props }: any) => <h3 {...props}>{children}</h3>,
-    p: ({ children, ...props }: any) => <p {...props}>{children}</p>,
-    img: ({ ...props }: any) => <img {...props} />,
+    div: ({ children, ...props }: any) => React.createElement('div', props, children),
+    span: ({ children, ...props }: any) => React.createElement('span', props, children),
+    button: ({ children, ...props }: any) => React.createElement('button', props, children),
+    h1: ({ children, ...props }: any) => React.createElement('h1', props, children),
+    h2: ({ children, ...props }: any) => React.createElement('h2', props, children),
+    h3: ({ children, ...props }: any) => React.createElement('h3', props, children),
+    p: ({ children, ...props }: any) => React.createElement('p', props, children),
+    img: ({ ...props }: any) => React.createElement('img', props),
   },
-  AnimatePresence: ({ children }: any) => <>{children}</>,
+  AnimatePresence: ({ children }: any) => React.createElement(React.Fragment, null, children),
   useAnimation: () => ({
     start: vi.fn(),
     stop: vi.fn(),
@@ -66,16 +67,16 @@ vi.mock('framer-motion', () => ({
 vi.mock('react-router-dom', () => ({
   useNavigate: () => vi.fn(),
   useLocation: () => ({ pathname: '/' }),
-  Link: ({ children, to, ...props }: any) => <a href={to} {...props}>{children}</a>,
-  NavLink: ({ children, to, ...props }: any) => <a href={to} {...props}>{children}</a>,
-  BrowserRouter: ({ children }: any) => <div>{children}</div>,
-  Routes: ({ children }: any) => <div>{children}</div>,
-  Route: ({ children }: any) => <div>{children}</div>,
+  Link: ({ children, to, ...props }: any) => React.createElement('a', { href: to, ...props }, children),
+  NavLink: ({ children, to, ...props }: any) => React.createElement('a', { href: to, ...props }, children),
+  BrowserRouter: ({ children }: any) => React.createElement('div', null, children),
+  Routes: ({ children }: any) => React.createElement('div', null, children),
+  Route: ({ children }: any) => React.createElement('div', null, children),
 }))
 
 // Mock date-fns
 vi.mock('date-fns', () => ({
-  format: vi.fn((date, formatStr) => date.toString()),
+  format: vi.fn((date: any) => date.toString()),
   parseISO: vi.fn((dateString) => new Date(dateString)),
   isValid: vi.fn(() => true),
   isToday: vi.fn(() => false),
@@ -86,14 +87,14 @@ vi.mock('date-fns', () => ({
 }))
 
 // Global test utilities
-global.ResizeObserver = vi.fn().mockImplementation(() => ({
+(global as any).ResizeObserver = vi.fn().mockImplementation(() => ({
   observe: vi.fn(),
   unobserve: vi.fn(),
   disconnect: vi.fn(),
 }))
 
 // Mock IntersectionObserver
-global.IntersectionObserver = vi.fn().mockImplementation(() => ({
+(global as any).IntersectionObserver = vi.fn().mockImplementation(() => ({
   observe: vi.fn(),
   unobserve: vi.fn(),
   disconnect: vi.fn(),

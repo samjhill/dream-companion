@@ -37,6 +37,7 @@
     "**/*.test.tsx", 
     "**/*.spec.ts", 
     "**/*.spec.tsx",
+    "src/test/**/*",
     "node_modules",
     "dist"
   ]

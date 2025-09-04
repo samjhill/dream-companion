@@ -1,6 +1,5 @@
 from flask import Flask
 from flask_cors import CORS
-from flask_jwt_extended import JWTManager
 from .config import Config
 from .auth import auth_bp
 from .routes import routes_bp
@@ -21,9 +20,6 @@ def create_app(config_override=None):
 
     # Enable CORS for the /api routes and allow requests from your frontend
     CORS(app, origins=['https://clarasdreamguide.com'], supports_credentials=True)
-
-    # Initialize JWT manager
-    jwt = JWTManager(app)
 
     # Register blueprints
     with app.app_context():

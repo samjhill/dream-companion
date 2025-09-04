@@ -9,6 +9,7 @@ import { SubscriptionManager } from './components/SubscriptionManager';
 import { AdvancedDreamAnalysis } from './components/AdvancedDreamAnalysis';
 import { usePremiumStatus } from './hooks/usePremiumStatus';
 import { useState } from 'react';
+import { clearUserAttributesCache } from './helpers/user';
 
 // Constants
 interface NavigationItem {
@@ -34,6 +35,8 @@ function App() {
 
   const handleSignOut = async () => {
     try {
+      // Clear user data cache before signing out
+      clearUserAttributesCache();
       await signOut();
     } catch (error) {
       console.error('Error signing out:', error);

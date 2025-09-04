@@ -4,6 +4,7 @@ import boto3
 import os
 from datetime import datetime, timedelta
 from functools import wraps
+from .auth import require_cognito_auth, get_cognito_user_info
 
 premium_bp = Blueprint('premium_bp', __name__)
 
@@ -42,14 +43,23 @@ def require_premium(f):
     """Decorator to require premium subscription for protected routes"""
     @wraps(f)
     def decorated_function(*args, **kwargs):
+        # First check Cognito authentication
         auth_header = request.headers.get('Authorization')
         if not auth_header or not auth_header.startswith('Bearer '):
             return jsonify({"error": "Missing or invalid authorization header"}), 401
 
-        # Get user phone number from request
-        phone_number = request.view_args.get('phone_number')
+        # Get user info from Cognito token
+        user_info = get_cognito_user_info()
+        if not user_info:
+            return jsonify({"error": "Invalid authentication token"}), 401
+
+        # Get user phone number from Cognito user info or request args
+        phone_number = user_info.get('phone_number') or request.view_args.get('phone_number')
         if not phone_number:
             return jsonify({"error": "Phone number required"}), 400
+
+        # Clean phone number (remove + if present)
+        phone_number = phone_number.replace('+', '')
 
         # Check if user has premium access
         if not is_premium_user(phone_number):

@@ -5,6 +5,7 @@ import os
 import boto3
 from datetime import datetime, timedelta
 from functools import wraps
+from .auth import require_cognito_auth, get_cognito_user_info
 
 stripe_bp = Blueprint('stripe_bp', __name__)
 
@@ -74,21 +75,8 @@ if not load_stripe_secrets():
         'yearly': os.getenv('STRIPE_YEARLY_PRICE_ID')
     }
 
-def require_auth(f):
-    """Decorator to require authentication for protected routes"""
-    @wraps(f)
-    def decorated_function(*args, **kwargs):
-        print("DEBUG: Checking authentication...")
-        auth_header = request.headers.get('Authorization')
-        print(f"DEBUG: Auth header: {auth_header}")
-
-        if not auth_header or not auth_header.startswith('Bearer '):
-            print("ERROR: Missing or invalid authorization header")
-            return jsonify({"error": "Missing or invalid authorization header"}), 401
-
-        print("DEBUG: Authentication passed")
-        return f(*args, **kwargs)
-    return decorated_function
+# Use the new Cognito authentication decorator
+require_auth = require_cognito_auth
 
 @stripe_bp.route('/create-checkout-session', methods=['POST'])
 @cross_origin(supports_credentials=True)
