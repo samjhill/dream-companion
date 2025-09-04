@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useCallback, useMemo } from 'react';
 import { fetchAuthSession } from 'aws-amplify/auth';
 import { formatDate } from '../helpers/date';
 import { getUserPhoneNumber } from '../helpers/user';
@@ -48,48 +48,46 @@ const DreamContent: React.FC<DreamContentProps> = ({ dream }) => {
     <div
       className='dream-container dream'
       onClick={handleCardClick}
-      role="button"
-      tabIndex={0}
-      aria-expanded={isOpen}
-      aria-label={`Dream from ${date} - ${summary}`}
       onKeyDown={handleKeyDown}
+      tabIndex={0}
+      role="button"
+      aria-label={`Dream from ${date}`}
     >
-      <div className="dream-header">
-        <div className="dream-summary">
-          <p className="dream-text">{summary}</p>
-          <p className="dream-date">{date}</p>
-        </div>
+      <div className='dream-header'>
+        <h3 className='dream-date'>{date}</h3>
         <button
-          className="btn btn-ghost toggle-btn"
+          className={`dream-toggle ${isOpen ? 'open' : ''}`}
           onClick={handleToggle}
-          aria-label={isOpen ? "Hide dream details" : "Show dream details"}
+          aria-label={isOpen ? 'Collapse dream' : 'Expand dream'}
         >
-          {isOpen ? "Hide" : "Show"}
+          {isOpen ? '−' : '+'}
         </button>
       </div>
-
+      
+      {summary && (
+        <div className='dream-summary'>
+          <p>{summary}</p>
+        </div>
+      )}
+      
       {isOpen && (
-        <div className="dream-details fade-in">
-          <div className="dream-section">
-            <h3>Your Dream</h3>
-            <p className="dream-content">{dream.dream_content}</p>
+        <div className='dream-details'>
+          <div className='dream-content'>
+            <h4>Dream Content:</h4>
+            <p>{dream.dream_content}</p>
           </div>
-
-          <div className="dream-section">
-            <h3>Interpretation</h3>
-            <p className="dream-response">{dream.response}</p>
-          </div>
-
+          
+          {dream.response && (
+            <div className='dream-analysis'>
+              <h4>Analysis:</h4>
+              <p>{dream.response}</p>
+            </div>
+          )}
+          
           {themes && (
-            <div className="dream-section">
-              <h3>Themes</h3>
-              <ul className="themes-list">
-                {themes.split("\n").map((theme, index) => (
-                  <li key={index} className="theme-item">
-                    {theme.replace("-", "")}
-                  </li>
-                ))}
-              </ul>
+            <div className='dream-themes'>
+              <h4>Themes:</h4>
+              <p>{themes}</p>
             </div>
           )}
         </div>
@@ -98,7 +96,7 @@ const DreamContent: React.FC<DreamContentProps> = ({ dream }) => {
   );
 };
 
-const DreamList: React.FC = () => {
+const DreamListOptimized: React.FC = () => {
   const [dreams, setDreams] = useState<Dream[]>([]);
   const [loading, setLoading] = useState(true);
   const [loadingMore, setLoadingMore] = useState(false);
@@ -106,8 +104,62 @@ const DreamList: React.FC = () => {
   const [hasMore, setHasMore] = useState(true);
   const [totalDreams, setTotalDreams] = useState(0);
   const [offset, setOffset] = useState(0);
+  
+  // Cache for individual dreams to prevent refetching
+  const [dreamCache, setDreamCache] = useState<Map<string, Dream>>(new Map());
+  // Track ongoing requests to prevent duplicates
+  const [ongoingRequests, setOngoingRequests] = useState<Set<string>>(new Set());
 
-  const fetchDreams = async (isLoadMore = false) => {
+  // Memoized function to fetch individual dream with caching
+  const fetchIndividualDream = useCallback(async (dreamKey: string, phoneNumber: string, session: any): Promise<Dream | null> => {
+    const dreamId = dreamKey.replace(`${phoneNumber}/`, '');
+    const cacheKey = `${phoneNumber}/${dreamId}`;
+    
+    // Check cache first
+    if (dreamCache.has(cacheKey)) {
+      return dreamCache.get(cacheKey)!;
+    }
+    
+    // Check if request is already ongoing
+    if (ongoingRequests.has(cacheKey)) {
+      return null; // Will be handled by the ongoing request
+    }
+    
+    // Mark request as ongoing
+    setOngoingRequests(prev => new Set(prev).add(cacheKey));
+    
+    try {
+      const dreamResponse = await fetch(
+        `${API_BASE_URL}/api/dreams/${phoneNumber}/${dreamId}`,
+        { headers: { 'Authorization': `Bearer ${session?.tokens?.idToken?.toString()}` } }
+      );
+
+      if (!dreamResponse.ok) {
+        console.warn(`Failed to fetch dream ${dreamKey}`);
+        return null;
+      }
+
+      const dreamData: Dream = await dreamResponse.json();
+      
+      // Cache the result
+      setDreamCache(prev => new Map(prev).set(cacheKey, dreamData));
+      
+      return dreamData;
+    } catch (error) {
+      console.warn(`Error fetching dream ${dreamKey}:`, error);
+      return null;
+    } finally {
+      // Remove from ongoing requests
+      setOngoingRequests(prev => {
+        const newSet = new Set(prev);
+        newSet.delete(cacheKey);
+        return newSet;
+      });
+    }
+  }, [dreamCache, ongoingRequests]);
+
+  // Memoized fetchDreams function
+  const fetchDreams = useCallback(async (isLoadMore = false) => {
     try {
       if (isLoadMore) {
         setLoadingMore(true);
@@ -147,31 +199,13 @@ const DreamList: React.FC = () => {
         setOffset(DREAMS_PER_PAGE);
       }
 
-      // Fetch individual dream details
-      const dreamFiles: Dream[] = [];
-      for (const dream of data.dreams) {
-        const key = dream.key;
-        
-        // Extract dream ID from S3 key (remove phone number prefix)
-        const dreamId = key.replace(`${phoneNumber}/`, '');
-
-        try {
-          const dreamResponse = await fetch(
-            `${API_BASE_URL}/api/dreams/${phoneNumber}/${dreamId}`,
-            { headers: { 'Authorization': `Bearer ${session?.tokens?.idToken?.toString()}` } }
-          );
-
-          if (!dreamResponse.ok) {
-            console.warn(`Failed to fetch dream ${key}`);
-            continue;
-          }
-
-          const dreamData: Dream = await dreamResponse.json();
-          dreamFiles.push(dreamData);
-        } catch (error) {
-          console.warn(`Error fetching dream ${key}:`, error);
-        }
-      }
+      // Batch fetch individual dream details with caching
+      const dreamPromises = data.dreams.map((dream: any) => 
+        fetchIndividualDream(dream.key, phoneNumber, session)
+      );
+      
+      const dreamResults = await Promise.all(dreamPromises);
+      const dreamFiles = dreamResults.filter((dream): dream is Dream => dream !== null);
 
       // Sort by creation date (newest first) and update dreams
       const sortedDreams = dreamFiles.sort((a, b) =>
@@ -179,7 +213,7 @@ const DreamList: React.FC = () => {
       );
 
       if (isLoadMore) {
-        setDreams(prev => [...prev, ...sortedDreams]);
+        setDreams(prevDreams => [...prevDreams, ...sortedDreams]);
       } else {
         setDreams(sortedDreams);
       }
@@ -190,19 +224,31 @@ const DreamList: React.FC = () => {
       setLoading(false);
       setLoadingMore(false);
     }
-  };
+  }, [offset, fetchIndividualDream]);
 
-  const handleLoadMore = () => {
+  const handleLoadMore = useCallback(() => {
     fetchDreams(true);
-  };
+  }, [fetchDreams]);
 
-  const handleRetry = () => {
+  const handleRetry = useCallback(() => {
     window.location.reload();
-  };
+  }, []);
 
+  // Fix useEffect dependency - only run once on mount
   useEffect(() => {
     fetchDreams();
-  }, [fetchDreams]);
+  }, []); // Empty dependency array - only run on mount
+
+  // Memoized dream heatmap data
+  const heatmapDreams = useMemo(() => {
+    return dreams.map(dream => ({
+      id: dream.id,
+      createdAt: dream.createdAt,
+      dream_content: dream.dream_content,
+      response: dream.response,
+      summary: dream.summary
+    }));
+  }, [dreams]);
 
   if (loading) {
     return (
@@ -223,13 +269,11 @@ const DreamList: React.FC = () => {
       <div className="dream-journal">
         <div className="journal-header">
           <h2>Dream Journal</h2>
+          <p className="text-muted">Error loading dreams</p>
         </div>
-        <div className="error-message">
+        <div className="error">
           <p>{error}</p>
-          <button
-            className="btn btn-primary"
-            onClick={handleRetry}
-          >
+          <button onClick={handleRetry} className="retry-button">
             Try Again
           </button>
         </div>
@@ -241,53 +285,46 @@ const DreamList: React.FC = () => {
     <div className="dream-journal">
       <div className="journal-header">
         <h2>Dream Journal</h2>
-        {totalDreams > 0 && (
-          <p className="text-muted">
-            Showing {dreams.length} of {totalDreams} dream{totalDreams === 1 ? '' : 's'}
-          </p>
+        <p className="text-muted">
+          {totalDreams > 0 
+            ? `You have ${totalDreams} dream${totalDreams === 1 ? '' : 's'} recorded`
+            : 'No dreams recorded yet'
+          }
+        </p>
+      </div>
+
+      {dreams.length > 0 && (
+        <div className="dream-heatmap">
+          <h3>Dream Activity</h3>
+          <DreamHeatmap dreams={heatmapDreams} />
+        </div>
+      )}
+
+      <div className="dreams-list">
+        {dreams.length === 0 ? (
+          <div className="no-dreams">
+            <p>No dreams found. Start recording your dreams to see them here!</p>
+          </div>
+        ) : (
+          dreams.map((dream) => (
+            <DreamContent key={dream.id} dream={dream} />
+          ))
         )}
       </div>
 
-      {dreams.length === 0 ? (
-        <div className="empty-state">
-          <div className="empty-icon">🌙</div>
-          <h3>No dreams recorded yet</h3>
-          <p className="text-muted">
-            Your dreams will appear here once you start recording them.
-          </p>
+      {hasMore && dreams.length > 0 && (
+        <div className="load-more">
+          <button 
+            onClick={handleLoadMore} 
+            disabled={loadingMore}
+            className="load-more-button"
+          >
+            {loadingMore ? 'Loading...' : 'Load More Dreams'}
+          </button>
         </div>
-      ) : (
-        <>
-          <DreamHeatmap dreams={dreams} />
-          <div className="dreams-list">
-            {dreams.map(dream => (
-              <DreamContent key={dream.id} dream={dream} />
-            ))}
-          </div>
-
-          {hasMore && (
-            <div className="load-more-section">
-              <button
-                className="btn btn-secondary load-more-btn"
-                onClick={handleLoadMore}
-                disabled={loadingMore}
-                aria-label="Load more dreams"
-              >
-                {loadingMore ? (
-                  <>
-                    <div className="loading-spinner-small"></div>
-                    Loading...
-                  </>
-                ) : (
-                  `Load More Dreams (${totalDreams - dreams.length} remaining)`
-                )}
-              </button>
-            </div>
-          )}
-        </>
       )}
     </div>
   );
 };
 
-export default DreamList;
+export default DreamListOptimized;
