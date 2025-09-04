@@ -86,7 +86,7 @@ def get_dreams(phone_number):
             dream_keys = []
             for obj in response['Contents']:
                 key = obj['Key']
-                if not key.endswith('metadata') and not key.endswith('themes.txt'):
+                if not key.endswith('metadata.json') and not key.endswith('metadata') and not key.endswith('themes.txt'):
                     dream_keys.append({
                         'key': key,
                         'lastModified': obj['LastModified']

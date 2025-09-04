@@ -151,10 +151,13 @@ const DreamList: React.FC = () => {
       const dreamFiles: Dream[] = [];
       for (const dream of data.dreams) {
         const key = dream.key;
+        
+        // Extract dream ID from S3 key (remove phone number prefix)
+        const dreamId = key.replace(`${phoneNumber}/`, '');
 
         try {
           const dreamResponse = await fetch(
-            `${API_BASE_URL}/api/dreams/${key}`,
+            `${API_BASE_URL}/api/dreams/${phoneNumber}/${dreamId}`,
             { headers: { 'Authorization': `Bearer ${session?.tokens?.idToken?.toString()}` } }
           );
 
