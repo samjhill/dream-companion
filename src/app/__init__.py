@@ -8,12 +8,16 @@ from .premium import premium_bp
 from .dream_analysis import dream_analysis_bp
 from .stripe_integration import stripe_bp
 
-def create_app():
+def create_app(config_override=None):
     """Create and configure the Flask application"""
     app = Flask(__name__)
 
     # Load configuration
     app.config.from_object(Config)
+    
+    # Override config if provided
+    if config_override:
+        app.config.update(config_override)
 
     # Enable CORS for the /api routes and allow requests from your frontend
     CORS(app, origins=['https://clarasdreamguide.com'], supports_credentials=True)

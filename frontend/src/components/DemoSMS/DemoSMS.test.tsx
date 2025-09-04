@@ -1,30 +1,23 @@
 import React from 'react';
-import { render } from '@testing-library/react';
+import { render, screen } from '@testing-library/react';
+import { describe, it, expect } from 'vitest';
 import DemoSMS from './DemoSMS';
-
-// Mock framer-motion for testing
-jest.mock('framer-motion', () => ({
-  motion: {
-    div: ({ children, ...props }: any) => <div {...props}>{children}</div>,
-  },
-  AnimatePresence: ({ children }: any) => <>{children}</>,
-}));
 
 describe('DemoSMS', () => {
   it('renders without crashing', () => {
-    const { getByText } = render(<DemoSMS />);
+    render(<DemoSMS />);
 
     // Check if main elements are rendered
-    expect(getByText('Understand your dreams. Wake up with a plan.')).toBeInTheDocument();
-    expect(getByText('Try It Now')).toBeInTheDocument();
-    expect(getByText('How it Works')).toBeInTheDocument();
-    expect(getByText('Clara')).toBeInTheDocument();
+    expect(screen.getByText('Understand your dreams. Wake up with a plan.')).toBeInTheDocument();
+    expect(screen.getByText('Try It Now')).toBeInTheDocument();
+    expect(screen.getByText('How it Works')).toBeInTheDocument();
+    expect(screen.getByText('Clara')).toBeInTheDocument();
   });
 
   it('displays the conversation title', () => {
-    const { getByRole } = render(<DemoSMS />);
+    render(<DemoSMS />);
 
-    const heading = getByRole('heading', { level: 1 });
+    const heading = screen.getByRole('heading', { level: 1 });
     expect(heading).toHaveTextContent('Understand your dreams. Wake up with a plan.');
   });
 });
