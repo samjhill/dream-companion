@@ -31,7 +31,7 @@ Resources:
           FLASK_ENV: production
           S3_BUCKET_NAME: dream.storage
           PREMIUM_TABLE_NAME: dream-companion-premium-users
-          STRIPE_SECRETS_ARN: arn:aws:secretsmanager:us-east-1:732408661603:secret:stripe-jm2Ua6
+          STRIPE_SECRETS_ARN: arn:aws:secretsmanager:us-east-1:732408661603:secret:stripe-jm2Ua6-Kg9uMo
       Events:
         DreamCompanionApiEvent:
           Type: Api
@@ -69,5 +69,5 @@ Resources:
               Action:
                 - "secretsmanager:GetSecretValue"
               Resource: 
-                - "arn:aws:secretsmanager:us-east-1:732408661603:secret:stripe-jm2Ua6"
+                - "arn:aws:secretsmanager:us-east-1:732408661603:secret:stripe-jm2Ua6-Kg9uMo"
 

@@ -1,13 +1,10 @@
 import json
 from flask import Blueprint, request, jsonify
-from flask_cors import CORS, cross_origin
-from flask_jwt_extended import jwt_required
-from flask_cognito import cognito_auth_required, current_user, current_cognito_jwt
+from flask_cors import cross_origin
+from functools import wraps
 import boto3
 import os
 import urllib.parse
-from functools import wraps
-
 from dotenv import load_dotenv
 
 load_dotenv()

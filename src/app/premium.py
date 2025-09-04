@@ -54,7 +54,11 @@ def require_premium(f):
         
         # Check if user has premium access
         if not is_premium_user(phone_number):
-            return jsonify({"error": "Premium subscription required"}), 403
+            return jsonify({
+                "error": "Premium subscription required",
+                "message": "This feature requires a premium subscription. Please upgrade to access advanced dream analysis.",
+                "upgrade_url": "https://clarasdreamguide.com/app/premium"
+            }), 403
         
         return f(*args, **kwargs)
     return decorated_function
@@ -76,29 +80,33 @@ def is_premium_user(phone_number: str) -> bool:
         print(f"Error checking premium status: {e}")
         return False
 
-@premium_bp.route('/subscription/status/<phone_number>', methods=['GET'])
-@cross_origin(supports_credentials=True)
-def get_subscription_status(phone_number):
-    """Get the current subscription status for a user"""
+def check_premium_access(phone_number: str) -> dict:
+    """Check premium access and return detailed status information"""
     try:
         table = get_premium_table()
         response = table.get_item(Key={'phone_number': phone_number})
         
         if 'Item' not in response:
-            return jsonify({
-                'is_premium': False,
+            return {
+                'has_premium': False,
                 'subscription_type': None,
                 'subscription_end': None,
+                'days_remaining': 0,
                 'features': ['basic_dream_storage', 'basic_interpretations']
-            }), 200
+            }
         
         user_data = response['Item']
-        is_premium = datetime.utcnow() < datetime.fromisoformat(user_data['subscription_end'])
+        subscription_end = datetime.fromisoformat(user_data['subscription_end'])
+        current_time = datetime.utcnow()
         
-        return jsonify({
-            'is_premium': is_premium,
+        has_premium = current_time < subscription_end
+        days_remaining = (subscription_end - current_time).days if has_premium else 0
+        
+        return {
+            'has_premium': has_premium,
             'subscription_type': user_data.get('subscription_type', 'premium'),
             'subscription_end': user_data['subscription_end'],
+            'days_remaining': days_remaining,
             'features': user_data.get('features', [
                 'basic_dream_storage', 
                 'basic_interpretations',
@@ -107,7 +115,31 @@ def get_subscription_status(phone_number):
                 'dream_archetypes',
                 'historical_trends',
                 'personalized_reports'
-            ])
+            ]) if has_premium else ['basic_dream_storage', 'basic_interpretations']
+        }
+    except Exception as e:
+        print(f"Error checking premium access: {e}")
+        return {
+            'has_premium': False,
+            'subscription_type': None,
+            'subscription_end': None,
+            'days_remaining': 0,
+            'features': ['basic_dream_storage', 'basic_interpretations']
+        }
+
+@premium_bp.route('/subscription/status/<phone_number>', methods=['GET'])
+@cross_origin(supports_credentials=True)
+def get_subscription_status(phone_number):
+    """Get the current subscription status for a user"""
+    try:
+        premium_status = check_premium_access(phone_number)
+        
+        return jsonify({
+            'is_premium': premium_status['has_premium'],
+            'subscription_type': premium_status['subscription_type'],
+            'subscription_end': premium_status['subscription_end'],
+            'days_remaining': premium_status['days_remaining'],
+            'features': premium_status['features']
         }), 200
         
     except Exception as e:

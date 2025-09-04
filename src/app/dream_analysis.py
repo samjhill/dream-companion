@@ -7,6 +7,7 @@ import re
 from datetime import datetime, timedelta
 from collections import Counter
 from functools import wraps
+from .premium import require_premium, check_premium_access
 
 dream_analysis_bp = Blueprint('dream_analysis_bp', __name__)
 
@@ -107,16 +108,11 @@ def extract_meaningful_words(text: str):
     filtered = [t for t in tokens if len(t) > 2 and t not in STOPWORDS]
     return filtered
 
-def require_premium(f):
-    """Decorator to require premium subscription for protected routes"""
-    @wraps(f)
-    def decorated_function(*args, **kwargs):
-        # This will be handled by the premium module
-        return f(*args, **kwargs)
-    return decorated_function
+# Premium decorator is now imported from premium module
 
 @dream_analysis_bp.route('/advanced/<phone_number>', methods=['GET'])
 @cross_origin(supports_credentials=True)
+@require_premium
 def get_advanced_analysis(phone_number):
     """Get advanced dream analysis including archetypes, patterns, and insights"""
     try:
@@ -161,6 +157,7 @@ def get_advanced_analysis(phone_number):
 
 @dream_analysis_bp.route('/archetypes/<phone_number>', methods=['GET'])
 @cross_origin(supports_credentials=True)
+@require_premium
 def get_dream_archetypes(phone_number):
     """Get dream archetype analysis for a user"""
     try:
@@ -199,6 +196,7 @@ def get_dream_archetypes(phone_number):
 
 @dream_analysis_bp.route('/patterns/<phone_number>', methods=['GET'])
 @cross_origin(supports_credentials=True)
+@require_premium
 def get_dream_patterns(phone_number):
     """Get psychological pattern analysis for a user"""
     try:
@@ -239,6 +237,16 @@ def get_dream_patterns(phone_number):
         
     except Exception as e:
         return jsonify({"error": f"Failed to analyze patterns: {str(e)}"}), 500
+
+@dream_analysis_bp.route('/premium-status/<phone_number>', methods=['GET'])
+@cross_origin(supports_credentials=True)
+def get_premium_status(phone_number):
+    """Get premium status for a user (public endpoint)"""
+    try:
+        premium_status = check_premium_access(phone_number)
+        return jsonify(premium_status), 200
+    except Exception as e:
+        return jsonify({"error": f"Failed to get premium status: {str(e)}"}), 500
 
 def perform_advanced_analysis(dreams):
     """Perform comprehensive dream analysis"""

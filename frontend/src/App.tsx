@@ -7,6 +7,7 @@ import { signOut } from 'aws-amplify/auth';
 import { LucidDreamGuide } from './components/LucidDreamGuide';
 import { SubscriptionManager } from './components/SubscriptionManager';
 import { AdvancedDreamAnalysis } from './components/AdvancedDreamAnalysis';
+import { usePremiumStatus } from './hooks/usePremiumStatus';
 import { useState } from 'react';
 
 // Constants
@@ -29,6 +30,7 @@ const NAVIGATION_ITEMS: NavigationItem[] = [
 
 function App() {
   const [activeSection, setActiveSection] = useState<NavigationItem['id']>('overview');
+  const { premiumStatus } = usePremiumStatus();
 
   const handleSignOut = async () => {
     try {
@@ -74,11 +76,13 @@ function App() {
                   <span>Explore Themes</span>
                 </button>
                 <button 
-                  className="btn btn-secondary action-card"
+                  className={`btn ${premiumStatus?.has_premium ? 'btn-secondary' : 'btn-disabled'} action-card`}
                   onClick={() => setActiveSection('analysis')}
+                  disabled={!premiumStatus?.has_premium}
                 >
                   <span className="action-icon">🔍</span>
                   <span>Advanced Analysis</span>
+                  {!premiumStatus?.has_premium && <span className="premium-badge">💎</span>}
                 </button>
                 <button 
                   className="btn btn-secondary action-card"
@@ -126,12 +130,14 @@ function App() {
           {NAVIGATION_ITEMS.map((item) => (
             <button
               key={item.id}
-              className={`nav-item ${activeSection === item.id ? 'active' : ''} ${item.premium ? 'premium-feature' : ''}`}
+              className={`nav-item ${activeSection === item.id ? 'active' : ''} ${item.premium ? 'premium-feature' : ''} ${item.premium && !premiumStatus?.has_premium ? 'premium-locked' : ''}`}
               onClick={() => setActiveSection(item.id)}
+              disabled={item.premium && !premiumStatus?.has_premium}
             >
               <span className="nav-icon">{item.icon}</span>
               <span className="nav-label">{item.label}</span>
-              {item.premium && <span className="premium-badge">💎</span>}
+              {item.premium && !premiumStatus?.has_premium && <span className="premium-badge">💎</span>}
+              {item.premium && premiumStatus?.has_premium && <span className="premium-active">✨</span>}
             </button>
           ))}
         </div>

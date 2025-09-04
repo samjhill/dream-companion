@@ -29,6 +29,15 @@ def load_stripe_secrets():
         
         # Set Stripe configuration
         stripe.api_key = secrets.get('STRIPE_SECRET_KEY')
+        
+        # Configure Stripe for test mode if using test keys
+        if stripe.api_key and stripe.api_key.startswith('sk_test_'):
+            print("🧪 Stripe configured for TEST/SANDBOX mode")
+        elif stripe.api_key and stripe.api_key.startswith('sk_live_'):
+            print("🚀 Stripe configured for LIVE/PRODUCTION mode")
+        else:
+            print("⚠️  Warning: Unknown Stripe key format")
+            
         global STRIPE_WEBHOOK_SECRET, SUBSCRIPTION_PRICES
         
         STRIPE_WEBHOOK_SECRET = secrets.get('STRIPE_WEBHOOK_SECRET')
@@ -49,6 +58,15 @@ def load_stripe_secrets():
 if not load_stripe_secrets():
     # Fallback to environment variables for local development
     stripe.api_key = os.getenv('STRIPE_SECRET_KEY')
+    
+    # Configure Stripe for test mode if using test keys
+    if stripe.api_key and stripe.api_key.startswith('sk_test_'):
+        print("🧪 Stripe configured for TEST/SANDBOX mode (env vars)")
+    elif stripe.api_key and stripe.api_key.startswith('sk_live_'):
+        print("🚀 Stripe configured for LIVE/PRODUCTION mode (env vars)")
+    else:
+        print("⚠️  Warning: Unknown Stripe key format (env vars)")
+        
     STRIPE_WEBHOOK_SECRET = os.getenv('STRIPE_WEBHOOK_SECRET')
     SUBSCRIPTION_PRICES = {
         'monthly': os.getenv('STRIPE_MONTHLY_PRICE_ID'),
@@ -239,7 +257,46 @@ def handle_subscription_created(subscription):
     plan_type = subscription.metadata.get('plan_type')
     
     print(f"Subscription created for {phone_number} with plan {plan_type}")
-    # Update your database to mark user as premium
+    
+    # Update premium status in DynamoDB
+    try:
+        from .premium import get_premium_table
+        from datetime import datetime, timedelta
+        
+        table = get_premium_table()
+        
+        # Calculate subscription end date based on plan type
+        if plan_type == 'monthly':
+            duration_days = 30
+        elif plan_type == 'quarterly':
+            duration_days = 90
+        elif plan_type == 'yearly':
+            duration_days = 365
+        else:
+            duration_days = 30  # Default to monthly
+        
+        subscription_end = datetime.utcnow() + timedelta(days=duration_days)
+        
+        table.put_item(Item={
+            'phone_number': phone_number,
+            'subscription_type': plan_type,
+            'subscription_start': datetime.utcnow().isoformat(),
+            'subscription_end': subscription_end.isoformat(),
+            'stripe_subscription_id': subscription.id,
+            'features': [
+                'basic_dream_storage', 
+                'basic_interpretations',
+                'advanced_dream_analysis',
+                'psychological_patterns',
+                'dream_archetypes',
+                'historical_trends',
+                'personalized_reports'
+            ]
+        })
+        
+        print(f"Premium status updated for {phone_number}")
+    except Exception as e:
+        print(f"Error updating premium status: {e}")
 
 def handle_subscription_updated(subscription):
     """Handle subscription updates"""
@@ -254,7 +311,17 @@ def handle_subscription_deleted(subscription):
     phone_number = subscription.metadata.get('phone_number')
     
     print(f"Subscription deleted for {phone_number}")
-    # Mark user as non-premium in your database
+    
+    # Remove premium status from DynamoDB
+    try:
+        from .premium import get_premium_table
+        
+        table = get_premium_table()
+        table.delete_item(Key={'phone_number': phone_number})
+        
+        print(f"Premium status removed for {phone_number}")
+    except Exception as e:
+        print(f"Error removing premium status: {e}")
 
 def handle_payment_succeeded(invoice):
     """Handle successful payment"""
@@ -263,7 +330,47 @@ def handle_payment_succeeded(invoice):
     phone_number = subscription.metadata.get('phone_number')
     
     print(f"Payment succeeded for {phone_number}")
-    # Extend premium access in your database
+    
+    # Extend premium access in DynamoDB
+    try:
+        from .premium import get_premium_table
+        from datetime import datetime, timedelta
+        
+        table = get_premium_table()
+        plan_type = subscription.metadata.get('plan_type', 'monthly')
+        
+        # Calculate new subscription end date
+        if plan_type == 'monthly':
+            duration_days = 30
+        elif plan_type == 'quarterly':
+            duration_days = 90
+        elif plan_type == 'yearly':
+            duration_days = 365
+        else:
+            duration_days = 30
+        
+        subscription_end = datetime.utcnow() + timedelta(days=duration_days)
+        
+        table.put_item(Item={
+            'phone_number': phone_number,
+            'subscription_type': plan_type,
+            'subscription_start': datetime.utcnow().isoformat(),
+            'subscription_end': subscription_end.isoformat(),
+            'stripe_subscription_id': subscription.id,
+            'features': [
+                'basic_dream_storage', 
+                'basic_interpretations',
+                'advanced_dream_analysis',
+                'psychological_patterns',
+                'dream_archetypes',
+                'historical_trends',
+                'personalized_reports'
+            ]
+        })
+        
+        print(f"Premium access extended for {phone_number}")
+    except Exception as e:
+        print(f"Error extending premium access: {e}")
 
 def handle_payment_failed(invoice):
     """Handle failed payment"""

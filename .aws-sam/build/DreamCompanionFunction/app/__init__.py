@@ -21,16 +21,6 @@ def create_app():
     # Initialize JWT manager
     jwt = JWTManager(app)
 
-    # Add CORS headers to all responses
-    @app.after_request
-    def after_request(response):
-        """Add CORS headers to all responses"""
-        response.headers.add('Access-Control-Allow-Origin', 'https://clarasdreamguide.com')
-        response.headers.add('Access-Control-Allow-Headers', 'Content-Type,Authorization,X-Amz-Date,X-Api-Key,X-Amz-Security-Token')
-        response.headers.add('Access-Control-Allow-Methods', 'GET,POST,PUT,DELETE,OPTIONS')
-        response.headers.add('Access-Control-Allow-Credentials', 'true')
-        return response
-
     # Register blueprints
     with app.app_context():
         app.register_blueprint(auth_bp, url_prefix='/auth')

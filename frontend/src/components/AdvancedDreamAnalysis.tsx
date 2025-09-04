@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { fetchAuthSession } from 'aws-amplify/auth';
 import { getUserPhoneNumber } from '../helpers/user';
+import { PremiumGate } from './PremiumGate';
 
 interface ArchetypeAnalysis {
   archetypes_found: string[];
@@ -112,6 +113,13 @@ export const AdvancedDreamAnalysis: React.FC = () => {
         )
       ]);
       
+      // Check for premium access errors
+      if (analysisResponse.status === 403 || archetypeResponse.status === 403 || patternResponse.status === 403) {
+        const errorData = await analysisResponse.json();
+        setError(errorData.message || "Premium subscription required for advanced analysis");
+        return;
+      }
+      
       if (!analysisResponse.ok || !archetypeResponse.ok || !patternResponse.ok) {
         throw new Error('Failed to fetch analysis data');
       }
@@ -194,13 +202,14 @@ export const AdvancedDreamAnalysis: React.FC = () => {
   }
 
   return (
-    <div className="advanced-dream-analysis">
-      <div className="section-header">
-        <h2>Advanced Dream Analysis</h2>
-        <p className="text-muted">
-          Deep insights into your dream patterns and psychological landscape
-        </p>
-      </div>
+    <PremiumGate feature="Advanced Dream Analysis">
+      <div className="advanced-dream-analysis">
+        <div className="section-header">
+          <h2>Advanced Dream Analysis</h2>
+          <p className="text-muted">
+            Deep insights into your dream patterns and psychological landscape
+          </p>
+        </div>
 
       {/* Analysis Summary */}
       {analysis && (
@@ -526,6 +535,7 @@ export const AdvancedDreamAnalysis: React.FC = () => {
           </div>
         )}
       </div>
-    </div>
+      </div>
+    </PremiumGate>
   );
 };
