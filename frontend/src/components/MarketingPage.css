@@ -1,109 +1,160 @@
 .marketing-container {
-    text-align: center;
-    padding: 2rem;
-  }
+  text-align: center;
+  padding: var(--space-xl);
+  max-width: 800px;
+  margin: 0 auto;
+}
 
-  .marketing-container img {
-    max-width: 80%;
-    border: 5px solid #8080807d;
-    padding: 1rem;
-    border-radius: 10px;
-  }
-  .marketing-header {
-    background: #00000017;
-    padding: 2rem;
-  }
-  
-  .marketing-header h1 {
-    font-size: 2.5rem;
-    margin-bottom: 1rem;
-  }
-  
-  .marketing-header p {
-    font-size: 1.2rem;
-    margin-bottom: 2rem;
-    text-align: left;
-  }
-  
-  .marketing-content h2 {
-    font-size: 1.5rem;
-    margin-top: 2.5rem;
-  }
-  
-  .marketing-content p {
-    font-size: 1rem;
-    margin-bottom: 1rem;
-    text-align: left;
-  }
-  
-  .cta-button {
-    padding: 0.8rem 1.5rem;
-    background-color: #0073e6;
-    color: white;
-    text-decoration: none;
-    border-radius: 5px;
-    font-size: 1.1rem;
-  }
-  
-  .cta-button:hover {
-    background-color: #005bb5;
-  }
-  
-  .marketing-footer p {
-    margin-top: 1.5rem;
-    font-size: 0.9rem;
-  }
-  
-  .get-started-section {
-    background: linear-gradient(135deg, #f8f9fa 0%, #e9ecef 100%);
-    border: 2px solid #0073e6;
-    border-radius: 15px;
-    padding: 2.5rem;
-    margin: 3rem 0;
-    box-shadow: 0 4px 15px rgba(0, 115, 230, 0.1);
-    width: 100%;
-    max-width: 100%;
-    box-sizing: border-box;
-  }
-  
-  .get-started-section h2 {
-    font-size: 2rem;
-    color: #0073e6;
-    margin-bottom: 1.5rem;
-    text-transform: uppercase;
-    letter-spacing: 1px;
-  }
-  
-  .get-started-text {
-    font-size: 1.3rem !important;
-    font-weight: 600;
-    margin-bottom: 1.5rem !important;
-    text-align: center !important;
-    word-wrap: break-word;
-    overflow-wrap: break-word;
-  }
-  
-  .phone-number {
-    color: #0073e6;
-    font-weight: 700;
-    font-size: 1.5rem;
-    text-decoration: none;
-    padding: 0.5rem 1rem;
-    background: rgba(0, 115, 230, 0.1);
-    border-radius: 8px;
-    border: 2px solid #0073e6;
-    transition: all 0.3s ease;
-    display: inline-block;
-    word-break: break-all;
-    max-width: 100%;
-    box-sizing: border-box;
-  }
-  
-  .phone-number:hover {
-    background: #0073e6;
-    color: white;
-    transform: scale(1.05);
-  }
+.marketing-container img {
+  max-width: 80%;
+  border: 4px solid var(--border-light);
+  padding: var(--space-md);
+  border-radius: var(--radius-lg);
+  box-shadow: 0 4px 16px var(--shadow-soft);
+  transition: transform var(--transition-normal);
+}
+
+.marketing-container img:hover {
+  transform: scale(1.02);
+}
+
+.marketing-header {
+  background: white;
+  border-radius: var(--radius-lg);
+  padding: var(--space-xl);
+  margin-bottom: var(--space-lg);
+  box-shadow: 0 2px 8px var(--shadow-soft);
+  border: 1px solid var(--border-light);
+}
+
+.marketing-header h1 {
+  font-size: 2.5rem;
+  margin-bottom: var(--space-md);
+  color: var(--text-primary);
+  font-weight: 700;
+}
+
+.marketing-header p {
+  font-size: 1.2rem;
+  margin-bottom: var(--space-lg);
+  text-align: left;
+  color: var(--text-secondary);
+  line-height: 1.7;
+}
+
+.marketing-content {
+  background: white;
+  border-radius: var(--radius-lg);
+  padding: var(--space-xl);
+  margin-bottom: var(--space-lg);
+  box-shadow: 0 2px 8px var(--shadow-soft);
+  border: 1px solid var(--border-light);
+}
+
+.marketing-content h2 {
+  font-size: 1.5rem;
+  margin-top: var(--space-xl);
+  margin-bottom: var(--space-md);
+  color: var(--text-primary);
+  font-weight: 600;
+}
+
+.marketing-content p {
+  font-size: 1rem;
+  margin-bottom: var(--space-md);
+  text-align: left;
+  color: var(--text-secondary);
+  line-height: 1.7;
+}
+
+.cta-button {
+  padding: var(--space-sm) var(--space-lg);
+  background: linear-gradient(135deg, var(--primary-blue), var(--primary-purple));
+  color: white;
+  text-decoration: none;
+  border-radius: var(--radius-md);
+  font-size: 1.1rem;
+  font-weight: 500;
+  transition: all var(--transition-fast);
+  display: inline-block;
+  min-height: 44px;
+  min-width: 44px;
+  box-shadow: 0 4px 12px var(--shadow-soft);
+}
+
+.cta-button:hover {
+  transform: translateY(-1px);
+  box-shadow: 0 6px 16px var(--shadow-medium);
+}
+
+.marketing-footer {
+  background: white;
+  border-radius: var(--radius-lg);
+  padding: var(--space-xl);
+  margin-bottom: var(--space-lg);
+  box-shadow: 0 2px 8px var(--shadow-soft);
+  border: 1px solid var(--border-light);
+}
+
+.marketing-footer p {
+  margin-top: var(--space-lg);
+  font-size: 0.9rem;
+  color: var(--text-muted);
+}
+
+.get-started-section {
+  background: white;
+  border-radius: var(--radius-lg);
+  padding: var(--space-xl);
+  margin-bottom: var(--space-lg);
+  box-shadow: 0 2px 8px var(--shadow-soft);
+  border: 1px solid var(--border-light);
+}
+
+.get-started-section h2 {
+  color: var(--text-primary);
+  font-weight: 600;
+  margin-bottom: var(--space-md);
+}
+
+.get-started-text {
+  color: var(--text-secondary);
+  line-height: 1.7;
+  margin-bottom: var(--space-md);
+}
+
+.phone-number {
+  color: var(--primary-blue);
+  font-weight: 600;
+  text-decoration: none;
+}
+
+.phone-number:hover {
+  color: var(--primary-purple);
+  text-decoration: underline;
+}
+
+.footer-credit {
+  text-align: center;
+  margin-top: var(--space-xl);
+  padding: var(--space-lg);
+}
+
+.footer-credit p {
+  color: var(--text-muted);
+  font-size: 0.9rem;
+  margin: 0;
+}
+
+.footer-credit a {
+  color: var(--primary-blue);
+  text-decoration: none;
+}
+
+.footer-credit a:hover {
+  color: var(--primary-purple);
+  text-decoration: underline;
+}
   
 /* Mobile responsive styles */
 @media (max-width: 768px) {
