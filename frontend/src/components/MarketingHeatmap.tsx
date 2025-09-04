@@ -51,16 +51,16 @@ export const MarketingHeatmap: React.FC = () => {
         <p style={styles.description}>
           Track your dreams over time and discover patterns in your subconscious mind
         </p>
-        
+
         <div style={styles.heatmapWrapper}>
-          <DreamHeatmap 
-            dreams={sampleDreams} 
+          <DreamHeatmap
+            dreams={sampleDreams}
             numberOfDays={30}
             showLegend={true}
             compact={false}
           />
         </div>
-        
+
         <div style={styles.stats}>
           <div style={styles.statItem}>
             <span style={styles.statNumber}>30</span>

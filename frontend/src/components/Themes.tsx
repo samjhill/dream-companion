@@ -22,24 +22,24 @@ export const Themes: React.FC = () => {
         try {
             setLoading(true);
             setError(null);
-            
+
             const session = await fetchAuthSession();
             const phoneNumber = await getUserPhoneNumber();
-            
+
             if (!phoneNumber) {
                 setError("No phone number found. Please check your profile settings.");
                 return;
             }
-            
+
             const response = await fetch(
                 `${API_BASE_URL}/api/themes/${phoneNumber.replace("+", "")}`,
                 { headers: { 'Authorization': `Bearer ${session?.tokens?.accessToken}` } }
             );
-            
+
             if (!response.ok) {
                 throw new Error(`Failed to fetch themes: ${response.status}`);
             }
-            
+
             const data = await response.text();
             setThemes(data);
         } catch (error) {
@@ -81,7 +81,7 @@ export const Themes: React.FC = () => {
                 </div>
                 <div className="error-message">
                     <p>{error}</p>
-                    <button 
+                    <button
                         className="btn btn-primary"
                         onClick={handleRetry}
                     >
@@ -124,7 +124,7 @@ export const Themes: React.FC = () => {
                 <h2>Dream Themes</h2>
                 <p className="theme-intro">{THEME_GREETINGS[randomNumber]}</p>
             </div>
-            
+
             <div className="themes-content">
                 <ul className="themes-list">
                     {themeList.map((item, index) => (

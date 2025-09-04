@@ -20,12 +20,12 @@ const DATE_FORMAT_OPTIONS: Intl.DateTimeFormatOptions = {
 export const formatDate = (dateStr: string): string => {
   try {
     const date = new Date(dateStr);
-    
+
     // Check if date is valid
     if (isNaN(date.getTime())) {
       throw new Error('Invalid date');
     }
-    
+
     return date.toLocaleDateString('en-US', DATE_FORMAT_OPTIONS);
   } catch (error) {
     console.warn('Error formatting date:', dateStr, error);
@@ -41,11 +41,11 @@ export const formatDate = (dateStr: string): string => {
 export const formatShortDate = (dateStr: string): string => {
   try {
     const date = new Date(dateStr);
-    
+
     if (isNaN(date.getTime())) {
       throw new Error('Invalid date');
     }
-    
+
     return date.toLocaleDateString('en-US', {
       month: 'long',
       day: 'numeric',

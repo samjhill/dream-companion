@@ -5,7 +5,7 @@ export const SmsConsent = () => {
         <p className="text-gray-800 mb-6">
           Text your dream to <strong>+1 (877) 754-1288</strong> and receive a personalized interpretation from Clara’s Dream Guide.
         </p>
-  
+
         <div className="border-l-4 border-purple-500 bg-purple-50 p-4 text-sm text-gray-700">
           <p>
             By texting us, you consent to receive automated messages from Clara’s Dream Guide (OLD HOUSE OVERHAUL LLC) regarding your dream

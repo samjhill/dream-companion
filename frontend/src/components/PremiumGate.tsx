@@ -8,8 +8,8 @@ interface PremiumGateProps {
   feature?: string;
 }
 
-export const PremiumGate: React.FC<PremiumGateProps> = ({ 
-  children, 
+export const PremiumGate: React.FC<PremiumGateProps> = ({
+  children,
   fallback,
   feature = "this feature"
 }) => {

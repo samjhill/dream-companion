@@ -59,7 +59,7 @@ const DreamContent: React.FC<DreamContentProps> = ({ dream }) => {
           <p className="dream-text">{summary}</p>
           <p className="dream-date">{date}</p>
         </div>
-        <button 
+        <button
           className="btn btn-ghost toggle-btn"
           onClick={handleToggle}
           aria-label={isOpen ? "Hide dream details" : "Show dream details"}
@@ -67,7 +67,7 @@ const DreamContent: React.FC<DreamContentProps> = ({ dream }) => {
           {isOpen ? "Hide" : "Show"}
         </button>
       </div>
-      
+
       {isOpen && (
         <div className="dream-details fade-in">
           <div className="dream-section">
@@ -115,32 +115,32 @@ const DreamList: React.FC = () => {
         setLoading(true);
       }
       setError(null);
-      
+
       const session = await fetchAuthSession();
       const phoneNumber = await getUserPhoneNumber();
-      
+
       if (!phoneNumber) {
         setError("No phone number found. Please check your profile settings.");
         return;
       }
-      
+
       const currentOffset = isLoadMore ? offset : 0;
-      
+
       const response = await fetch(
         `${API_BASE_URL}/api/dreams/${phoneNumber.replace("+", "")}?limit=${DREAMS_PER_PAGE}&offset=${currentOffset}`,
         { headers: { 'Authorization': `Bearer ${session?.tokens?.accessToken}` } }
       );
-      
+
       if (!response.ok) {
         throw new Error(`Failed to fetch dreams: ${response.status}`);
       }
-      
+
       const data = await response.json();
-      
+
       // Update pagination state
       setTotalDreams(data.total);
       setHasMore(data.hasMore);
-      
+
       if (isLoadMore) {
         setOffset(currentOffset + DREAMS_PER_PAGE);
       } else {
@@ -151,30 +151,30 @@ const DreamList: React.FC = () => {
       const dreamFiles: Dream[] = [];
       for (const dream of data.dreams) {
         const key = dream.key;
-        
+
         try {
           const dreamResponse = await fetch(
             `${API_BASE_URL}/api/dreams/${key}`,
             { headers: { 'Authorization': `Bearer ${session?.tokens?.accessToken}` } }
           );
-          
+
           if (!dreamResponse.ok) {
             console.warn(`Failed to fetch dream ${key}`);
             continue;
           }
-          
+
           const dreamData: Dream = await dreamResponse.json();
           dreamFiles.push(dreamData);
         } catch (error) {
           console.warn(`Error fetching dream ${key}:`, error);
         }
       }
-      
+
       // Sort by creation date (newest first) and update dreams
-      const sortedDreams = dreamFiles.sort((a, b) => 
+      const sortedDreams = dreamFiles.sort((a, b) =>
         new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime()
       );
-      
+
       if (isLoadMore) {
         setDreams(prev => [...prev, ...sortedDreams]);
       } else {
@@ -199,7 +199,7 @@ const DreamList: React.FC = () => {
 
   useEffect(() => {
     fetchDreams();
-  }, []);
+  }, [fetchDreams]);
 
   if (loading) {
     return (
@@ -223,7 +223,7 @@ const DreamList: React.FC = () => {
         </div>
         <div className="error-message">
           <p>{error}</p>
-          <button 
+          <button
             className="btn btn-primary"
             onClick={handleRetry}
           >
@@ -244,7 +244,7 @@ const DreamList: React.FC = () => {
           </p>
         )}
       </div>
-      
+
       {dreams.length === 0 ? (
         <div className="empty-state">
           <div className="empty-icon">🌙</div>
@@ -255,16 +255,16 @@ const DreamList: React.FC = () => {
         </div>
       ) : (
         <>
-          <DreamHeatmap dreams={dreams} /> 
+          <DreamHeatmap dreams={dreams} />
           <div className="dreams-list">
             {dreams.map(dream => (
               <DreamContent key={dream.id} dream={dream} />
             ))}
           </div>
-          
+
           {hasMore && (
             <div className="load-more-section">
-              <button 
+              <button
                 className="btn btn-secondary load-more-btn"
                 onClick={handleLoadMore}
                 disabled={loadingMore}

@@ -13,7 +13,7 @@ jest.mock('framer-motion', () => ({
 describe('DemoSMS', () => {
   it('renders without crashing', () => {
     const { getByText } = render(<DemoSMS />);
-    
+
     // Check if main elements are rendered
     expect(getByText('Understand your dreams. Wake up with a plan.')).toBeInTheDocument();
     expect(getByText('Try It Now')).toBeInTheDocument();
@@ -23,7 +23,7 @@ describe('DemoSMS', () => {
 
   it('displays the conversation title', () => {
     const { getByRole } = render(<DemoSMS />);
-    
+
     const heading = getByRole('heading', { level: 1 });
     expect(heading).toHaveTextContent('Understand your dreams. Wake up with a plan.');
   });

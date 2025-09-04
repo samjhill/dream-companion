@@ -77,24 +77,24 @@ export const SubscriptionManager: React.FC = () => {
     try {
       setLoading(true);
       setError(null);
-      
+
       const session = await fetchAuthSession();
       const phoneNumber = await getUserPhoneNumber();
-      
+
       if (!phoneNumber) {
         setError("No phone number found. Please check your profile settings.");
         return;
       }
-      
+
       const response = await fetch(
         `${API_BASE_URL}/api/premium/subscription/status/${phoneNumber.replace("+", "")}`,
         { headers: { 'Authorization': `Bearer ${session?.tokens?.accessToken}` } }
       );
-      
+
       if (!response.ok) {
         throw new Error(`Failed to fetch subscription status: ${response.status}`);
       }
-      
+
       const data = await response.json();
       setSubscriptionStatus(data);
     } catch (error) {
@@ -109,21 +109,21 @@ export const SubscriptionManager: React.FC = () => {
     try {
       setProcessing(true);
       setError(null);
-      
+
       const session = await fetchAuthSession();
       const phoneNumber = await getUserPhoneNumber();
-      
+
       if (!phoneNumber) {
         setError("No phone number found. Please check your profile settings.");
         return;
       }
-      
+
       const plan = SUBSCRIPTION_PLANS.find(p => p.id === planId);
       if (!plan) {
         setError("Invalid plan selected.");
         return;
       }
-      
+
       // Create Stripe checkout session
       const response = await fetch(
         `${API_BASE_URL}/api/stripe/create-checkout-session`,
@@ -141,16 +141,16 @@ export const SubscriptionManager: React.FC = () => {
           })
         }
       );
-      
+
       if (!response.ok) {
         throw new Error(`Failed to create checkout session: ${response.status}`);
       }
-      
+
       const data = await response.json();
-      
+
       // Redirect to Stripe Checkout
       window.location.href = data.checkout_url;
-      
+
     } catch (error) {
       console.error("Error creating checkout session:", error);
       setError("Failed to create checkout session. Please try again later.");
@@ -163,15 +163,15 @@ export const SubscriptionManager: React.FC = () => {
     try {
       setProcessing(true);
       setError(null);
-      
+
       const session = await fetchAuthSession();
       const phoneNumber = await getUserPhoneNumber();
-      
+
       if (!phoneNumber) {
         setError("No phone number found. Please check your profile settings.");
         return;
       }
-      
+
       // Create Stripe customer portal session
       const response = await fetch(
         `${API_BASE_URL}/api/stripe/create-portal-session`,
@@ -187,16 +187,16 @@ export const SubscriptionManager: React.FC = () => {
           })
         }
       );
-      
+
       if (!response.ok) {
         throw new Error(`Failed to create portal session: ${response.status}`);
       }
-      
+
       const data = await response.json();
-      
+
       // Redirect to Stripe Customer Portal
       window.location.href = data.portal_url;
-      
+
     } catch (error) {
       console.error("Error creating portal session:", error);
       setError("Failed to access subscription management. Please try again later.");
@@ -209,15 +209,15 @@ export const SubscriptionManager: React.FC = () => {
     try {
       setProcessing(true);
       setError(null);
-      
+
       const session = await fetchAuthSession();
       const phoneNumber = await getUserPhoneNumber();
-      
+
       if (!phoneNumber) {
         setError("No phone number found. Please check your profile settings.");
         return;
       }
-      
+
       const response = await fetch(
         `${API_BASE_URL}/api/premium/subscription/cancel/${phoneNumber.replace("+", "")}`,
         {
@@ -227,14 +227,14 @@ export const SubscriptionManager: React.FC = () => {
           }
         }
       );
-      
+
       if (!response.ok) {
         throw new Error(`Failed to cancel subscription: ${response.status}`);
       }
-      
+
       // Refresh subscription status
       await fetchSubscriptionStatus();
-      
+
     } catch (error) {
       console.error("Error cancelling subscription:", error);
       setError("Failed to cancel subscription. Please try again later.");
@@ -261,14 +261,14 @@ export const SubscriptionManager: React.FC = () => {
     const urlParams = new URLSearchParams(window.location.search);
     const success = urlParams.get('success');
     const canceled = urlParams.get('canceled');
-    
+
     if (success) {
       // Refresh subscription status after successful payment
       fetchSubscriptionStatus();
       // Clean up URL
       window.history.replaceState({}, document.title, window.location.pathname);
     }
-    
+
     if (canceled) {
       setError("Subscription was canceled. You can try again anytime.");
       // Clean up URL
@@ -298,7 +298,7 @@ export const SubscriptionManager: React.FC = () => {
         </div>
         <div className="error-message">
           <p>{error}</p>
-          <button 
+          <button
             className="btn btn-primary"
             onClick={fetchSubscriptionStatus}
           >
@@ -330,7 +330,7 @@ export const SubscriptionManager: React.FC = () => {
                 <span className="status-badge">Active</span>
               )}
             </div>
-            
+
             {subscriptionStatus.is_premium ? (
               <div className="subscription-details">
                 <p><strong>Plan:</strong> {subscriptionStatus.subscription_type}</p>
@@ -344,14 +344,14 @@ export const SubscriptionManager: React.FC = () => {
                   </ul>
                 </div>
                 <div className="subscription-actions">
-                  <button 
+                  <button
                     className="btn btn-primary"
                     onClick={handleManageSubscription}
                     disabled={processing}
                   >
                     {processing ? 'Loading...' : 'Manage Subscription'}
                   </button>
-                  <button 
+                  <button
                     className="btn btn-secondary"
                     onClick={handleCancelSubscription}
                     disabled={processing}
@@ -383,14 +383,14 @@ export const SubscriptionManager: React.FC = () => {
           <h3>Choose Your Premium Plan</h3>
           <div className="plans-grid">
             {SUBSCRIPTION_PLANS.map((plan) => (
-              <div 
-                key={plan.id} 
+              <div
+                key={plan.id}
                 className={`plan-card ${plan.popular ? 'popular' : ''}`}
               >
                 {plan.popular && (
                   <div className="popular-badge">Most Popular</div>
                 )}
-                
+
                 <div className="plan-header">
                   <h4>{plan.name}</h4>
                   <div className="plan-price">
@@ -400,7 +400,7 @@ export const SubscriptionManager: React.FC = () => {
                     </span>
                   </div>
                 </div>
-                
+
                 <div className="plan-features">
                   <ul>
                     {plan.features.map((feature, index) => (
@@ -408,8 +408,8 @@ export const SubscriptionManager: React.FC = () => {
                     ))}
                   </ul>
                 </div>
-                
-                <button 
+
+                <button
                   className={`btn ${plan.popular ? 'btn-primary' : 'btn-secondary'}`}
                   onClick={() => handleSubscribe(plan.id)}
                   disabled={processing}
@@ -431,31 +431,31 @@ export const SubscriptionManager: React.FC = () => {
             <h4>Advanced Dream Analysis</h4>
             <p>Deep psychological insights and pattern recognition across your entire dream history.</p>
           </div>
-          
+
           <div className="benefit-card">
             <div className="benefit-icon">🧠</div>
             <h4>Psychological Patterns</h4>
             <p>Identify recurring themes and emotional patterns that reveal your inner landscape.</p>
           </div>
-          
+
           <div className="benefit-card">
             <div className="benefit-icon">🏛️</div>
             <h4>Dream Archetypes</h4>
             <p>Discover universal dream symbols and their personal meanings in your life.</p>
           </div>
-          
+
           <div className="benefit-card">
             <div className="benefit-icon">📊</div>
             <h4>Historical Trends</h4>
             <p>Track how your dreams evolve over time and identify personal growth patterns.</p>
           </div>
-          
+
           <div className="benefit-card">
             <div className="benefit-icon">📝</div>
             <h4>Personalized Reports</h4>
             <p>Get customized insights and recommendations based on your unique dream patterns.</p>
           </div>
-          
+
           <div className="benefit-card">
             <div className="benefit-icon">🎯</div>
             <h4>Actionable Insights</h4>
@@ -468,7 +468,7 @@ export const SubscriptionManager: React.FC = () => {
       <div className="security-notice">
         <h4>🔒 Secure Payment Processing</h4>
         <p>
-          All payments are processed securely through Stripe, a trusted payment processor used by millions of businesses worldwide. 
+          All payments are processed securely through Stripe, a trusted payment processor used by millions of businesses worldwide.
           Your payment information is never stored on our servers.
         </p>
       </div>

@@ -11,15 +11,15 @@ def login():
         data = request.get_json()
         if not data:
             return jsonify({"error": "No data provided"}), 400
-            
+
         username = data.get('username')
         password = data.get('password')
-        
+
         if not username or not password:
             return jsonify({"error": "Username and password are required"}), 400
 
-        # TODO: Replace with proper authentication logic
-        # This is a placeholder implementation
+        # Note: This is a placeholder implementation for development
+        # In production, integrate with AWS Cognito or another authentication service
         if username == 'user' and password == 'password':
             access_token = create_access_token(
                 identity={'username': username},
@@ -28,6 +28,6 @@ def login():
             return jsonify({"access_token": access_token}), 200
         else:
             return jsonify({"error": "Invalid credentials"}), 401
-            
+
     except Exception as e:
         return jsonify({"error": f"Login failed: {str(e)}"}), 500

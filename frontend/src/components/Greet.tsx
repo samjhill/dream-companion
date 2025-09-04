@@ -44,12 +44,12 @@ export const Greet: React.FC = () => {
     return (
         <div className="greet-section">
             <div className="greet-content">
-                <img 
-                    src={randomImage} 
-                    alt="Clara the owl - your dream guide" 
+                <img
+                    src={randomImage}
+                    alt="Clara the owl - your dream guide"
                     className="profile-pic"
                 />
-                
+
                 <div className="greeting-text">
                     <p className="greeting-main">
                         <strong>{greetingParts[0]}!</strong>

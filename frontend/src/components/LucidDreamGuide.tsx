@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import React, { useEffect, useState } from "react";
 
 const sleepTips = [
     "Stick to a consistent sleep schedule, even on weekends.",
@@ -63,8 +63,8 @@ export const LucidDreamGuide: React.FC = () => {
     return (
         <div className="lucid-dream-section">
         <div style={{display: "flex"}}>
-        
-        
+
+
         </div>
         <h2>Today's key to dreamland</h2>
         <p>{randomSleepTip}</p>

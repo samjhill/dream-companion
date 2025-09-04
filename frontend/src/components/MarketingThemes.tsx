@@ -42,7 +42,7 @@ export const MarketingThemes: React.FC = () => {
         <div className="marketing-themes-section">
             <div className="themes-content">
                 <p className="theme-intro">{greeting}</p>
-                
+
                 <div className="themes-grid">
                     {SAMPLE_THEMES.map((item, index) => (
                         <div key={index} className="theme-card">

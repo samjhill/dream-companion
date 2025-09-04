@@ -11,7 +11,7 @@ from .stripe_integration import stripe_bp
 def create_app():
     """Create and configure the Flask application"""
     app = Flask(__name__)
-    
+
     # Load configuration
     app.config.from_object(Config)
 

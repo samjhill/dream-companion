@@ -88,15 +88,15 @@ export const AdvancedDreamAnalysis: React.FC = () => {
     try {
       setLoading(true);
       setError(null);
-      
+
       const session = await fetchAuthSession();
       const phoneNumber = await getUserPhoneNumber();
-      
+
       if (!phoneNumber) {
         setError("No phone number found. Please check your profile settings.");
         return;
       }
-      
+
       // Fetch comprehensive analysis
       const [analysisResponse, archetypeResponse, patternResponse] = await Promise.all([
         fetch(
@@ -112,28 +112,28 @@ export const AdvancedDreamAnalysis: React.FC = () => {
           { headers: { 'Authorization': `Bearer ${session?.tokens?.accessToken}` } }
         )
       ]);
-      
+
       // Check for premium access errors
       if (analysisResponse.status === 403 || archetypeResponse.status === 403 || patternResponse.status === 403) {
         const errorData = await analysisResponse.json();
         setError(errorData.message || "Premium subscription required for advanced analysis");
         return;
       }
-      
+
       if (!analysisResponse.ok || !archetypeResponse.ok || !patternResponse.ok) {
         throw new Error('Failed to fetch analysis data');
       }
-      
+
       const [analysisData, archetypeData, patternData] = await Promise.all([
         analysisResponse.json(),
         archetypeResponse.json(),
         patternResponse.json()
       ]);
-      
+
       setAnalysis(analysisData);
       setArchetypeAnalysis(archetypeData);
       setPatternAnalysis(patternData);
-      
+
     } catch (error) {
       console.error("Error fetching advanced analysis:", error);
       setError("Failed to load advanced analysis. Please try again later.");
@@ -190,7 +190,7 @@ export const AdvancedDreamAnalysis: React.FC = () => {
         </div>
         <div className="error-message">
           <p>{error}</p>
-          <button 
+          <button
             className="btn btn-primary"
             onClick={fetchAdvancedAnalysis}
           >
@@ -245,19 +245,19 @@ export const AdvancedDreamAnalysis: React.FC = () => {
 
       {/* Navigation Tabs */}
       <div className="analysis-tabs">
-        <button 
+        <button
           className={`tab-button ${activeTab === 'overview' ? 'active' : ''}`}
           onClick={() => setActiveTab('overview')}
         >
           Overview
         </button>
-        <button 
+        <button
           className={`tab-button ${activeTab === 'archetypes' ? 'active' : ''}`}
           onClick={() => setActiveTab('archetypes')}
         >
           Archetypes
         </button>
-        <button 
+        <button
           className={`tab-button ${activeTab === 'patterns' ? 'active' : ''}`}
           onClick={() => setActiveTab('patterns')}
         >
@@ -284,7 +284,7 @@ export const AdvancedDreamAnalysis: React.FC = () => {
                     ))}
                   </div>
                 </div>
-                
+
                 <div className="pattern-card">
                   <h4>Emotional Stability</h4>
                   <p className="stability-label">
@@ -319,7 +319,7 @@ export const AdvancedDreamAnalysis: React.FC = () => {
                     </div>
                   </div>
                 </div>
-                
+
                 <div className="pattern-card">
                   <h4>Recent Time-Related Dreams</h4>
                   <div className="time-dreams-list">
@@ -388,7 +388,7 @@ export const AdvancedDreamAnalysis: React.FC = () => {
               <p className="section-description">
                 Archetypes are universal dream symbols that carry deep psychological meaning.
               </p>
-              
+
               {archetypeAnalysis.archetypes_found.length > 0 ? (
                 <div className="archetypes-grid">
                   {archetypeAnalysis.archetypes_found.map((archetype) => {
@@ -401,12 +401,12 @@ export const AdvancedDreamAnalysis: React.FC = () => {
                             {details.appearances.length} appearance{details.appearances.length !== 1 ? 's' : ''}
                           </span>
                         </div>
-                        
+
                         <div className="archetype-meaning">
                           <h5>Meaning</h5>
                           <p>{details.meaning}</p>
                         </div>
-                        
+
                         <div className="archetype-aspects">
                           <div className="aspect positive">
                             <h5>Positive Aspects</h5>
@@ -417,7 +417,7 @@ export const AdvancedDreamAnalysis: React.FC = () => {
                             <p>{details.negative_aspects}</p>
                           </div>
                         </div>
-                        
+
                         <div className="archetype-appearances">
                           <h5>Recent Appearances</h5>
                           <div className="appearances-list">
@@ -438,7 +438,7 @@ export const AdvancedDreamAnalysis: React.FC = () => {
                   <p>No archetypes found in your recent dreams. Continue journaling to discover patterns!</p>
                 </div>
               )}
-              
+
               {archetypeAnalysis.recommendations.length > 0 && (
                 <div className="archetype-recommendations">
                   <h4>Archetype-Based Recommendations</h4>
@@ -463,7 +463,7 @@ export const AdvancedDreamAnalysis: React.FC = () => {
               <p className="section-description">
                 Discover recurring themes and emotional patterns in your dream life.
               </p>
-              
+
               {/* Recurring Themes */}
               <div className="pattern-section">
                 <h4>🔄 Recurring Themes</h4>
@@ -471,7 +471,7 @@ export const AdvancedDreamAnalysis: React.FC = () => {
                   <div className="pattern-card">
                     <h5>Theme Summary</h5>
                     <p>Found {patternAnalysis.recurring_themes.count} recurring themes across your dreams.</p>
-                    
+
                     {patternAnalysis.recurring_themes.count > 0 && (
                       <div className="themes-list">
                         <h6>Most Common Themes:</h6>
@@ -491,7 +491,7 @@ export const AdvancedDreamAnalysis: React.FC = () => {
                   </div>
                 </div>
               </div>
-              
+
               {/* Emotional Patterns */}
               <div className="pattern-section">
                 <h4>😊 Emotional Patterns</h4>
@@ -503,7 +503,7 @@ export const AdvancedDreamAnalysis: React.FC = () => {
                         <div key={emotion} className="emotion-distribution-item">
                           <span className="emotion-name">{emotion}</span>
                           <div className="emotion-bar">
-                            <div 
+                            <div
                               className="emotion-fill"
                               style={{ width: `${(count / Math.max(...Object.values(patternAnalysis.emotional_patterns.distribution))) * 100}%` }}
                             ></div>
@@ -516,7 +516,7 @@ export const AdvancedDreamAnalysis: React.FC = () => {
                   </div>
                 </div>
               </div>
-              
+
               {/* Insights */}
               {patternAnalysis.insights.length > 0 && (
                 <div className="pattern-section">

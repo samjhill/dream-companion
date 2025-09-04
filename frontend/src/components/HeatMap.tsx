@@ -57,14 +57,14 @@ const getShadingLevel = (dreamCount: number): string => {
  * DreamHeatmap component that displays dream activity in a calendar-style heatmap
  * Shows dream frequency over a specified number of days with color-coded intensity
  */
-export const DreamHeatmap: React.FC<DreamHeatmapProps> = ({ 
-  dreams, 
-  numberOfDays = 30, 
+export const DreamHeatmap: React.FC<DreamHeatmapProps> = ({
+  dreams,
+  numberOfDays = 30,
   showLegend = true,
-  compact = false 
+  compact = false
 }) => {
   const [hoveredDay, setHoveredDay] = useState<string | null>(null);
-  
+
   // Get today's date and create a list of past days
   const today = startOfToday();
   const days: Date[] = eachDayOfInterval({
@@ -82,7 +82,7 @@ export const DreamHeatmap: React.FC<DreamHeatmapProps> = ({
   return (
     <div style={styles.container}>
       <h3 style={styles.title}>Dream Activity Heatmap</h3>
-      
+
       <div style={{
         ...styles.gridContainer,
         gap: `${gap}px`,

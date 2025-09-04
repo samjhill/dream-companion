@@ -23,4 +23,3 @@ declare module './aws-exports' {
     };
     export default awsconfig;
   }
-  

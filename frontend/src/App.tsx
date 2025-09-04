@@ -61,21 +61,21 @@ function App() {
             <div className="quick-actions">
               <h3>Quick Actions</h3>
               <div className="action-grid">
-                <button 
+                <button
                   className="btn btn-primary action-card"
                   onClick={() => setActiveSection('dreams')}
                 >
                   <span className="action-icon">📖</span>
                   <span>View Dream Journal</span>
                 </button>
-                <button 
+                <button
                   className="btn btn-secondary action-card"
                   onClick={() => setActiveSection('themes')}
                 >
                   <span className="action-icon">🎨</span>
                   <span>Explore Themes</span>
                 </button>
-                <button 
+                <button
                   className={`btn ${premiumStatus?.has_premium ? 'btn-secondary' : 'btn-disabled'} action-card`}
                   onClick={() => setActiveSection('analysis')}
                   disabled={!premiumStatus?.has_premium}
@@ -84,14 +84,14 @@ function App() {
                   <span>Advanced Analysis</span>
                   {!premiumStatus?.has_premium && <span className="premium-badge">💎</span>}
                 </button>
-                <button 
+                <button
                   className="btn btn-secondary action-card"
                   onClick={() => setActiveSection('guide')}
                 >
                   <span className="action-icon">✨</span>
                   <span>Lucid Dream Guide</span>
                 </button>
-                <button 
+                <button
                   className="btn btn-secondary action-card"
                   onClick={() => setActiveSection('premium')}
                 >
@@ -114,7 +114,7 @@ function App() {
             <span className="title-icon">🦉</span>
             Clara's Dream Guide
           </h1>
-          <button 
+          <button
             className="btn btn-ghost sign-out-btn"
             onClick={handleSignOut}
             aria-label="Sign out"

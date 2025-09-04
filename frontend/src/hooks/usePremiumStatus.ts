@@ -28,24 +28,24 @@ export const usePremiumStatus = (): PremiumStatusHook => {
     try {
       setLoading(true);
       setError(null);
-      
+
       const session = await fetchAuthSession();
       const phoneNumber = await getUserPhoneNumber();
-      
+
       if (!phoneNumber) {
         setError("No phone number found. Please check your profile settings.");
         return;
       }
-      
+
       const response = await fetch(
         `${API_BASE_URL}/api/analysis/premium-status/${phoneNumber.replace("+", "")}`,
         { headers: { 'Authorization': `Bearer ${session?.tokens?.accessToken}` } }
       );
-      
+
       if (!response.ok) {
         throw new Error(`Failed to fetch premium status: ${response.status}`);
       }
-      
+
       const data = await response.json();
       setPremiumStatus(data);
     } catch (error) {

@@ -22,13 +22,13 @@ def require_auth(f):
         auth_header = request.headers.get('Authorization')
         if not auth_header or not auth_header.startswith('Bearer '):
             return jsonify({"error": "Missing or invalid authorization header"}), 401
-        
+
         # For now, we'll just check if the token exists
         # In a real implementation, you would validate the JWT token
         token = auth_header.split(' ')[1]
         if not token:
             return jsonify({"error": "Invalid token"}), 401
-        
+
         return f(*args, **kwargs)
     return decorated_function
 
@@ -63,7 +63,7 @@ def get_themes(phone_number):
     try:
         if not S3_BUCKET_NAME:
             return jsonify({"error": "S3 bucket not configured"}), 500
-            
+
         response = s3_client.get_object(
             Bucket=S3_BUCKET_NAME,
             Key=f'{phone_number}/themes.txt'
@@ -74,7 +74,7 @@ def get_themes(phone_number):
         return jsonify({"error": "Themes not found"}), 404
     except Exception as e:
         return jsonify({"error": f"Failed to retrieve themes: {str(e)}"}), 500
-    
+
 @routes_bp.route('/dreams/<phone_number>', methods=['GET'])
 @require_auth
 @cross_origin(supports_credentials=True)
@@ -83,11 +83,11 @@ def get_dreams(phone_number):
     try:
         if not S3_BUCKET_NAME:
             return jsonify({"error": "S3 bucket not configured"}), 500
-            
+
         # Get pagination parameters
         limit = request.args.get('limit', default=10, type=int)
         offset = request.args.get('offset', default=0, type=int)
-        
+
         # List all objects in the user's S3 directory
         response = s3_client.list_objects_v2(
             Bucket=S3_BUCKET_NAME,
@@ -104,14 +104,14 @@ def get_dreams(phone_number):
                         'key': key,
                         'lastModified': obj['LastModified']
                     })
-            
+
             # Sort by last modified date (newest first)
             dream_keys.sort(key=lambda x: x['lastModified'], reverse=True)
-            
+
             # Apply pagination
             total_dreams = len(dream_keys)
             paginated_dreams = dream_keys[offset:offset + limit]
-            
+
             return jsonify({
                 'dreams': [{'key': dream['key']} for dream in paginated_dreams],
                 'total': total_dreams,
@@ -138,7 +138,7 @@ def get_dream(phone_number, dream_id):
     try:
         if not S3_BUCKET_NAME:
             return jsonify({"error": "S3 bucket not configured"}), 500
-            
+
         # Retrieve the specific dream object from S3
         key = f'{phone_number}/{dream_id}'
         response = s3_client.get_object(
@@ -147,7 +147,7 @@ def get_dream(phone_number, dream_id):
         )
 
         dream_content = json.loads(response['Body'].read().decode('utf-8'))
-        
+
         to_return = {
             **dream_content,
             "response": " ".join(dream_content["response"]),

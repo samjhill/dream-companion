@@ -50,7 +50,7 @@ export function useConversationPlayer(script: ScriptLine[] = demoScript, opts: P
     clearTimer();
     step();
     return clearTimer;
-  }, [index, isPlaying, loop, idleLoopDelayMs, script]);
+  }, [index, isPlaying, loop, idleLoopDelayMs, script, step]);
 
   // Pause when tab hidden
   useEffect(() => {

@@ -12,7 +12,7 @@ export const MarketingPage: React.FC = () => {
     <>
       {/* Hero Section with SMS Demo */}
       <DemoSMS />
-      
+
       <header className="marketing-header">
         <h1 className="marketing-title">Hoot hoot! Welcome.</h1>
         <div className="profile-container">
@@ -21,7 +21,7 @@ export const MarketingPage: React.FC = () => {
         <h1 className="marketing-title">I'm Clara, the Dream Mentor.</h1>
         <p>I can help you unlock the power of your dreams and gain insights into your waking life.</p>
       </header>
-      
+
       <div className="marketing-container">
         <section className="marketing-content">
           <h2>Track, Reflect, Grow</h2>
@@ -40,7 +40,7 @@ export const MarketingPage: React.FC = () => {
             <a href="tel:877-754-1288" className="phone-number">877-754-1288</a>.
           </p>
           <p>
-            By texting me, you consent to receive SMS updates from Old House Overhaul LLC. 
+            By texting me, you consent to receive SMS updates from Old House Overhaul LLC.
             Message and data rates may apply. Reply STOP to unsubscribe.
           </p>
         </section>
@@ -51,7 +51,7 @@ export const MarketingPage: React.FC = () => {
             <Link to="/app">Sign in here</Link>
           </Button>
         </footer>
-        
+
         <div className="footer-credit">
           <p>Made with love by <a target="_blank" rel="noopener noreferrer" href="https://github.com/samjhill">Sam Hill</a></p>
         </div>

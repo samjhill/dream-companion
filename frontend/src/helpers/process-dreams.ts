@@ -29,10 +29,10 @@ const isValidDream = (dream: unknown): dream is Dream => {
 /**
  * Processes an array of dreams and returns a mapping of dates to dream counts
  * for use in heatmap visualization
- * 
+ *
  * @param dreams - Array of dream objects with createdAt property
  * @returns DreamData - Object mapping each date (yyyy-MM-dd) to the number of dreams
- * 
+ *
  * @example
  * ```typescript
  * const dreams = [
@@ -60,13 +60,13 @@ export const processDreamsForHeatmap = (dreams: Dream[]): DreamData => {
 
     try {
       const dreamDate = parseISO(dream.createdAt);
-      
+
       // Check if date is valid
       if (isNaN(dreamDate.getTime())) {
         console.warn(`processDreamsForHeatmap: Invalid date format at index ${index}:`, dream.createdAt);
         return;
       }
-      
+
       const dateStr = format(dreamDate, 'yyyy-MM-dd');
       dreamData[dateStr] = (dreamData[dateStr] || 0) + 1;
     } catch (error) {

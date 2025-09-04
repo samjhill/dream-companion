@@ -40,7 +40,7 @@ export default function DemoSMS() {
           <div className="demo-sms-text">
             <h1 className="demo-sms-title">Understand your dreams. Wake up with a plan.</h1>
             <p className="demo-sms-description">
-              Watch a quick example of Clara turning a raw dream into practical guidance. 
+              Watch a quick example of Clara turning a raw dream into practical guidance.
               The real experience happens over SMS or in‑app—this is a lightweight preview.
             </p>
           </div>

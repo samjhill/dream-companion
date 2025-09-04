@@ -27,13 +27,13 @@ root.render(
         <Route path="/" element={<MarketingPage />} />
         <Route path="/sms-consent" element={<SmsConsent />} />
         {/* Authenticated routes */}
-        <Route 
-          path="/app/*" 
+        <Route
+          path="/app/*"
           element={
             <Authenticator>
                <App />
             </Authenticator>
-          } 
+          }
         />
       </Routes>
     </Router>
