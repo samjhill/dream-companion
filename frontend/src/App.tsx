@@ -10,6 +10,8 @@ import { AdvancedDreamAnalysis } from './components/AdvancedDreamAnalysis';
 import { usePremiumStatus } from './hooks/usePremiumStatus';
 import { useState } from 'react';
 import { clearUserAttributesCache } from './helpers/user';
+import { ThemeProvider } from './contexts/ThemeContext';
+import { ThemeToggle } from './components/ThemeToggle';
 
 // Constants
 interface NavigationItem {
@@ -117,13 +119,16 @@ function App() {
             <span className="title-icon">🦉</span>
             Clara's Dream Guide
           </h1>
-          <button
-            className="btn btn-ghost sign-out-btn"
-            onClick={handleSignOut}
-            aria-label="Sign out"
-          >
-            Sign Out
-          </button>
+          <div className="header-actions">
+            <ThemeToggle />
+            <button
+              className="btn btn-ghost sign-out-btn"
+              onClick={handleSignOut}
+              aria-label="Sign out"
+            >
+              Sign Out
+            </button>
+          </div>
         </div>
       </header>
 
@@ -154,4 +159,12 @@ function App() {
   );
 }
 
-export default withAuthenticator(App);
+const AppWithAuth = withAuthenticator(App);
+
+export default function AppWrapper() {
+  return (
+    <ThemeProvider>
+      <AppWithAuth />
+    </ThemeProvider>
+  );
+}
