@@ -101,15 +101,15 @@ export const AdvancedDreamAnalysis: React.FC = () => {
       const [analysisResponse, archetypeResponse, patternResponse] = await Promise.all([
         fetch(
           `${API_BASE_URL}/api/analysis/advanced/${phoneNumber.replace("+", "")}`,
-          { headers: { 'Authorization': `Bearer ${session?.tokens?.accessToken}` } }
+          { headers: { 'Authorization': `Bearer ${session?.tokens?.idToken?.toString()}` } }
         ),
         fetch(
           `${API_BASE_URL}/api/analysis/archetypes/${phoneNumber.replace("+", "")}`,
-          { headers: { 'Authorization': `Bearer ${session?.tokens?.accessToken}` } }
+          { headers: { 'Authorization': `Bearer ${session?.tokens?.idToken?.toString()}` } }
         ),
         fetch(
           `${API_BASE_URL}/api/analysis/patterns/${phoneNumber.replace("+", "")}`,
-          { headers: { 'Authorization': `Bearer ${session?.tokens?.accessToken}` } }
+          { headers: { 'Authorization': `Bearer ${session?.tokens?.idToken?.toString()}` } }
         )
       ]);
 

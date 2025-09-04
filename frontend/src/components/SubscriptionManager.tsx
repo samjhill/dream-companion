@@ -88,7 +88,7 @@ export const SubscriptionManager: React.FC = () => {
 
       const response = await fetch(
         `${API_BASE_URL}/api/premium/subscription/status/${phoneNumber.replace("+", "")}`,
-        { headers: { 'Authorization': `Bearer ${session?.tokens?.accessToken}` } }
+        { headers: { 'Authorization': `Bearer ${session?.tokens?.idToken?.toString()}` } }
       );
 
       if (!response.ok) {
@@ -131,7 +131,7 @@ export const SubscriptionManager: React.FC = () => {
           method: 'POST',
           headers: {
             'Content-Type': 'application/json',
-            'Authorization': `Bearer ${session?.tokens?.accessToken}`
+            'Authorization': `Bearer ${session?.tokens?.idToken?.toString()}`
           },
           body: JSON.stringify({
             plan_type: planId,
@@ -179,7 +179,7 @@ export const SubscriptionManager: React.FC = () => {
           method: 'POST',
           headers: {
             'Content-Type': 'application/json',
-            'Authorization': `Bearer ${session?.tokens?.accessToken}`
+            'Authorization': `Bearer ${session?.tokens?.idToken?.toString()}`
           },
           body: JSON.stringify({
             phone_number: phoneNumber.replace("+", ""),
@@ -223,7 +223,7 @@ export const SubscriptionManager: React.FC = () => {
         {
           method: 'POST',
           headers: {
-            'Authorization': `Bearer ${session?.tokens?.accessToken}`
+            'Authorization': `Bearer ${session?.tokens?.idToken?.toString()}`
           }
         }
       );

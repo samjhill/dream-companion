@@ -128,7 +128,7 @@ const DreamList: React.FC = () => {
 
       const response = await fetch(
         `${API_BASE_URL}/api/dreams/${phoneNumber.replace("+", "")}?limit=${DREAMS_PER_PAGE}&offset=${currentOffset}`,
-        { headers: { 'Authorization': `Bearer ${session?.tokens?.accessToken}` } }
+        { headers: { 'Authorization': `Bearer ${session?.tokens?.idToken?.toString()}` } }
       );
 
       if (!response.ok) {
@@ -155,7 +155,7 @@ const DreamList: React.FC = () => {
         try {
           const dreamResponse = await fetch(
             `${API_BASE_URL}/api/dreams/${key}`,
-            { headers: { 'Authorization': `Bearer ${session?.tokens?.accessToken}` } }
+            { headers: { 'Authorization': `Bearer ${session?.tokens?.idToken?.toString()}` } }
           );
 
           if (!dreamResponse.ok) {

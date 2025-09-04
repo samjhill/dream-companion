@@ -33,7 +33,7 @@ export const Themes: React.FC = () => {
 
             const response = await fetch(
                 `${API_BASE_URL}/api/themes/${phoneNumber.replace("+", "")}`,
-                { headers: { 'Authorization': `Bearer ${session?.tokens?.accessToken}` } }
+                { headers: { 'Authorization': `Bearer ${session?.tokens?.idToken?.toString()}` } }
             );
 
             if (!response.ok) {
