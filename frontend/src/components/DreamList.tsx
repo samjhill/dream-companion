@@ -112,8 +112,10 @@ const DreamListOptimized: React.FC = () => {
 
   // Memoized function to fetch individual dream with caching
   const fetchIndividualDream = useCallback(async (dreamKey: string, phoneNumber: string, session: any): Promise<Dream | null> => {
-    const dreamId = dreamKey.replace(`${phoneNumber}/`, '');
-    const cacheKey = `${phoneNumber}/${dreamId}`;
+    // dreamKey is already the full S3 key like "16464578206/dream-id.json"
+    // Extract just the dream ID part
+    const dreamId = dreamKey.split('/').pop(); // Get the last part after the slash
+    const cacheKey = dreamKey; // Use the full key as cache key
     
     // Check cache first
     if (dreamCache.has(cacheKey)) {
@@ -130,7 +132,7 @@ const DreamListOptimized: React.FC = () => {
     
     try {
       const dreamResponse = await fetch(
-        `${API_BASE_URL}/api/dreams/${phoneNumber}/${dreamId}`,
+        `${API_BASE_URL}/api/dreams/${phoneNumber.replace("+", "")}/${dreamId}`,
         { headers: { 'Authorization': `Bearer ${session?.tokens?.idToken?.toString()}` } }
       );
 
