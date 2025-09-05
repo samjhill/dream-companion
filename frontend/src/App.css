@@ -2,13 +2,13 @@
 #root {
   max-width: 1280px;
   margin: 0 auto;
-  padding: 2rem;
+  padding: var(--space-lg);
   text-align: center;
 }
 
 /* Card styles */
 .card {
-  padding: 2em;
+  padding: var(--space-xl);
 }
 
 /* Read the docs link */
@@ -95,7 +95,7 @@
 .premium-upgrade-card {
   background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
   color: white;
-  padding: 2rem;
+  padding: var(--space-2xl);
   border-radius: 16px;
   text-align: center;
   max-width: 500px;
@@ -121,9 +121,9 @@
 
 .premium-features-list {
   background: rgba(255,255,255,0.1);
-  padding: 1.5rem;
+  padding: var(--space-xl);
   border-radius: 12px;
-  margin: 1.5rem 0;
+  margin: var(--space-xl) 0;
   text-align: left;
 }
 
