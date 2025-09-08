@@ -45,6 +45,13 @@ export const MarketingPage: React.FC = () => {
           </p>
         </section>
 
+        <footer className="marketing-footer">
+          <h2>Already a member?</h2>
+          <Button>
+            <Link to="/app">Sign in here</Link>
+          </Button>
+        </footer>
+
         <section className="terms-section">
           <h2>Terms and Conditions of Data and Personal Information Collection</h2>
           <div className="terms-content">
@@ -102,13 +109,6 @@ export const MarketingPage: React.FC = () => {
             </p>
           </div>
         </section>
-
-        <footer className="marketing-footer">
-          <h2>Already a member?</h2>
-          <Button>
-            <Link to="/app">Sign in here</Link>
-          </Button>
-        </footer>
 
         <div className="footer-credit">
           <p>Made with love by <a target="_blank" rel="noopener noreferrer" href="https://github.com/samjhill">Sam Hill</a></p>
