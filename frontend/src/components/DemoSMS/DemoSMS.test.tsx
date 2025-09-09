@@ -9,9 +9,9 @@ describe('DemoSMS', () => {
 
     // Check if main elements are rendered
     expect(screen.getByText('Understand your dreams. Wake up with a plan.')).toBeInTheDocument();
-    expect(screen.getByText('Try It Now')).toBeInTheDocument();
-    expect(screen.getByText('How it Works')).toBeInTheDocument();
+    expect(screen.getByText(/Watch a quick example of Clara turning a raw dream into practical guidance/)).toBeInTheDocument();
     expect(screen.getByText('Clara')).toBeInTheDocument();
+    expect(screen.getByText('Replay')).toBeInTheDocument();
   });
 
   it('displays the conversation title', () => {

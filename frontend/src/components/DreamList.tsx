@@ -260,7 +260,7 @@ const DreamListOptimized: React.FC = () => {
           <p className="text-muted">Loading your dreams...</p>
         </div>
         <div className="loading">
-          <div className="loading-spinner"></div>
+          <div className="loading-spinner" data-testid="loading-spinner"></div>
         </div>
       </div>
     );

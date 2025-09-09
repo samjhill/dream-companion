@@ -42,8 +42,8 @@ export const Greet: React.FC = () => {
     const greetingParts = randomGreeting.split("!");
 
     return (
-        <div className="greet-section">
-            <div className="greet-content">
+        <div className="greet-section" data-testid="greet-section">
+            <div className="greet-content" data-testid="greet-content">
                 <img
                     src={randomImage}
                     alt="Clara the owl - your dream guide"

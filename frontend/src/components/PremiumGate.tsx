@@ -17,7 +17,7 @@ export const PremiumGate: React.FC<PremiumGateProps> = ({
 
   if (loading) {
     return (
-      <div className="premium-gate-loading">
+      <div className="premium-gate-loading" data-testid="premium-gate-loading">
         <div className="loading-spinner"></div>
         <p>Checking premium status...</p>
       </div>
@@ -26,7 +26,7 @@ export const PremiumGate: React.FC<PremiumGateProps> = ({
 
   if (error) {
     return (
-      <div className="premium-gate-error">
+      <div className="premium-gate-error" data-testid="premium-gate-error">
         <p>Error loading premium status: {error}</p>
       </div>
     );

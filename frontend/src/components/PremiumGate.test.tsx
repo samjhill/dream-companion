@@ -45,7 +45,7 @@ describe('PremiumGate Component', () => {
     );
 
     expect(screen.getByText('Checking premium status...')).toBeInTheDocument();
-    expect(screen.getByRole('generic')).toHaveClass('premium-gate-loading');
+    expect(screen.getByTestId('premium-gate-loading')).toHaveClass('premium-gate-loading');
     expect(screen.queryByTestId('premium-content')).not.toBeInTheDocument();
   });
 
@@ -64,7 +64,7 @@ describe('PremiumGate Component', () => {
     );
 
     expect(screen.getByText(`Error loading premium status: ${errorMessage}`)).toBeInTheDocument();
-    expect(screen.getByRole('generic')).toHaveClass('premium-gate-error');
+    expect(screen.getByTestId('premium-gate-error')).toHaveClass('premium-gate-error');
     expect(screen.queryByTestId('premium-content')).not.toBeInTheDocument();
   });
 

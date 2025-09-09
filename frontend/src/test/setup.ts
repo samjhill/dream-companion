@@ -84,6 +84,16 @@ vi.mock('date-fns', () => ({
   differenceInDays: vi.fn(() => 0),
   addDays: vi.fn((date, days) => new Date(date.getTime() + days * 24 * 60 * 60 * 1000)),
   subDays: vi.fn((date, days) => new Date(date.getTime() - days * 24 * 60 * 60 * 1000)),
+  startOfToday: vi.fn(() => new Date('2024-01-15T00:00:00Z')),
+  eachDayOfInterval: vi.fn(({ start, end }) => {
+    const days = [];
+    const current = new Date(start);
+    while (current <= end) {
+      days.push(new Date(current));
+      current.setDate(current.getDate() + 1);
+    }
+    return days;
+  }),
 }))
 
 // Global test utilities

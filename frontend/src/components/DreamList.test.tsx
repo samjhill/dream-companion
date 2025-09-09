@@ -55,7 +55,7 @@ describe('DreamList Component', () => {
     
     expect(screen.getByText('Dream Journal')).toBeInTheDocument();
     expect(screen.getByText('Loading your dreams...')).toBeInTheDocument();
-    expect(screen.getByRole('generic')).toHaveClass('loading');
+    expect(screen.getByTestId('loading-spinner')).toBeInTheDocument();
   });
 
   it('renders error state when API call fails', async () => {
@@ -83,8 +83,7 @@ describe('DreamList Component', () => {
       expect(screen.getByText('No dreams recorded yet')).toBeInTheDocument();
     });
 
-    expect(screen.getByText('Your dreams will appear here once you start recording them.')).toBeInTheDocument();
-    expect(screen.getByText('🌙')).toBeInTheDocument();
+    expect(screen.getByText('No dreams found. Start recording your dreams to see them here!')).toBeInTheDocument();
   });
 
   it('renders dreams list when dreams are available', async () => {
@@ -105,7 +104,7 @@ describe('DreamList Component', () => {
     render(<DreamList />);
 
     await waitFor(() => {
-      expect(screen.getByText('Showing 2 of 2 dreams')).toBeInTheDocument();
+      expect(screen.getByText('You have 2 dreams recorded')).toBeInTheDocument();
     });
 
     expect(screen.getByText('Flying dream')).toBeInTheDocument();
@@ -140,9 +139,9 @@ describe('DreamList Component', () => {
     fireEvent.click(dreamCard!);
 
     await waitFor(() => {
-      expect(screen.getByText('Your Dream')).toBeInTheDocument();
+      expect(screen.getByText('Dream Content:')).toBeInTheDocument();
       expect(screen.getByText('I was flying over a beautiful landscape...')).toBeInTheDocument();
-      expect(screen.getByText('Interpretation')).toBeInTheDocument();
+      expect(screen.getByText('Analysis:')).toBeInTheDocument();
       expect(screen.getByText('This dream suggests freedom and liberation...')).toBeInTheDocument();
     });
   });
@@ -168,23 +167,24 @@ describe('DreamList Component', () => {
       expect(screen.getByText('Flying dream')).toBeInTheDocument();
     });
 
-    const toggleButton = screen.getByText('Show');
+    const toggleButtons = screen.getAllByText('+');
+    const toggleButton = toggleButtons[0]; // Get the first one
     expect(toggleButton).toBeInTheDocument();
 
     // Click show button
     fireEvent.click(toggleButton);
 
     await waitFor(() => {
-      expect(screen.getByText('Hide')).toBeInTheDocument();
-      expect(screen.getByText('Your Dream')).toBeInTheDocument();
+      expect(screen.getByText('−')).toBeInTheDocument();
+      expect(screen.getByText('Dream Content:')).toBeInTheDocument();
     });
 
     // Click hide button
-    fireEvent.click(screen.getByText('Hide'));
+    fireEvent.click(screen.getByText('−'));
 
     await waitFor(() => {
-      expect(screen.getByText('Show')).toBeInTheDocument();
-      expect(screen.queryByText('Your Dream')).not.toBeInTheDocument();
+      expect(screen.getAllByText('+')[0]).toBeInTheDocument();
+      expect(screen.queryByText('Dream Content:')).not.toBeInTheDocument();
     });
   });
 
@@ -217,14 +217,14 @@ describe('DreamList Component', () => {
     fireEvent.keyDown(dreamCard!, { key: 'Enter' });
 
     await waitFor(() => {
-      expect(screen.getByText('Your Dream')).toBeInTheDocument();
+      expect(screen.getByText('Dream Content:')).toBeInTheDocument();
     });
 
     // Test Space key
     fireEvent.keyDown(dreamCard!, { key: ' ' });
 
     await waitFor(() => {
-      expect(screen.getByText('Hide')).toBeInTheDocument();
+      expect(screen.getByText('−')).toBeInTheDocument();
     });
   });
 
@@ -251,7 +251,7 @@ describe('DreamList Component', () => {
     render(<DreamList />);
 
     await waitFor(() => {
-      expect(screen.getByText('Load More Dreams (0 remaining)')).toBeInTheDocument();
+      expect(screen.getByText('Load More Dreams')).toBeInTheDocument();
     });
   });
 

@@ -42,8 +42,8 @@ describe('Greet Component', () => {
     mockMath.random.mockReturnValue(0.5);
     render(<Greet />);
     
-    expect(screen.getByRole('generic')).toHaveClass('greet-section');
-    expect(screen.getByRole('generic')).toHaveClass('greet-content');
+    expect(screen.getByTestId('greet-section')).toHaveClass('greet-section');
+    expect(screen.getByTestId('greet-content')).toHaveClass('greet-content');
   });
 
   it('splits greeting text correctly with exclamation mark', () => {
