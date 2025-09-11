@@ -3,7 +3,7 @@ import { fetchAuthSession } from 'aws-amplify/auth';
 import { getUserPhoneNumber } from '../helpers/user';
 
 interface SubscriptionStatus {
-  is_premium: boolean;
+  has_premium: boolean;
   subscription_type: string | null;
   subscription_end: string | null;
   features: string[];
@@ -321,17 +321,17 @@ export const SubscriptionManager: React.FC = () => {
       {/* Current Subscription Status */}
       {subscriptionStatus && (
         <div className="current-subscription">
-          <div className={`status-card ${subscriptionStatus.is_premium ? 'premium' : 'basic'}`}>
-            <div className="status-header">
-              <h3>
-                {subscriptionStatus.is_premium ? '🌟 Premium Active' : '📱 Basic Plan'}
-              </h3>
-              {subscriptionStatus.is_premium && (
-                <span className="status-badge">Active</span>
-              )}
-            </div>
+            <div className={`status-card ${subscriptionStatus.has_premium ? 'premium' : 'basic'}`}>
+              <div className="status-header">
+                <h3>
+                  {subscriptionStatus.has_premium ? '🌟 Premium Active' : '📱 Basic Plan'}
+                </h3>
+                {subscriptionStatus.has_premium && (
+                  <span className="status-badge">Active</span>
+                )}
+              </div>
 
-            {subscriptionStatus.is_premium ? (
+              {subscriptionStatus.has_premium ? (
               <div className="subscription-details">
                 <p><strong>Plan:</strong> {subscriptionStatus.subscription_type}</p>
                 <p><strong>Expires:</strong> {formatDate(subscriptionStatus.subscription_end || '')}</p>
@@ -378,7 +378,7 @@ export const SubscriptionManager: React.FC = () => {
       )}
 
       {/* Subscription Plans */}
-      {!subscriptionStatus?.is_premium && (
+      {!subscriptionStatus?.has_premium && (
         <div className="subscription-plans">
           <h3>Choose Your Premium Plan</h3>
           <div className="plans-grid">

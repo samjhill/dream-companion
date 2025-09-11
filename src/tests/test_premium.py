@@ -159,11 +159,17 @@ class TestPremiumEndpoints:
         })
         
         with patch('app.premium.get_premium_table', return_value=table):
-            response = client.get('/api/premium/subscription/status/+1234567890')
+            # Mock authentication
+            with patch('app.auth.verify_cognito_token') as mock_verify, \
+                 patch('app.auth.get_cognito_user_info') as mock_user_info:
+                mock_verify.return_value = {'sub': 'test-user', 'phone_number': '+1234567890'}
+                mock_user_info.return_value = {'phone_number': '+1234567890'}
+                response = client.get('/api/premium/subscription/status/+1234567890', 
+                                    headers={'Authorization': 'Bearer mock-token'})
             
             assert response.status_code == 200
             data = json.loads(response.data)
-            assert data['is_premium'] is True
+            assert data['has_premium'] is True
             assert data['subscription_type'] == 'premium'
             assert data['days_remaining'] > 0
             assert 'advanced_analysis' in data['features']
@@ -182,11 +188,17 @@ class TestPremiumEndpoints:
         )
         
         with patch('app.premium.get_premium_table', return_value=table):
-            response = client.get('/api/premium/subscription/status/+1234567890')
+            # Mock authentication
+            with patch('app.auth.verify_cognito_token') as mock_verify, \
+                 patch('app.auth.get_cognito_user_info') as mock_user_info:
+                mock_verify.return_value = {'sub': 'test-user', 'phone_number': '+1234567890'}
+                mock_user_info.return_value = {'phone_number': '+1234567890'}
+                response = client.get('/api/premium/subscription/status/+1234567890',
+                                    headers={'Authorization': 'Bearer mock-token'})
             
             assert response.status_code == 200
             data = json.loads(response.data)
-            assert data['is_premium'] is False
+            assert data['has_premium'] is False
             assert data['subscription_type'] is None
             assert data['days_remaining'] == 0
             assert 'basic_dream_storage' in data['features']

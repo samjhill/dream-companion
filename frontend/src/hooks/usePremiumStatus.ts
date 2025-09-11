@@ -38,7 +38,7 @@ export const usePremiumStatus = (): PremiumStatusHook => {
       }
 
       const response = await fetch(
-        `${API_BASE_URL}/api/analysis/premium-status/${phoneNumber.replace("+", "")}`,
+        `${API_BASE_URL}/api/premium/subscription/status/${phoneNumber.replace("+", "")}`,
         { headers: { 'Authorization': `Bearer ${session?.tokens?.idToken?.toString()}` } }
       );
 

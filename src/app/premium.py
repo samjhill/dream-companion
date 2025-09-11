@@ -144,13 +144,14 @@ def check_premium_access(phone_number: str) -> dict:
 
 @premium_bp.route('/subscription/status/<phone_number>', methods=['GET'])
 @cross_origin(supports_credentials=True)
+@require_cognito_auth
 def get_subscription_status(phone_number):
     """Get the current subscription status for a user"""
     try:
         premium_status = check_premium_access(phone_number)
 
         return jsonify({
-            'is_premium': premium_status['has_premium'],
+            'has_premium': premium_status['has_premium'],
             'subscription_type': premium_status['subscription_type'],
             'subscription_end': premium_status['subscription_end'],
             'days_remaining': premium_status['days_remaining'],
