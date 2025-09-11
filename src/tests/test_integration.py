@@ -14,14 +14,10 @@ import boto3
 class TestAPIIntegration:
     """Test API integration scenarios."""
     
-    def test_dream_workflow_integration(self, client, mock_auth_session):
+    def test_dream_workflow_integration(self, client, mock_s3_client, mock_auth_session):
         """Test the complete dream workflow from creation to retrieval."""
-        # Setup S3 client and bucket
-        s3_client = boto3.client('s3', region_name='us-east-1')
-        s3_client.create_bucket(Bucket='test-dream-bucket')
-        
         with patch('app.routes.S3_BUCKET_NAME', 'test-dream-bucket'), \
-             patch('app.routes.get_s3_client', return_value=s3_client):
+             patch('app.routes.get_s3_client', return_value=mock_s3_client):
             # 1. Create a dream (simulate by putting data in S3)
             dream_data = {
                 'id': 'test-dream-1',
@@ -30,7 +26,7 @@ class TestAPIIntegration:
                 'summary': 'Flying dream about freedom'
             }
             
-            s3_client.put_object(
+            mock_s3_client.put_object(
                 Bucket='test-dream-bucket',
                 Key='1234567890/test-dream-1',
                 Body=json.dumps(dream_data)
@@ -55,17 +51,13 @@ class TestAPIIntegration:
             assert dream_detail['dream_content'] == 'I was flying over a beautiful landscape'
             assert dream_detail['response'] == 'This dream suggests freedom and liberation'
 
-    def test_themes_workflow_integration(self, client, mock_auth_session):
+    def test_themes_workflow_integration(self, client, mock_s3_client, mock_auth_session):
         """Test the themes workflow integration."""
-        # Setup S3 client and bucket
-        s3_client = boto3.client('s3', region_name='us-east-1')
-        s3_client.create_bucket(Bucket='test-dream-bucket')
-        
         with patch('app.routes.S3_BUCKET_NAME', 'test-dream-bucket'), \
-             patch('app.routes.get_s3_client', return_value=s3_client):
+             patch('app.routes.get_s3_client', return_value=mock_s3_client):
             # 1. Create themes data
             themes_data = "Flying dreams\nWater dreams\nNightmare themes"
-            s3_client.put_object(
+            mock_s3_client.put_object(
                 Bucket='test-dream-bucket',
                 Key='1234567890/themes.txt',
                 Body=themes_data
@@ -169,15 +161,11 @@ class TestAPIIntegration:
             assert response.headers['Access-Control-Allow-Origin'] == 'https://clarasdreamguide.com'
             assert response.headers['Access-Control-Allow-Credentials'] == 'true'
 
-    def test_error_handling_integration(self, client, mock_auth_session):
+    def test_error_handling_integration(self, client, mock_s3_client, mock_auth_session):
         """Test error handling across the API."""
-        # Setup S3 client and bucket for 404 test
-        s3_client = boto3.client('s3', region_name='us-east-1')
-        s3_client.create_bucket(Bucket='test-dream-bucket')
-        
         # Test 404 errors
         with patch('app.routes.S3_BUCKET_NAME', 'test-dream-bucket'), \
-             patch('app.routes.get_s3_client', return_value=s3_client):
+             patch('app.routes.get_s3_client', return_value=mock_s3_client):
             response = client.get('/api/dreams/1234567890/nonexistent', 
                                 headers={'Authorization': 'Bearer valid-token'})
             assert response.status_code == 404
@@ -245,12 +233,8 @@ class TestAPIIntegration:
         assert 'Access-Control-Allow-Methods' in response.headers
         assert 'Access-Control-Allow-Headers' in response.headers
 
-    def test_pagination_integration(self, client, mock_auth_session):
+    def test_pagination_integration(self, client, mock_s3_client, mock_auth_session):
         """Test pagination integration across the API."""
-        # Setup S3 client and bucket with multiple dreams
-        s3_client = boto3.client('s3', region_name='us-east-1')
-        s3_client.create_bucket(Bucket='test-dream-bucket')
-        
         # Create multiple dream objects
         for i in range(15):
             dream_data = {
@@ -260,14 +244,14 @@ class TestAPIIntegration:
                 'summary': f'Summary {i}'
             }
             
-            s3_client.put_object(
+            mock_s3_client.put_object(
                 Bucket='test-dream-bucket',
                 Key=f'1234567890/dream-{i}',
                 Body=json.dumps(dream_data)
             )
         
         with patch('app.routes.S3_BUCKET_NAME', 'test-dream-bucket'), \
-             patch('app.routes.get_s3_client', return_value=s3_client):
+             patch('app.routes.get_s3_client', return_value=mock_s3_client):
             # Test first page
             response = client.get('/api/dreams/1234567890?limit=10&offset=0', 
                                 headers={'Authorization': 'Bearer valid-token'})
