@@ -99,7 +99,8 @@ class TestThemesEndpoint:
             Body=themes_data
         )
         
-        with patch('app.routes.S3_BUCKET_NAME', 'test-dream-bucket'):
+        with patch('app.routes.S3_BUCKET_NAME', 'test-dream-bucket'), \
+             patch('app.routes.get_s3_client', return_value=mock_s3_client):
             response = client.get('/api/themes/1234567890', headers={'Authorization': 'Bearer valid-token'})
             
             assert response.status_code == 200
@@ -107,7 +108,8 @@ class TestThemesEndpoint:
 
     def test_get_themes_not_found(self, client, mock_s3_client, mock_auth_session):
         """Test themes endpoint when themes file doesn't exist."""
-        with patch('app.routes.S3_BUCKET_NAME', 'test-dream-bucket'):
+        with patch('app.routes.S3_BUCKET_NAME', 'test-dream-bucket'), \
+             patch('app.routes.get_s3_client', return_value=mock_s3_client):
             response = client.get('/api/themes/1234567890', headers={'Authorization': 'Bearer valid-token'})
             
             assert response.status_code == 404
@@ -149,7 +151,8 @@ class TestDreamsEndpoint:
             Body='metadata content'
         )
         
-        with patch('app.routes.S3_BUCKET_NAME', 'test-dream-bucket'):
+        with patch('app.routes.S3_BUCKET_NAME', 'test-dream-bucket'), \
+             patch('app.routes.get_s3_client', return_value=mock_s3_client):
             response = client.get('/api/dreams/1234567890', headers={'Authorization': 'Bearer valid-token'})
             
             assert response.status_code == 200
@@ -170,7 +173,8 @@ class TestDreamsEndpoint:
                 Body=json.dumps({'id': f'dream{i}', 'content': f'Test dream {i}'})
             )
         
-        with patch('app.routes.S3_BUCKET_NAME', 'test-dream-bucket'):
+        with patch('app.routes.S3_BUCKET_NAME', 'test-dream-bucket'), \
+             patch('app.routes.get_s3_client', return_value=mock_s3_client):
             # Test first page
             response = client.get('/api/dreams/1234567890?limit=10&offset=0', 
                                 headers={'Authorization': 'Bearer valid-token'})
@@ -265,7 +269,8 @@ class TestDreamDetailEndpoint:
             Body='invalid json data'
         )
         
-        with patch('app.routes.S3_BUCKET_NAME', 'test-dream-bucket'):
+        with patch('app.routes.S3_BUCKET_NAME', 'test-dream-bucket'), \
+             patch('app.routes.get_s3_client', return_value=mock_s3_client):
             response = client.get('/api/dreams/1234567890/invalid-dream', 
                                 headers={'Authorization': 'Bearer valid-token'})
             
