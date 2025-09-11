@@ -28,7 +28,11 @@ def add_cors_headers(response):
     return response
 
 # Initialize S3 client
-s3_client = boto3.client('s3')
+def get_s3_client():
+    """Get S3 client - can be mocked for testing"""
+    return boto3.client('s3')
+
+s3_client = get_s3_client()
 
 @routes_bp.route('/', methods=['GET'])
 @cross_origin(supports_credentials=True)

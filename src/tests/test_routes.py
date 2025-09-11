@@ -75,7 +75,7 @@ class TestAuthentication:
 
     def test_require_auth_valid_header(self, client, mock_auth_session):
         """Test that protected routes accept valid authorization header."""
-        with patch('app.routes.s3_client') as mock_s3:
+        with patch('app.routes.get_s3_client') as mock_s3:
             mock_s3.exceptions.NoSuchKey = Exception
             mock_s3.get_object.side_effect = mock_s3.exceptions.NoSuchKey()
             
@@ -194,7 +194,7 @@ class TestDreamsEndpoint:
     def test_get_dreams_empty(self, client, mock_s3_client, mock_auth_session):
         """Test dreams endpoint when no dreams exist."""
         with patch('app.routes.S3_BUCKET_NAME', 'test-dream-bucket'), \
-             patch('app.routes.s3_client', mock_s3_client):
+             patch('app.routes.get_s3_client', return_value=mock_s3_client):
             response = client.get('/api/dreams/1234567890', headers={'Authorization': 'Bearer valid-token'})
             
             assert response.status_code == 200
@@ -234,7 +234,7 @@ class TestDreamDetailEndpoint:
         )
         
         with patch('app.routes.S3_BUCKET_NAME', 'test-dream-bucket'), \
-             patch('app.routes.s3_client', mock_s3_client):
+             patch('app.routes.get_s3_client', return_value=mock_s3_client):
             response = client.get('/api/dreams/1234567890/dream1', 
                                 headers={'Authorization': 'Bearer valid-token'})
             
@@ -248,7 +248,7 @@ class TestDreamDetailEndpoint:
     def test_get_dream_not_found(self, client, mock_s3_client, mock_auth_session):
         """Test dream detail endpoint when dream doesn't exist."""
         with patch('app.routes.S3_BUCKET_NAME', 'test-dream-bucket'), \
-             patch('app.routes.s3_client', mock_s3_client):
+             patch('app.routes.get_s3_client', return_value=mock_s3_client):
             response = client.get('/api/dreams/1234567890/nonexistent', 
                                 headers={'Authorization': 'Bearer valid-token'})
             
