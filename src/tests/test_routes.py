@@ -193,7 +193,8 @@ class TestDreamsEndpoint:
 
     def test_get_dreams_empty(self, client, mock_s3_client, mock_auth_session):
         """Test dreams endpoint when no dreams exist."""
-        with patch('app.routes.S3_BUCKET_NAME', 'test-dream-bucket'):
+        with patch('app.routes.S3_BUCKET_NAME', 'test-dream-bucket'), \
+             patch('app.routes.s3_client', mock_s3_client):
             response = client.get('/api/dreams/1234567890', headers={'Authorization': 'Bearer valid-token'})
             
             assert response.status_code == 200
@@ -232,7 +233,8 @@ class TestDreamDetailEndpoint:
             Body=json.dumps(dream_data)
         )
         
-        with patch('app.routes.S3_BUCKET_NAME', 'test-dream-bucket'):
+        with patch('app.routes.S3_BUCKET_NAME', 'test-dream-bucket'), \
+             patch('app.routes.s3_client', mock_s3_client):
             response = client.get('/api/dreams/1234567890/dream1', 
                                 headers={'Authorization': 'Bearer valid-token'})
             
@@ -245,7 +247,8 @@ class TestDreamDetailEndpoint:
 
     def test_get_dream_not_found(self, client, mock_s3_client, mock_auth_session):
         """Test dream detail endpoint when dream doesn't exist."""
-        with patch('app.routes.S3_BUCKET_NAME', 'test-dream-bucket'):
+        with patch('app.routes.S3_BUCKET_NAME', 'test-dream-bucket'), \
+             patch('app.routes.s3_client', mock_s3_client):
             response = client.get('/api/dreams/1234567890/nonexistent', 
                                 headers={'Authorization': 'Bearer valid-token'})
             
