@@ -110,12 +110,15 @@ class TestAPIIntegration:
             BillingMode='PAY_PER_REQUEST'
         )
         
-        with patch('app.premium.get_premium_table', return_value=table):
+        with patch('app.premium.get_premium_table', return_value=table), \
+             patch('app.auth.verify_cognito_token', return_value={'sub': 'test-user', 'phone_number': '+1234567890'}), \
+             patch('app.auth.get_cognito_user_info', return_value={'phone_number': '+1234567890'}):
             # 1. Check initial premium status
-            response = client.get('/api/premium/subscription/status/+1234567890')
+            response = client.get('/api/premium/subscription/status/+1234567890',
+                                  headers={'Authorization': 'Bearer valid-token'})
             assert response.status_code == 200
             status = json.loads(response.data)
-            assert status['is_premium'] is False
+            assert status['has_premium'] is False
             
             # 2. Create premium subscription
             subscription_data = {
@@ -130,20 +133,22 @@ class TestAPIIntegration:
             assert response.status_code == 200
             
             # 3. Check premium status after subscription
-            response = client.get('/api/premium/subscription/status/+1234567890')
+            response = client.get('/api/premium/subscription/status/+1234567890',
+                                  headers={'Authorization': 'Bearer valid-token'})
             assert response.status_code == 200
             status = json.loads(response.data)
-            assert status['is_premium'] is True
+            assert status['has_premium'] is True
             
             # 4. Cancel subscription
             response = client.post('/api/premium/subscription/cancel/+1234567890')
             assert response.status_code == 200
             
             # 5. Check premium status after cancellation
-            response = client.get('/api/premium/subscription/status/+1234567890')
+            response = client.get('/api/premium/subscription/status/+1234567890',
+                                  headers={'Authorization': 'Bearer valid-token'})
             assert response.status_code == 200
             status = json.loads(response.data)
-            assert status['is_premium'] is False
+            assert status['has_premium'] is False
 
     def test_authentication_flow_integration(self, client, mock_auth_session):
         """Test authentication flow across different endpoints."""
