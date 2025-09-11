@@ -19,7 +19,8 @@ class TestAPIIntegration:
         # Setup S3 bucket
         mock_s3_client.create_bucket(Bucket='test-dream-bucket')
         
-        with patch('app.routes.S3_BUCKET_NAME', 'test-dream-bucket'):
+        with patch('app.routes.S3_BUCKET_NAME', 'test-dream-bucket'), \
+             patch('app.routes.get_s3_client', return_value=mock_s3_client):
             # 1. Create a dream (simulate by putting data in S3)
             dream_data = {
                 'id': 'test-dream-1',
@@ -59,7 +60,8 @@ class TestAPIIntegration:
         # Setup S3 bucket
         mock_s3_client.create_bucket(Bucket='test-dream-bucket')
         
-        with patch('app.routes.S3_BUCKET_NAME', 'test-dream-bucket'):
+        with patch('app.routes.S3_BUCKET_NAME', 'test-dream-bucket'), \
+             patch('app.routes.get_s3_client', return_value=mock_s3_client):
             # 1. Create themes data
             themes_data = "Flying dreams\nWater dreams\nNightmare themes"
             mock_s3_client.put_object(
@@ -257,7 +259,8 @@ class TestAPIIntegration:
                 Body=json.dumps(dream_data)
             )
         
-        with patch('app.routes.S3_BUCKET_NAME', 'test-dream-bucket'):
+        with patch('app.routes.S3_BUCKET_NAME', 'test-dream-bucket'), \
+             patch('app.routes.get_s3_client', return_value=mock_s3_client):
             # Test first page
             response = client.get('/api/dreams/1234567890?limit=10&offset=0', 
                                 headers={'Authorization': 'Bearer valid-token'})
