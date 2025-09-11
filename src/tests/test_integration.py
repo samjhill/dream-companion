@@ -14,13 +14,14 @@ class TestAPIIntegration:
     """Test API integration scenarios."""
     
     @mock_aws
-    def test_dream_workflow_integration(self, client, mock_s3_client, mock_auth_session):
+    def test_dream_workflow_integration(self, client, mock_auth_session):
         """Test the complete dream workflow from creation to retrieval."""
-        # Setup S3 bucket
-        mock_s3_client.create_bucket(Bucket='test-dream-bucket')
+        # Setup S3 client and bucket
+        s3_client = boto3.client('s3', region_name='us-east-1')
+        s3_client.create_bucket(Bucket='test-dream-bucket')
         
         with patch('app.routes.S3_BUCKET_NAME', 'test-dream-bucket'), \
-             patch('app.routes.get_s3_client', return_value=mock_s3_client):
+             patch('app.routes.get_s3_client', return_value=s3_client):
             # 1. Create a dream (simulate by putting data in S3)
             dream_data = {
                 'id': 'test-dream-1',
@@ -29,7 +30,7 @@ class TestAPIIntegration:
                 'summary': 'Flying dream about freedom'
             }
             
-            mock_s3_client.put_object(
+            s3_client.put_object(
                 Bucket='test-dream-bucket',
                 Key='1234567890/test-dream-1',
                 Body=json.dumps(dream_data)
@@ -55,16 +56,17 @@ class TestAPIIntegration:
             assert dream_detail['response'] == 'This dream suggests freedom and liberation'
 
     @mock_aws
-    def test_themes_workflow_integration(self, client, mock_s3_client, mock_auth_session):
+    def test_themes_workflow_integration(self, client, mock_auth_session):
         """Test the themes workflow integration."""
-        # Setup S3 bucket
-        mock_s3_client.create_bucket(Bucket='test-dream-bucket')
+        # Setup S3 client and bucket
+        s3_client = boto3.client('s3', region_name='us-east-1')
+        s3_client.create_bucket(Bucket='test-dream-bucket')
         
         with patch('app.routes.S3_BUCKET_NAME', 'test-dream-bucket'), \
-             patch('app.routes.get_s3_client', return_value=mock_s3_client):
+             patch('app.routes.get_s3_client', return_value=s3_client):
             # 1. Create themes data
             themes_data = "Flying dreams\nWater dreams\nNightmare themes"
-            mock_s3_client.put_object(
+            s3_client.put_object(
                 Bucket='test-dream-bucket',
                 Key='1234567890/themes.txt',
                 Body=themes_data
@@ -239,10 +241,12 @@ class TestAPIIntegration:
         assert 'Access-Control-Allow-Methods' in response.headers
         assert 'Access-Control-Allow-Headers' in response.headers
 
-    def test_pagination_integration(self, client, mock_s3_client, mock_auth_session):
+    @mock_aws
+    def test_pagination_integration(self, client, mock_auth_session):
         """Test pagination integration across the API."""
-        # Setup S3 bucket with multiple dreams
-        mock_s3_client.create_bucket(Bucket='test-dream-bucket')
+        # Setup S3 client and bucket with multiple dreams
+        s3_client = boto3.client('s3', region_name='us-east-1')
+        s3_client.create_bucket(Bucket='test-dream-bucket')
         
         # Create multiple dream objects
         for i in range(15):
@@ -253,14 +257,14 @@ class TestAPIIntegration:
                 'summary': f'Summary {i}'
             }
             
-            mock_s3_client.put_object(
+            s3_client.put_object(
                 Bucket='test-dream-bucket',
                 Key=f'1234567890/dream-{i}',
                 Body=json.dumps(dream_data)
             )
         
         with patch('app.routes.S3_BUCKET_NAME', 'test-dream-bucket'), \
-             patch('app.routes.get_s3_client', return_value=mock_s3_client):
+             patch('app.routes.get_s3_client', return_value=s3_client):
             # Test first page
             response = client.get('/api/dreams/1234567890?limit=10&offset=0', 
                                 headers={'Authorization': 'Bearer valid-token'})
