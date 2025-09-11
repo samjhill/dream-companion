@@ -10,10 +10,10 @@ from moto import mock_aws
 import boto3
 
 
+@mock_aws
 class TestAPIIntegration:
     """Test API integration scenarios."""
     
-    @mock_aws
     def test_dream_workflow_integration(self, client, mock_auth_session):
         """Test the complete dream workflow from creation to retrieval."""
         # Setup S3 client and bucket
@@ -55,7 +55,6 @@ class TestAPIIntegration:
             assert dream_detail['dream_content'] == 'I was flying over a beautiful landscape'
             assert dream_detail['response'] == 'This dream suggests freedom and liberation'
 
-    @mock_aws
     def test_themes_workflow_integration(self, client, mock_auth_session):
         """Test the themes workflow integration."""
         # Setup S3 client and bucket
@@ -79,7 +78,6 @@ class TestAPIIntegration:
             assert response.status_code == 200
             assert response.data.decode('utf-8') == themes_data
 
-    @mock_aws
     def test_premium_workflow_integration(self, client):
         """Test the premium subscription workflow integration."""
         # Setup DynamoDB table
@@ -173,10 +171,16 @@ class TestAPIIntegration:
 
     def test_error_handling_integration(self, client, mock_auth_session):
         """Test error handling across the API."""
+        # Setup S3 client and bucket for 404 test
+        s3_client = boto3.client('s3', region_name='us-east-1')
+        s3_client.create_bucket(Bucket='test-dream-bucket')
+        
         # Test 404 errors
-        response = client.get('/api/dreams/1234567890/nonexistent', 
-                            headers={'Authorization': 'Bearer valid-token'})
-        assert response.status_code == 404
+        with patch('app.routes.S3_BUCKET_NAME', 'test-dream-bucket'), \
+             patch('app.routes.get_s3_client', return_value=s3_client):
+            response = client.get('/api/dreams/1234567890/nonexistent', 
+                                headers={'Authorization': 'Bearer valid-token'})
+            assert response.status_code == 404
         
         # Test 400 errors
         response = client.post('/api/premium/subscription/create',
@@ -241,7 +245,6 @@ class TestAPIIntegration:
         assert 'Access-Control-Allow-Methods' in response.headers
         assert 'Access-Control-Allow-Headers' in response.headers
 
-    @mock_aws
     def test_pagination_integration(self, client, mock_auth_session):
         """Test pagination integration across the API."""
         # Setup S3 client and bucket with multiple dreams
