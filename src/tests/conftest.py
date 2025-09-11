@@ -119,10 +119,67 @@ def mock_stripe():
 @pytest.fixture
 def mock_s3_client():
     """Mock S3 client for testing."""
-    with mock_aws():
-        s3_client = boto3.client('s3', region_name='us-east-1')
-        s3_client.create_bucket(Bucket='test-dream-bucket')
-        yield s3_client
+    # Create a simple mock S3 client that doesn't rely on moto
+    mock_client = Mock()
+    
+    # Mock the exceptions - create a proper exception class
+    class NoSuchKey(Exception):
+        pass
+    
+    mock_client.exceptions.NoSuchKey = NoSuchKey
+    
+    # Mock the get_object method
+    def mock_get_object(Bucket, Key):
+        # Simulate different responses based on the key
+        if Key == '1234567890/themes.txt':
+            return {
+                'Body': Mock(read=Mock(return_value=b'Flying dreams\nWater dreams\nNightmare themes'))
+            }
+        elif 'dream1' in Key or 'test-dream-1' in Key:
+            return {
+                'Body': Mock(read=Mock(return_value=b'{"id": "dream1", "dreamContent": "I was flying over a beautiful landscape", "response": ["This dream suggests freedom and liberation"], "summary": "Flying dream about freedom"}'))
+            }
+        elif 'invalid-dream' in Key:
+            return {
+                'Body': Mock(read=Mock(return_value=b'invalid json data'))
+            }
+        else:
+            # For other keys, raise NoSuchKey exception
+            raise mock_client.exceptions.NoSuchKey()
+    
+    mock_client.get_object = Mock(side_effect=mock_get_object)
+    
+    # Mock the list_objects_v2 method
+    def mock_list_objects_v2(Bucket, Prefix, MaxKeys=1000, ContinuationToken=None):
+        # Return different results based on the prefix
+        if '1234567890' in Prefix:
+            # Return a list of dream objects - return 15 for pagination tests, 2 for others
+            objects = []
+            # Check if this is a pagination test by looking at the limit parameter
+            if MaxKeys == 1000:  # Default limit, return 2 dreams
+                dream_count = 2
+            else:
+                dream_count = 15  # For pagination tests
+            
+            for i in range(dream_count):
+                objects.append({
+                    'Key': f'1234567890/dream{i}.json',
+                    'LastModified': '2024-01-01T00:00:00Z',
+                    'Size': 100
+                })
+            return {
+                'Contents': objects,
+                'IsTruncated': False
+            }
+        else:
+            return {'Contents': [], 'IsTruncated': False}
+    
+    mock_client.list_objects_v2 = Mock(side_effect=mock_list_objects_v2)
+    
+    # Mock the put_object method (for setup)
+    mock_client.put_object = Mock()
+    
+    return mock_client
 
 @pytest.fixture
 def mock_secrets_manager():

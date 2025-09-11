@@ -85,7 +85,6 @@ class TestAuthentication:
             assert response.status_code != 401
 
 
-@mock_aws
 class TestThemesEndpoint:
     """Test the themes endpoint."""
     
@@ -106,10 +105,15 @@ class TestThemesEndpoint:
             assert response.status_code == 200
             assert response.data.decode('utf-8') == themes_data
 
-    def test_get_themes_not_found(self, client, mock_s3_client, mock_auth_session):
+    def test_get_themes_not_found(self, client, mock_auth_session):
         """Test themes endpoint when themes file doesn't exist."""
+        # Create a custom mock that raises NoSuchKey for themes
+        custom_mock_s3_client = Mock()
+        custom_mock_s3_client.exceptions.NoSuchKey = Exception
+        custom_mock_s3_client.get_object.side_effect = custom_mock_s3_client.exceptions.NoSuchKey()
+        
         with patch('app.routes.S3_BUCKET_NAME', 'test-dream-bucket'), \
-             patch('app.routes.get_s3_client', return_value=mock_s3_client):
+             patch('app.routes.get_s3_client', return_value=custom_mock_s3_client):
             response = client.get('/api/themes/1234567890', headers={'Authorization': 'Bearer valid-token'})
             
             assert response.status_code == 404
@@ -128,7 +132,6 @@ class TestThemesEndpoint:
             assert 'not configured' in data['error'].lower()
 
 
-@mock_aws
 class TestDreamsEndpoint:
     """Test the dreams list endpoint."""
     
@@ -163,18 +166,21 @@ class TestDreamsEndpoint:
             assert len(data['dreams']) == 2
             assert data['total'] == 2
 
-    def test_get_dreams_pagination(self, client, mock_s3_client, mock_auth_session):
+    def test_get_dreams_pagination(self, client, mock_auth_session):
         """Test dreams list pagination."""
-        # Create multiple test dreams
+        # Create a custom mock that returns 15 dreams
+        custom_mock_s3_client = Mock()
+        objects = []
         for i in range(15):
-            mock_s3_client.put_object(
-                Bucket='test-dream-bucket',
-                Key=f'1234567890/dream{i}.json',
-                Body=json.dumps({'id': f'dream{i}', 'content': f'Test dream {i}'})
-            )
+            objects.append({
+                'Key': f'1234567890/dream{i}.json',
+                'LastModified': '2024-01-01T00:00:00Z',
+                'Size': 100
+            })
+        custom_mock_s3_client.list_objects_v2.return_value = {'Contents': objects, 'IsTruncated': False}
         
         with patch('app.routes.S3_BUCKET_NAME', 'test-dream-bucket'), \
-             patch('app.routes.get_s3_client', return_value=mock_s3_client):
+             patch('app.routes.get_s3_client', return_value=custom_mock_s3_client):
             # Test first page
             response = client.get('/api/dreams/1234567890?limit=10&offset=0', 
                                 headers={'Authorization': 'Bearer valid-token'})
@@ -195,10 +201,14 @@ class TestDreamsEndpoint:
             assert data['total'] == 15
             assert data['hasMore'] is False
 
-    def test_get_dreams_empty(self, client, mock_s3_client, mock_auth_session):
+    def test_get_dreams_empty(self, client, mock_auth_session):
         """Test dreams endpoint when no dreams exist."""
+        # Create a custom mock that returns empty results
+        custom_mock_s3_client = Mock()
+        custom_mock_s3_client.list_objects_v2.return_value = {'Contents': [], 'IsTruncated': False}
+        
         with patch('app.routes.S3_BUCKET_NAME', 'test-dream-bucket'), \
-             patch('app.routes.get_s3_client', return_value=mock_s3_client):
+             patch('app.routes.get_s3_client', return_value=custom_mock_s3_client):
             response = client.get('/api/dreams/1234567890', headers={'Authorization': 'Bearer valid-token'})
             
             assert response.status_code == 200
@@ -218,7 +228,6 @@ class TestDreamsEndpoint:
             assert 'not configured' in data['error'].lower()
 
 
-@mock_aws
 class TestDreamDetailEndpoint:
     """Test the individual dream detail endpoint."""
     

@@ -14,10 +14,39 @@ import boto3
 class TestAPIIntegration:
     """Test API integration scenarios."""
     
-    def test_dream_workflow_integration(self, client, mock_s3_client, mock_auth_session):
+    def test_dream_workflow_integration(self, client, mock_auth_session):
         """Test the complete dream workflow from creation to retrieval."""
+        # Create a custom mock that returns only 1 dream
+        custom_mock_s3_client = Mock()
+        custom_mock_s3_client.exceptions.NoSuchKey = Exception
+        
+        # Mock get_object for the specific dream
+        def mock_get_object(Bucket, Key):
+            if Key == '1234567890/test-dream-1':
+                dream_data = {
+                    'id': 'test-dream-1',
+                    'dreamContent': 'I%20was%20flying%20over%20a%20beautiful%20landscape',
+                    'response': ['This dream suggests freedom and liberation'],
+                    'summary': 'Flying dream about freedom'
+                }
+                return {'Body': Mock(read=Mock(return_value=json.dumps(dream_data).encode()))}
+            else:
+                raise custom_mock_s3_client.exceptions.NoSuchKey()
+        
+        custom_mock_s3_client.get_object = Mock(side_effect=mock_get_object)
+        
+        # Mock list_objects_v2 to return only 1 dream
+        custom_mock_s3_client.list_objects_v2.return_value = {
+            'Contents': [{
+                'Key': '1234567890/test-dream-1',
+                'LastModified': '2024-01-01T00:00:00Z',
+                'Size': 100
+            }],
+            'IsTruncated': False
+        }
+        
         with patch('app.routes.S3_BUCKET_NAME', 'test-dream-bucket'), \
-             patch('app.routes.get_s3_client', return_value=mock_s3_client):
+             patch('app.routes.get_s3_client', return_value=custom_mock_s3_client):
             # 1. Create a dream (simulate by putting data in S3)
             dream_data = {
                 'id': 'test-dream-1',
@@ -26,7 +55,7 @@ class TestAPIIntegration:
                 'summary': 'Flying dream about freedom'
             }
             
-            mock_s3_client.put_object(
+            custom_mock_s3_client.put_object(
                 Bucket='test-dream-bucket',
                 Key='1234567890/test-dream-1',
                 Body=json.dumps(dream_data)
@@ -233,25 +262,21 @@ class TestAPIIntegration:
         assert 'Access-Control-Allow-Methods' in response.headers
         assert 'Access-Control-Allow-Headers' in response.headers
 
-    def test_pagination_integration(self, client, mock_s3_client, mock_auth_session):
+    def test_pagination_integration(self, client, mock_auth_session):
         """Test pagination integration across the API."""
-        # Create multiple dream objects
+        # Create a custom mock that returns 15 dreams
+        custom_mock_s3_client = Mock()
+        objects = []
         for i in range(15):
-            dream_data = {
-                'id': f'dream-{i}',
-                'dreamContent': f'Dream content {i}',
-                'response': [f'Response {i}'],
-                'summary': f'Summary {i}'
-            }
-            
-            mock_s3_client.put_object(
-                Bucket='test-dream-bucket',
-                Key=f'1234567890/dream-{i}',
-                Body=json.dumps(dream_data)
-            )
+            objects.append({
+                'Key': f'1234567890/dream-{i}',
+                'LastModified': '2024-01-01T00:00:00Z',
+                'Size': 100
+            })
+        custom_mock_s3_client.list_objects_v2.return_value = {'Contents': objects, 'IsTruncated': False}
         
         with patch('app.routes.S3_BUCKET_NAME', 'test-dream-bucket'), \
-             patch('app.routes.get_s3_client', return_value=mock_s3_client):
+             patch('app.routes.get_s3_client', return_value=custom_mock_s3_client):
             # Test first page
             response = client.get('/api/dreams/1234567890?limit=10&offset=0', 
                                 headers={'Authorization': 'Bearer valid-token'})
