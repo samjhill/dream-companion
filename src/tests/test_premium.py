@@ -16,7 +16,7 @@ class TestPremiumFunctions:
     
     def test_is_premium_user_active_subscription(self, app):
         """Test is_premium_user with active subscription."""
-        from src.app.premium import is_premium_user, get_premium_table
+        from app.premium import is_premium_user, get_premium_table
         
         # Create DynamoDB table
         dynamodb = boto3.resource('dynamodb', region_name='us-east-1')
@@ -30,17 +30,17 @@ class TestPremiumFunctions:
         # Add active subscription
         future_date = (datetime.utcnow() + timedelta(days=30)).isoformat()
         table.put_item(Item={
-            'phone_number': '+1234567890',
+            'phone_number': '1234567890',
             'subscription_end': future_date
         })
         
-        with patch('src.app.premium.get_premium_table', return_value=table):
+        with patch('app.premium.get_premium_table', return_value=table):
             result = is_premium_user('+1234567890')
             assert result is True
 
     def test_is_premium_user_expired_subscription(self, app):
         """Test is_premium_user with expired subscription."""
-        from src.app.premium import is_premium_user, get_premium_table
+        from app.premium import is_premium_user, get_premium_table
         
         # Create DynamoDB table
         dynamodb = boto3.resource('dynamodb', region_name='us-east-1')
@@ -54,17 +54,17 @@ class TestPremiumFunctions:
         # Add expired subscription
         past_date = (datetime.utcnow() - timedelta(days=1)).isoformat()
         table.put_item(Item={
-            'phone_number': '+1234567890',
+            'phone_number': '1234567890',
             'subscription_end': past_date
         })
         
-        with patch('src.app.premium.get_premium_table', return_value=table):
+        with patch('app.premium.get_premium_table', return_value=table):
             result = is_premium_user('+1234567890')
             assert result is False
 
     def test_is_premium_user_no_subscription(self, app):
         """Test is_premium_user with no subscription."""
-        from src.app.premium import is_premium_user, get_premium_table
+        from app.premium import is_premium_user, get_premium_table
         
         # Create empty DynamoDB table
         dynamodb = boto3.resource('dynamodb', region_name='us-east-1')
@@ -75,13 +75,13 @@ class TestPremiumFunctions:
             BillingMode='PAY_PER_REQUEST'
         )
         
-        with patch('src.app.premium.get_premium_table', return_value=table):
+        with patch('app.premium.get_premium_table', return_value=table):
             result = is_premium_user('+1234567890')
             assert result is False
 
     def test_check_premium_access_active(self, app):
         """Test check_premium_access with active subscription."""
-        from src.app.premium import check_premium_access, get_premium_table
+        from app.premium import check_premium_access, get_premium_table
         
         # Create DynamoDB table
         dynamodb = boto3.resource('dynamodb', region_name='us-east-1')
@@ -95,13 +95,13 @@ class TestPremiumFunctions:
         # Add active subscription
         future_date = (datetime.utcnow() + timedelta(days=30)).isoformat()
         table.put_item(Item={
-            'phone_number': '+1234567890',
+            'phone_number': '1234567890',
             'subscription_type': 'premium',
             'subscription_end': future_date,
             'features': ['advanced_analysis', 'archetypes']
         })
         
-        with patch('src.app.premium.get_premium_table', return_value=table):
+        with patch('app.premium.get_premium_table', return_value=table):
             result = check_premium_access('+1234567890')
             
             assert result['has_premium'] is True
@@ -111,7 +111,7 @@ class TestPremiumFunctions:
 
     def test_check_premium_access_no_subscription(self, app):
         """Test check_premium_access with no subscription."""
-        from src.app.premium import check_premium_access, get_premium_table
+        from app.premium import check_premium_access, get_premium_table
         
         # Create empty DynamoDB table
         dynamodb = boto3.resource('dynamodb', region_name='us-east-1')
@@ -122,7 +122,7 @@ class TestPremiumFunctions:
             BillingMode='PAY_PER_REQUEST'
         )
         
-        with patch('src.app.premium.get_premium_table', return_value=table):
+        with patch('app.premium.get_premium_table', return_value=table):
             result = check_premium_access('+1234567890')
             
             assert result['has_premium'] is False
@@ -138,7 +138,7 @@ class TestPremiumEndpoints:
     
     def test_get_subscription_status_active(self, client):
         """Test getting subscription status for active user."""
-        from src.app.premium import get_premium_table
+        from app.premium import get_premium_table
         
         # Create DynamoDB table
         dynamodb = boto3.resource('dynamodb', region_name='us-east-1')
@@ -152,13 +152,13 @@ class TestPremiumEndpoints:
         # Add active subscription
         future_date = (datetime.utcnow() + timedelta(days=30)).isoformat()
         table.put_item(Item={
-            'phone_number': '+1234567890',
+            'phone_number': '1234567890',
             'subscription_type': 'premium',
             'subscription_end': future_date,
             'features': ['advanced_analysis', 'archetypes']
         })
         
-        with patch('src.app.premium.get_premium_table', return_value=table):
+        with patch('app.premium.get_premium_table', return_value=table):
             response = client.get('/api/premium/subscription/status/+1234567890')
             
             assert response.status_code == 200
@@ -170,7 +170,7 @@ class TestPremiumEndpoints:
 
     def test_get_subscription_status_no_subscription(self, client):
         """Test getting subscription status for user with no subscription."""
-        from src.app.premium import get_premium_table
+        from app.premium import get_premium_table
         
         # Create empty DynamoDB table
         dynamodb = boto3.resource('dynamodb', region_name='us-east-1')
@@ -181,7 +181,7 @@ class TestPremiumEndpoints:
             BillingMode='PAY_PER_REQUEST'
         )
         
-        with patch('src.app.premium.get_premium_table', return_value=table):
+        with patch('app.premium.get_premium_table', return_value=table):
             response = client.get('/api/premium/subscription/status/+1234567890')
             
             assert response.status_code == 200
@@ -193,7 +193,7 @@ class TestPremiumEndpoints:
 
     def test_create_subscription_success(self, client):
         """Test creating a new subscription."""
-        from src.app.premium import get_premium_table
+        from app.premium import get_premium_table
         
         # Create DynamoDB table
         dynamodb = boto3.resource('dynamodb', region_name='us-east-1')
@@ -204,9 +204,9 @@ class TestPremiumEndpoints:
             BillingMode='PAY_PER_REQUEST'
         )
         
-        with patch('src.app.premium.get_premium_table', return_value=table):
+        with patch('app.premium.get_premium_table', return_value=table):
             subscription_data = {
-                'phone_number': '+1234567890',
+                'phone_number': '1234567890',
                 'subscription_type': 'premium',
                 'duration_months': 1
             }
@@ -239,7 +239,7 @@ class TestPremiumEndpoints:
 
     def test_cancel_subscription_success(self, client):
         """Test cancelling a subscription."""
-        from src.app.premium import get_premium_table
+        from app.premium import get_premium_table
         
         # Create DynamoDB table
         dynamodb = boto3.resource('dynamodb', region_name='us-east-1')
@@ -253,12 +253,12 @@ class TestPremiumEndpoints:
         # Add subscription to cancel
         future_date = (datetime.utcnow() + timedelta(days=30)).isoformat()
         table.put_item(Item={
-            'phone_number': '+1234567890',
+            'phone_number': '1234567890',
             'subscription_type': 'premium',
             'subscription_end': future_date
         })
         
-        with patch('src.app.premium.get_premium_table', return_value=table):
+        with patch('app.premium.get_premium_table', return_value=table):
             response = client.post('/api/premium/subscription/cancel/+1234567890')
             
             assert response.status_code == 200
@@ -268,7 +268,7 @@ class TestPremiumEndpoints:
 
     def test_require_premium_decorator_with_premium(self, client):
         """Test require_premium decorator with premium user."""
-        from src.app.premium import get_premium_table, require_premium
+        from app.premium import get_premium_table, require_premium
         
         # Create DynamoDB table
         dynamodb = boto3.resource('dynamodb', region_name='us-east-1')
@@ -282,11 +282,18 @@ class TestPremiumEndpoints:
         # Add active subscription
         future_date = (datetime.utcnow() + timedelta(days=30)).isoformat()
         table.put_item(Item={
-            'phone_number': '+1234567890',
+            'phone_number': '1234567890',
             'subscription_end': future_date
         })
         
-        with patch('src.app.premium.get_premium_table', return_value=table):
+        with patch('app.premium.get_premium_table', return_value=table), \
+             patch('app.premium.get_cognito_user_info') as mock_user_info:
+            mock_user_info.return_value = {
+                'sub': 'mock-user-id',
+                'phone_number': '1234567890',
+                'email': 'test@example.com'
+            }
+            
             # Create a test route with require_premium decorator
             from flask import Flask
             test_app = Flask(__name__)
@@ -307,7 +314,7 @@ class TestPremiumEndpoints:
 
     def test_require_premium_decorator_without_premium(self, client):
         """Test require_premium decorator without premium user."""
-        from src.app.premium import get_premium_table, require_premium
+        from app.premium import get_premium_table, require_premium
         
         # Create empty DynamoDB table
         dynamodb = boto3.resource('dynamodb', region_name='us-east-1')
@@ -318,7 +325,14 @@ class TestPremiumEndpoints:
             BillingMode='PAY_PER_REQUEST'
         )
         
-        with patch('src.app.premium.get_premium_table', return_value=table):
+        with patch('app.premium.get_premium_table', return_value=table), \
+             patch('app.premium.get_cognito_user_info') as mock_user_info:
+            mock_user_info.return_value = {
+                'sub': 'mock-user-id',
+                'phone_number': '1234567890',
+                'email': 'test@example.com'
+            }
+            
             # Create a test route with require_premium decorator
             from flask import Flask
             test_app = Flask(__name__)
@@ -341,7 +355,7 @@ class TestPremiumEndpoints:
 
     def test_require_premium_decorator_missing_auth(self, client):
         """Test require_premium decorator without authorization header."""
-        from src.app.premium import require_premium
+        from app.premium import require_premium
         
         # Create a test route with require_premium decorator
         from flask import Flask

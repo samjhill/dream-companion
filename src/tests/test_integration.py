@@ -96,7 +96,7 @@ class TestAPIIntegration:
             
             # 2. Create premium subscription
             subscription_data = {
-                'phone_number': '+1234567890',
+                'phone_number': '1234567890',
                 'subscription_type': 'premium',
                 'duration_months': 1
             }

@@ -13,13 +13,23 @@ class TestStripeConfiguration:
     
     def test_load_stripe_secrets_from_environment(self, app):
         """Test loading Stripe secrets from environment variables."""
-        with patch.dict('os.environ', {
+        mock_secrets = {
             'STRIPE_SECRET_KEY': 'sk_test_mock_key',
             'STRIPE_WEBHOOK_SECRET': 'whsec_mock_secret',
             'STRIPE_MONTHLY_PRICE_ID': 'price_mock_monthly',
             'STRIPE_QUARTERLY_PRICE_ID': 'price_mock_quarterly',
             'STRIPE_YEARLY_PRICE_ID': 'price_mock_yearly'
-        }):
+        }
+        
+        with patch.dict('os.environ', {
+            'STRIPE_SECRETS_ARN': 'arn:aws:secretsmanager:us-east-1:123456789012:secret:stripe-secrets'
+        }), patch('boto3.client') as mock_boto:
+            # Mock Secrets Manager client
+            mock_secrets_client = mock_boto.return_value
+            mock_secrets_client.get_secret_value.return_value = {
+                'SecretString': json.dumps(mock_secrets)
+            }
+            
             from app.stripe_integration import load_stripe_secrets
             result = load_stripe_secrets()
             assert result is True
@@ -268,23 +278,36 @@ class TestStripeWebhooks:
 
     def test_webhook_checkout_completed(self, client, mock_stripe):
         """Test webhook handling for checkout.session.completed event."""
+        # Create a mock session object with metadata attribute
+        mock_session = Mock()
+        mock_session.metadata = {
+            'phone_number': '+1234567890',
+            'plan_type': 'monthly'
+        }
+        
         event_data = {
             'type': 'checkout.session.completed',
             'data': {
-                'object': {
-                    'metadata': {
-                        'phone_number': '+1234567890',
-                        'plan_type': 'monthly'
-                    }
-                }
+                'object': mock_session
             }
         }
         
-        with patch('app.stripe_integration.stripe.Webhook.construct_event') as mock_construct:
+        with patch('app.stripe_integration.stripe.Webhook.construct_event') as mock_construct, \
+             patch.dict('os.environ', {'STRIPE_WEBHOOK_SECRET': 'whsec_mock_secret'}):
             mock_construct.return_value = event_data
             
             response = client.post('/api/stripe/webhook',
-                                 data=json.dumps(event_data),
+                                 data=json.dumps({
+                                     'type': 'checkout.session.completed',
+                                     'data': {
+                                         'object': {
+                                             'metadata': {
+                                                 'phone_number': '+1234567890',
+                                                 'plan_type': 'monthly'
+                                             }
+                                         }
+                                     }
+                                 }),
                                  headers={'Stripe-Signature': 'valid_signature'},
                                  content_type='application/json')
             
@@ -294,27 +317,41 @@ class TestStripeWebhooks:
 
     def test_webhook_subscription_created(self, client, mock_stripe):
         """Test webhook handling for customer.subscription.created event."""
+        # Create a mock subscription object with metadata attribute
+        mock_subscription = Mock()
+        mock_subscription.id = 'sub_test_123'
+        mock_subscription.metadata = {
+            'phone_number': '+1234567890',
+            'plan_type': 'monthly'
+        }
+        
         event_data = {
             'type': 'customer.subscription.created',
             'data': {
-                'object': {
-                    'id': 'sub_test_123',
-                    'metadata': {
-                        'phone_number': '+1234567890',
-                        'plan_type': 'monthly'
-                    }
-                }
+                'object': mock_subscription
             }
         }
         
-        with patch('app.stripe_integration.stripe.Webhook.construct_event') as mock_construct:
+        with patch('app.stripe_integration.stripe.Webhook.construct_event') as mock_construct, \
+             patch.dict('os.environ', {'STRIPE_WEBHOOK_SECRET': 'whsec_mock_secret'}):
             mock_construct.return_value = event_data
             
             with patch('app.premium.get_premium_table') as mock_table:
                 mock_table.return_value = Mock()
                 
                 response = client.post('/api/stripe/webhook',
-                                     data=json.dumps(event_data),
+                                     data=json.dumps({
+                                         'type': 'customer.subscription.created',
+                                         'data': {
+                                             'object': {
+                                                 'id': 'sub_test_123',
+                                                 'metadata': {
+                                                     'phone_number': '+1234567890',
+                                                     'plan_type': 'monthly'
+                                                 }
+                                             }
+                                         }
+                                     }),
                                      headers={'Stripe-Signature': 'valid_signature'},
                                      content_type='application/json')
                 
@@ -324,25 +361,37 @@ class TestStripeWebhooks:
 
     def test_webhook_subscription_deleted(self, client, mock_stripe):
         """Test webhook handling for customer.subscription.deleted event."""
+        # Create a mock subscription object with metadata attribute
+        mock_subscription = Mock()
+        mock_subscription.metadata = {
+            'phone_number': '+1234567890'
+        }
+        
         event_data = {
             'type': 'customer.subscription.deleted',
             'data': {
-                'object': {
-                    'metadata': {
-                        'phone_number': '+1234567890'
-                    }
-                }
+                'object': mock_subscription
             }
         }
         
-        with patch('app.stripe_integration.stripe.Webhook.construct_event') as mock_construct:
+        with patch('app.stripe_integration.stripe.Webhook.construct_event') as mock_construct, \
+             patch.dict('os.environ', {'STRIPE_WEBHOOK_SECRET': 'whsec_mock_secret'}):
             mock_construct.return_value = event_data
             
             with patch('app.premium.get_premium_table') as mock_table:
                 mock_table.return_value = Mock()
                 
                 response = client.post('/api/stripe/webhook',
-                                     data=json.dumps(event_data),
+                                     data=json.dumps({
+                                         'type': 'customer.subscription.deleted',
+                                         'data': {
+                                             'object': {
+                                                 'metadata': {
+                                                     'phone_number': '+1234567890'
+                                                 }
+                                             }
+                                         }
+                                     }),
                                      headers={'Stripe-Signature': 'valid_signature'},
                                      content_type='application/json')
                 

@@ -75,6 +75,9 @@ def require_premium(f):
 def is_premium_user(phone_number: str) -> bool:
     """Check if a user has an active premium subscription"""
     try:
+        # Clean phone number (remove + if present)
+        phone_number = phone_number.replace('+', '')
+        
         table = get_premium_table()
         response = table.get_item(Key={'phone_number': phone_number})
 
@@ -92,6 +95,9 @@ def is_premium_user(phone_number: str) -> bool:
 def check_premium_access(phone_number: str) -> dict:
     """Check premium access and return detailed status information"""
     try:
+        # Clean phone number (remove + if present)
+        phone_number = phone_number.replace('+', '')
+        
         table = get_premium_table()
         response = table.get_item(Key={'phone_number': phone_number})
 
@@ -201,6 +207,9 @@ def create_subscription():
 def cancel_subscription(phone_number):
     """Cancel a premium subscription"""
     try:
+        # Clean phone number (remove + if present)
+        phone_number = phone_number.replace('+', '')
+        
         table = get_premium_table()
         table.delete_item(Key={'phone_number': phone_number})
 
