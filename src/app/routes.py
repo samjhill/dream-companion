@@ -31,16 +31,18 @@ def add_cors_headers(response):
 s3_client = boto3.client('s3')
 
 @routes_bp.route('/', methods=['GET'])
+@cross_origin(supports_credentials=True)
 def api_health_check():
     """Health check endpoint for the API"""
     print("Received health check request")
     return jsonify({"status": "OK"}), 200
 
 @routes_bp.route('/<path:proxy>', methods=['OPTIONS'])
+@cross_origin(supports_credentials=True)
 def handle_options(proxy):
     """Handle OPTIONS requests for CORS preflight"""
     response = jsonify({"status": "OK"})
-    return add_cors_headers(response), 200
+    return response, 200
 
 @routes_bp.route('/themes/<phone_number>', methods=['GET'])
 @require_auth

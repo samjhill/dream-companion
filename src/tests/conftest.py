@@ -3,11 +3,15 @@ Pytest configuration and fixtures for the Dream Companion App tests.
 """
 
 import os
+import sys
 import pytest
 from unittest.mock import Mock, patch
 from flask import Flask
 import boto3
 from moto import mock_aws
+
+# Add the src directory to Python path for imports
+sys.path.insert(0, os.path.join(os.path.dirname(__file__), '..'))
 
 # Set test environment variables
 os.environ['FLASK_ENV'] = 'testing'
@@ -46,22 +50,18 @@ def runner(app):
 @pytest.fixture
 def mock_auth_session():
     """Mock AWS Cognito authentication session."""
-    with patch('src.app.auth.fetchAuthSession') as mock_session:
-        mock_session.return_value = {
-            'tokens': {
-                'accessToken': 'mock-access-token',
-                'idToken': 'mock-id-token',
-                'refreshToken': 'mock-refresh-token'
-            },
-            'userSub': 'mock-user-id',
-            'username': 'test@example.com'
+    with patch('app.auth.verify_cognito_token') as mock_verify:
+        mock_verify.return_value = {
+            'sub': 'mock-user-id',
+            'phone_number': '+1234567890',
+            'email': 'test@example.com'
         }
-        yield mock_session
+        yield mock_verify
 
 @pytest.fixture
 def mock_user_phone():
     """Mock user phone number."""
-    with patch('src.helpers.user.getUserPhoneNumber') as mock_phone:
+    with patch('app.helpers.user.getUserPhoneNumber') as mock_phone:
         mock_phone.return_value = '+1234567890'
         yield mock_phone
 
@@ -70,7 +70,11 @@ def mock_stripe():
     """Mock Stripe API calls."""
     with patch('stripe.Price.retrieve') as mock_price, \
          patch('stripe.Customer.create') as mock_customer, \
-         patch('stripe.Subscription.create') as mock_subscription:
+         patch('stripe.Subscription.create') as mock_subscription, \
+         patch('stripe.checkout.Session.create') as mock_checkout, \
+         patch('stripe.Customer.list') as mock_customer_list, \
+         patch('stripe.billing_portal.Session.create') as mock_billing_portal, \
+         patch('stripe.Subscription.list') as mock_subscription_list:
         
         mock_price.return_value = Mock(
             id='price_mock',
@@ -89,10 +93,27 @@ def mock_stripe():
             current_period_end=1234567890
         )
         
+        mock_checkout.return_value = Mock(
+            id='cs_mock',
+            url='https://checkout.stripe.com/test'
+        )
+        
+        mock_customer_list.return_value = Mock(data=[])
+        mock_subscription_list.return_value = Mock(data=[])
+        
+        mock_billing_portal.return_value = Mock(
+            id='bps_mock',
+            url='https://billing.stripe.com/test'
+        )
+        
         yield {
             'price': mock_price,
             'customer': mock_customer,
-            'subscription': mock_subscription
+            'subscription': mock_subscription,
+            'checkout': Mock(Session=Mock(create=mock_checkout)),
+            'Customer': Mock(list=mock_customer_list),
+            'billing_portal': Mock(Session=Mock(create=mock_billing_portal)),
+            'Subscription': Mock(list=mock_subscription_list)
         }
 
 @pytest.fixture

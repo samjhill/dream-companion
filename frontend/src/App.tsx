@@ -7,6 +7,7 @@ import { signOut } from 'aws-amplify/auth';
 import { LucidDreamGuide } from './components/LucidDreamGuide';
 import { SubscriptionManager } from './components/SubscriptionManager';
 import { AdvancedDreamAnalysis } from './components/AdvancedDreamAnalysis';
+import { MemoryManagement } from './components/MemoryManagement';
 import { usePremiumStatus } from './hooks/usePremiumStatus';
 import { useState } from 'react';
 import { clearUserAttributesCache } from './helpers/user';
@@ -15,7 +16,7 @@ import { ThemeToggle } from './components/ThemeToggle';
 
 // Constants
 interface NavigationItem {
-  id: 'overview' | 'dreams' | 'themes' | 'analysis' | 'guide' | 'waking' | 'premium';
+  id: 'overview' | 'dreams' | 'themes' | 'analysis' | 'guide' | 'waking' | 'premium' | 'memory';
   label: string;
   icon: string;
   premium?: boolean;
@@ -28,6 +29,7 @@ const NAVIGATION_ITEMS: NavigationItem[] = [
   { id: 'analysis', label: 'Advanced Analysis', icon: '🔍', premium: true },
   { id: 'guide', label: 'Lucid Guide', icon: '✨' },
   { id: 'waking', label: 'Waking Life', icon: '🌅' },
+  { id: 'memory', label: 'Memory Management', icon: '🧠', premium: true },
   { id: 'premium', label: 'Premium', icon: '💎' }
 ];
 
@@ -57,6 +59,8 @@ function App() {
         return <LucidDreamGuide />;
       case 'waking':
         return <WakingLife />;
+      case 'memory':
+        return <MemoryManagement />;
       case 'premium':
         return <SubscriptionManager />;
       default:

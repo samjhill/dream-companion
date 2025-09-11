@@ -1,0 +1,296 @@
+/* Memory Card Styles */
+.memory-card {
+  background: var(--surface-primary);
+  border-radius: var(--radius-lg);
+  box-shadow: 0 2px 8px var(--shadow-soft);
+  border: 1px solid var(--border-light);
+  transition: all var(--transition-fast);
+  overflow: hidden;
+}
+
+.memory-card:hover {
+  box-shadow: 0 4px 16px var(--shadow-medium);
+  transform: translateY(-2px);
+}
+
+.card-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: var(--space-md) var(--space-lg);
+  background: var(--soft-blue);
+  border-bottom: 1px solid var(--border-light);
+}
+
+.card-type {
+  display: flex;
+  align-items: center;
+  gap: var(--space-sm);
+}
+
+.type-icon {
+  font-size: 1.2rem;
+}
+
+.type-label {
+  font-weight: 600;
+  color: var(--text-primary);
+  text-transform: capitalize;
+}
+
+.card-actions {
+  display: flex;
+  gap: var(--space-xs);
+}
+
+.btn-icon {
+  background: none;
+  border: none;
+  padding: var(--space-xs);
+  border-radius: var(--radius-sm);
+  cursor: pointer;
+  transition: all var(--transition-fast);
+  font-size: 1rem;
+  color: var(--text-secondary);
+}
+
+.btn-icon:hover {
+  background: var(--surface-hover);
+  color: var(--text-primary);
+  transform: scale(1.1);
+}
+
+.card-content {
+  padding: var(--space-lg);
+}
+
+/* Trait Card Specific */
+.trait-card .card-content {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-sm);
+}
+
+.trait-name {
+  font-weight: 600;
+  color: var(--interactive-primary);
+  font-size: 1.1rem;
+}
+
+.trait-value {
+  color: var(--text-primary);
+  font-size: 1rem;
+  line-height: 1.5;
+}
+
+.trait-confidence {
+  color: var(--text-secondary);
+  font-size: 0.9rem;
+}
+
+.trait-updated {
+  color: var(--text-muted);
+  font-size: 0.8rem;
+}
+
+/* Pattern Card Specific */
+.pattern-card .card-content {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-sm);
+}
+
+.pattern-frequency {
+  background: var(--interactive-primary);
+  color: white;
+  padding: var(--space-xs) var(--space-sm);
+  border-radius: var(--radius-sm);
+  font-weight: 600;
+  font-size: 0.9rem;
+}
+
+.pattern-name {
+  font-weight: 600;
+  color: var(--text-primary);
+  font-size: 1.1rem;
+}
+
+.pattern-dates {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-xs);
+  color: var(--text-secondary);
+  font-size: 0.9rem;
+}
+
+/* Context Card Specific */
+.context-card .card-content {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-md);
+}
+
+.context-value {
+  color: var(--text-primary);
+  font-size: 1rem;
+  line-height: 1.6;
+}
+
+.context-meta {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-xs);
+}
+
+.context-importance {
+  font-weight: 600;
+  font-size: 0.9rem;
+}
+
+.context-source {
+  color: var(--text-secondary);
+  font-size: 0.9rem;
+}
+
+.context-created {
+  color: var(--text-muted);
+  font-size: 0.8rem;
+}
+
+/* Memory Card Specific */
+.memory-card-item .card-content {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-md);
+}
+
+.memory-content {
+  color: var(--text-primary);
+  font-size: 1rem;
+  line-height: 1.6;
+}
+
+.memory-meta {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-sm);
+}
+
+.memory-type {
+  color: var(--text-secondary);
+  font-size: 0.9rem;
+  font-weight: 500;
+}
+
+.memory-importance {
+  font-weight: 600;
+  font-size: 0.9rem;
+}
+
+.memory-tags {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--space-xs);
+}
+
+.tag {
+  background: var(--soft-blue);
+  color: var(--interactive-primary);
+  padding: 2px 8px;
+  border-radius: var(--radius-sm);
+  font-size: 0.8rem;
+  font-weight: 500;
+}
+
+.memory-created {
+  color: var(--text-muted);
+  font-size: 0.8rem;
+}
+
+/* Edit Form Styles */
+.edit-form {
+  padding: var(--space-lg);
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-md);
+}
+
+.form-input,
+.form-textarea,
+.form-select {
+  width: 100%;
+  padding: var(--space-sm) var(--space-md);
+  border: 1px solid var(--border-light);
+  border-radius: var(--radius-md);
+  font-size: 1rem;
+  color: var(--text-primary);
+  background: var(--surface-primary);
+  transition: all var(--transition-fast);
+}
+
+.form-input:focus,
+.form-textarea:focus,
+.form-select:focus {
+  outline: none;
+  border-color: var(--interactive-primary);
+  box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.1);
+}
+
+.form-textarea {
+  resize: vertical;
+  min-height: 80px;
+}
+
+.edit-actions {
+  display: flex;
+  gap: var(--space-sm);
+  justify-content: flex-end;
+}
+
+/* Responsive Design */
+@media (max-width: 768px) {
+  .card-header {
+    padding: var(--space-sm) var(--space-md);
+  }
+  
+  .card-content {
+    padding: var(--space-md);
+  }
+  
+  .edit-form {
+    padding: var(--space-md);
+  }
+  
+  .edit-actions {
+    flex-direction: column;
+  }
+  
+  .edit-actions .btn {
+    width: 100%;
+  }
+}
+
+@media (max-width: 480px) {
+  .card-header {
+    padding: var(--space-xs) var(--space-sm);
+  }
+  
+  .card-content {
+    padding: var(--space-sm);
+  }
+  
+  .edit-form {
+    padding: var(--space-sm);
+  }
+  
+  .trait-name,
+  .pattern-name {
+    font-size: 1rem;
+  }
+  
+  .trait-value,
+  .context-value,
+  .memory-content {
+    font-size: 0.9rem;
+  }
+}

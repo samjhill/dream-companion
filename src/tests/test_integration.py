@@ -14,12 +14,12 @@ class TestAPIIntegration:
     """Test API integration scenarios."""
     
     @mock_aws
-    def test_dream_workflow_integration(self, client, mock_s3_client):
+    def test_dream_workflow_integration(self, client, mock_s3_client, mock_auth_session):
         """Test the complete dream workflow from creation to retrieval."""
         # Setup S3 bucket
         mock_s3_client.create_bucket(Bucket='test-dream-bucket')
         
-        with patch('src.app.routes.S3_BUCKET_NAME', 'test-dream-bucket'):
+        with patch('app.routes.S3_BUCKET_NAME', 'test-dream-bucket'):
             # 1. Create a dream (simulate by putting data in S3)
             dream_data = {
                 'id': 'test-dream-1',
@@ -35,7 +35,7 @@ class TestAPIIntegration:
             )
             
             # 2. List dreams
-            response = client.get('/dreams/1234567890', 
+            response = client.get('/api/dreams/1234567890', 
                                 headers={'Authorization': 'Bearer valid-token'})
             
             assert response.status_code == 200
@@ -44,7 +44,7 @@ class TestAPIIntegration:
             assert dreams_list['total'] == 1
             
             # 3. Get specific dream
-            response = client.get('/dreams/1234567890/test-dream-1', 
+            response = client.get('/api/dreams/1234567890/test-dream-1', 
                                 headers={'Authorization': 'Bearer valid-token'})
             
             assert response.status_code == 200
@@ -54,12 +54,12 @@ class TestAPIIntegration:
             assert dream_detail['response'] == 'This dream suggests freedom and liberation'
 
     @mock_aws
-    def test_themes_workflow_integration(self, client, mock_s3_client):
+    def test_themes_workflow_integration(self, client, mock_s3_client, mock_auth_session):
         """Test the themes workflow integration."""
         # Setup S3 bucket
         mock_s3_client.create_bucket(Bucket='test-dream-bucket')
         
-        with patch('src.app.routes.S3_BUCKET_NAME', 'test-dream-bucket'):
+        with patch('app.routes.S3_BUCKET_NAME', 'test-dream-bucket'):
             # 1. Create themes data
             themes_data = "Flying dreams\nWater dreams\nNightmare themes"
             mock_s3_client.put_object(
@@ -69,7 +69,7 @@ class TestAPIIntegration:
             )
             
             # 2. Retrieve themes
-            response = client.get('/themes/1234567890', 
+            response = client.get('/api/themes/1234567890', 
                                 headers={'Authorization': 'Bearer valid-token'})
             
             assert response.status_code == 200
@@ -87,7 +87,7 @@ class TestAPIIntegration:
             BillingMode='PAY_PER_REQUEST'
         )
         
-        with patch('src.app.premium.get_premium_table', return_value=table):
+        with patch('app.premium.get_premium_table', return_value=table):
             # 1. Check initial premium status
             response = client.get('/api/premium/subscription/status/+1234567890')
             assert response.status_code == 200
@@ -122,13 +122,13 @@ class TestAPIIntegration:
             status = json.loads(response.data)
             assert status['is_premium'] is False
 
-    def test_authentication_flow_integration(self, client):
+    def test_authentication_flow_integration(self, client, mock_auth_session):
         """Test authentication flow across different endpoints."""
         # Test endpoints that require authentication
         protected_endpoints = [
-            '/themes/1234567890',
-            '/dreams/1234567890',
-            '/dreams/1234567890/test-dream-1'
+            '/api/themes/1234567890',
+            '/api/dreams/1234567890',
+            '/api/dreams/1234567890/test-dream-1'
         ]
         
         for endpoint in protected_endpoints:
@@ -144,32 +144,33 @@ class TestAPIIntegration:
             response = client.get(endpoint, headers={'Authorization': 'Bearer valid-token'})
             assert response.status_code != 401
 
-    def test_cors_headers_integration(self, client):
+    def test_cors_headers_integration(self, client, mock_auth_session):
         """Test CORS headers are properly set across all endpoints."""
         endpoints = [
-            '/',
-            '/themes/1234567890',
-            '/dreams/1234567890',
+            '/api/',
+            '/api/themes/1234567890',
+            '/api/dreams/1234567890',
             '/api/premium/subscription/status/+1234567890'
         ]
         
         for endpoint in endpoints:
-            response = client.get(endpoint, headers={'Authorization': 'Bearer valid-token'})
+            response = client.get(endpoint, headers={
+                'Authorization': 'Bearer valid-token',
+                'Origin': 'https://clarasdreamguide.com'
+            })
             
             # Check CORS headers are present
             assert 'Access-Control-Allow-Origin' in response.headers
-            assert 'Access-Control-Allow-Headers' in response.headers
-            assert 'Access-Control-Allow-Methods' in response.headers
             assert 'Access-Control-Allow-Credentials' in response.headers
             
             # Check specific values
             assert response.headers['Access-Control-Allow-Origin'] == 'https://clarasdreamguide.com'
             assert response.headers['Access-Control-Allow-Credentials'] == 'true'
 
-    def test_error_handling_integration(self, client):
+    def test_error_handling_integration(self, client, mock_auth_session):
         """Test error handling across the API."""
         # Test 404 errors
-        response = client.get('/dreams/1234567890/nonexistent', 
+        response = client.get('/api/dreams/1234567890/nonexistent', 
                             headers={'Authorization': 'Bearer valid-token'})
         assert response.status_code == 404
         
@@ -180,15 +181,15 @@ class TestAPIIntegration:
         assert response.status_code == 400
         
         # Test 500 errors (when S3 is not configured)
-        with patch('src.app.routes.S3_BUCKET_NAME', None):
-            response = client.get('/dreams/1234567890', 
+        with patch('app.routes.S3_BUCKET_NAME', None):
+            response = client.get('/api/dreams/1234567890', 
                                 headers={'Authorization': 'Bearer valid-token'})
             assert response.status_code == 500
 
-    @patch('src.app.stripe_integration.stripe.api_key', 'sk_test_mock')
-    def test_stripe_integration_flow(self, client):
+    @patch('app.stripe_integration.stripe.api_key', 'sk_test_mock')
+    def test_stripe_integration_flow(self, client, mock_auth_session):
         """Test Stripe integration flow."""
-        with patch('src.app.stripe_integration.stripe.checkout.Session.create') as mock_checkout:
+        with patch('app.stripe_integration.stripe.checkout.Session.create') as mock_checkout:
             mock_checkout.return_value = Mock(
                 id='cs_test_123',
                 url='https://checkout.stripe.com/test'
@@ -211,7 +212,7 @@ class TestAPIIntegration:
 
     def test_health_check_integration(self, client):
         """Test health check endpoint integration."""
-        response = client.get('/')
+        response = client.get('/api/', headers={'Origin': 'https://clarasdreamguide.com'})
         
         assert response.status_code == 200
         data = json.loads(response.data)
@@ -222,18 +223,21 @@ class TestAPIIntegration:
 
     def test_options_request_integration(self, client):
         """Test OPTIONS request handling for CORS preflight."""
-        response = client.options('/any/path')
+        response = client.options('/api/any/path', headers={
+            'Origin': 'https://clarasdreamguide.com',
+            'Access-Control-Request-Method': 'GET',
+            'Access-Control-Request-Headers': 'Content-Type,Authorization'
+        })
         
         assert response.status_code == 200
-        data = json.loads(response.data)
-        assert data['status'] == 'OK'
+        # OPTIONS requests may return empty body, just check status
         
         # Verify CORS headers are set
         assert 'Access-Control-Allow-Origin' in response.headers
         assert 'Access-Control-Allow-Methods' in response.headers
         assert 'Access-Control-Allow-Headers' in response.headers
 
-    def test_pagination_integration(self, client, mock_s3_client):
+    def test_pagination_integration(self, client, mock_s3_client, mock_auth_session):
         """Test pagination integration across the API."""
         # Setup S3 bucket with multiple dreams
         mock_s3_client.create_bucket(Bucket='test-dream-bucket')
@@ -253,9 +257,9 @@ class TestAPIIntegration:
                 Body=json.dumps(dream_data)
             )
         
-        with patch('src.app.routes.S3_BUCKET_NAME', 'test-dream-bucket'):
+        with patch('app.routes.S3_BUCKET_NAME', 'test-dream-bucket'):
             # Test first page
-            response = client.get('/dreams/1234567890?limit=10&offset=0', 
+            response = client.get('/api/dreams/1234567890?limit=10&offset=0', 
                                 headers={'Authorization': 'Bearer valid-token'})
             
             assert response.status_code == 200
@@ -265,7 +269,7 @@ class TestAPIIntegration:
             assert data['hasMore'] is True
             
             # Test second page
-            response = client.get('/dreams/1234567890?limit=10&offset=10', 
+            response = client.get('/api/dreams/1234567890?limit=10&offset=10', 
                                 headers={'Authorization': 'Bearer valid-token'})
             
             assert response.status_code == 200

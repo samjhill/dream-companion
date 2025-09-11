@@ -20,7 +20,7 @@ class TestStripeConfiguration:
             'STRIPE_QUARTERLY_PRICE_ID': 'price_mock_quarterly',
             'STRIPE_YEARLY_PRICE_ID': 'price_mock_yearly'
         }):
-            from src.app.stripe_integration import load_stripe_secrets
+            from app.stripe_integration import load_stripe_secrets
             result = load_stripe_secrets()
             assert result is True
 
@@ -42,7 +42,7 @@ class TestStripeConfiguration:
                 }
                 mock_boto_client.return_value = mock_secrets_client
                 
-                from src.app.stripe_integration import load_stripe_secrets
+                from app.stripe_integration import load_stripe_secrets
                 result = load_stripe_secrets()
                 assert result is True
 
@@ -61,7 +61,7 @@ class TestStripeConfiguration:
                 mock_secrets_client.get_secret_value.side_effect = Exception("Secrets Manager error")
                 mock_boto_client.return_value = mock_secrets_client
                 
-                from src.app.stripe_integration import load_stripe_secrets
+                from app.stripe_integration import load_stripe_secrets
                 result = load_stripe_secrets()
                 assert result is False  # Should fallback to env vars
 
@@ -69,7 +69,7 @@ class TestStripeConfiguration:
 class TestStripeEndpoints:
     """Test Stripe API endpoints."""
     
-    def test_create_checkout_session_success(self, client, mock_stripe):
+    def test_create_checkout_session_success(self, client, mock_stripe, mock_auth_session):
         """Test successful checkout session creation."""
         mock_stripe['checkout'].Session.create.return_value = Mock(
             id='cs_test_123',
@@ -93,39 +93,39 @@ class TestStripeEndpoints:
         assert 'checkout_url' in data
         assert data['session_id'] == 'cs_test_123'
 
-    def test_create_checkout_session_missing_data(self, client):
+    def test_create_checkout_session_missing_data(self, client, mock_auth_session):
         """Test checkout session creation with missing data."""
         checkout_data = {
             'plan_type': 'monthly'
             # Missing phone_number
         }
-        
+
         response = client.post('/api/stripe/create-checkout-session',
                              json=checkout_data,
                              headers={'Authorization': 'Bearer valid-token'})
-        
+
         assert response.status_code == 400
         data = json.loads(response.data)
         assert 'error' in data
         assert 'Missing plan_type or phone_number' in data['error']
 
-    def test_create_checkout_session_invalid_plan(self, client):
+    def test_create_checkout_session_invalid_plan(self, client, mock_auth_session):
         """Test checkout session creation with invalid plan type."""
         checkout_data = {
             'plan_type': 'invalid_plan',
             'phone_number': '+1234567890'
         }
-        
+
         response = client.post('/api/stripe/create-checkout-session',
                              json=checkout_data,
                              headers={'Authorization': 'Bearer valid-token'})
-        
+
         assert response.status_code == 400
         data = json.loads(response.data)
         assert 'error' in data
         assert 'Invalid plan type' in data['error']
 
-    def test_create_checkout_session_stripe_error(self, client, mock_stripe):
+    def test_create_checkout_session_stripe_error(self, client, mock_stripe, mock_auth_session):
         """Test checkout session creation with Stripe error."""
         mock_stripe['checkout'].Session.create.side_effect = stripe.error.StripeError("Stripe API error")
         
@@ -143,7 +143,7 @@ class TestStripeEndpoints:
         assert 'error' in data
         assert 'Stripe error' in data['error']
 
-    def test_create_portal_session_success(self, client, mock_stripe):
+    def test_create_portal_session_success(self, client, mock_stripe, mock_auth_session):
         """Test successful portal session creation."""
         mock_customer = Mock()
         mock_customer.id = 'cus_test_123'
@@ -168,7 +168,7 @@ class TestStripeEndpoints:
         assert 'portal_url' in data
         assert data['portal_url'] == 'https://billing.stripe.com/test'
 
-    def test_create_portal_session_customer_not_found(self, client, mock_stripe):
+    def test_create_portal_session_customer_not_found(self, client, mock_stripe, mock_auth_session):
         """Test portal session creation when customer is not found."""
         mock_stripe['Customer'].list.return_value = Mock(data=[])
         
@@ -185,7 +185,7 @@ class TestStripeEndpoints:
         assert 'error' in data
         assert 'Customer not found' in data['error']
 
-    def test_get_stripe_subscription_status_success(self, client, mock_stripe):
+    def test_get_stripe_subscription_status_success(self, client, mock_stripe, mock_auth_session):
         """Test getting Stripe subscription status successfully."""
         mock_customer = Mock()
         mock_customer.id = 'cus_test_123'
@@ -210,7 +210,7 @@ class TestStripeEndpoints:
         assert data['subscription']['id'] == 'sub_test_123'
         assert data['subscription']['status'] == 'active'
 
-    def test_get_stripe_subscription_status_no_customer(self, client, mock_stripe):
+    def test_get_stripe_subscription_status_no_customer(self, client, mock_stripe, mock_auth_session):
         """Test getting subscription status when customer doesn't exist."""
         mock_stripe['Customer'].list.return_value = Mock(data=[])
         
@@ -222,7 +222,7 @@ class TestStripeEndpoints:
         assert data['has_subscription'] is False
         assert data['subscription'] is None
 
-    def test_get_stripe_subscription_status_no_subscription(self, client, mock_stripe):
+    def test_get_stripe_subscription_status_no_subscription(self, client, mock_stripe, mock_auth_session):
         """Test getting subscription status when customer has no active subscription."""
         mock_customer = Mock()
         mock_customer.id = 'cus_test_123'
@@ -280,7 +280,7 @@ class TestStripeWebhooks:
             }
         }
         
-        with patch('src.app.stripe_integration.stripe.Webhook.construct_event') as mock_construct:
+        with patch('app.stripe_integration.stripe.Webhook.construct_event') as mock_construct:
             mock_construct.return_value = event_data
             
             response = client.post('/api/stripe/webhook',
@@ -307,10 +307,10 @@ class TestStripeWebhooks:
             }
         }
         
-        with patch('src.app.stripe_integration.stripe.Webhook.construct_event') as mock_construct:
+        with patch('app.stripe_integration.stripe.Webhook.construct_event') as mock_construct:
             mock_construct.return_value = event_data
             
-            with patch('src.app.stripe_integration.get_premium_table') as mock_table:
+            with patch('app.premium.get_premium_table') as mock_table:
                 mock_table.return_value = Mock()
                 
                 response = client.post('/api/stripe/webhook',
@@ -335,10 +335,10 @@ class TestStripeWebhooks:
             }
         }
         
-        with patch('src.app.stripe_integration.stripe.Webhook.construct_event') as mock_construct:
+        with patch('app.stripe_integration.stripe.Webhook.construct_event') as mock_construct:
             mock_construct.return_value = event_data
             
-            with patch('src.app.stripe_integration.get_premium_table') as mock_table:
+            with patch('app.premium.get_premium_table') as mock_table:
                 mock_table.return_value = Mock()
                 
                 response = client.post('/api/stripe/webhook',
@@ -377,7 +377,7 @@ class TestStripeAuthentication:
 
     def test_webhook_no_auth_required(self, client):
         """Test that webhook endpoint doesn't require authentication."""
-        with patch('src.app.stripe_integration.stripe.Webhook.construct_event') as mock_construct:
+        with patch('app.stripe_integration.stripe.Webhook.construct_event') as mock_construct:
             mock_construct.return_value = {'type': 'test.event', 'data': {'object': {}}}
             
             response = client.post('/api/stripe/webhook',

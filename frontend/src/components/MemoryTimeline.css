@@ -1,0 +1,343 @@
+/* Memory Timeline Styles */
+.memory-timeline {
+  background: var(--surface-primary);
+  border-radius: var(--radius-lg);
+  box-shadow: 0 2px 8px var(--shadow-soft);
+  border: 1px solid var(--border-light);
+  overflow: hidden;
+}
+
+.timeline-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: var(--space-lg) var(--space-xl);
+  background: var(--soft-blue);
+  border-bottom: 1px solid var(--border-light);
+}
+
+.timeline-header h4 {
+  margin: 0;
+  color: var(--text-primary);
+  font-size: 1.3rem;
+  font-weight: 600;
+}
+
+.timeline-controls {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-md);
+  align-items: flex-end;
+}
+
+.group-label {
+  color: var(--text-secondary);
+  font-size: 0.9rem;
+  font-weight: 500;
+}
+
+.group-filters {
+  display: flex;
+  gap: var(--space-sm);
+  flex-wrap: wrap;
+}
+
+.group-filter {
+  display: flex;
+  align-items: center;
+  gap: var(--space-xs);
+  padding: var(--space-xs) var(--space-sm);
+  background: transparent;
+  border: 2px solid var(--border-light);
+  border-radius: var(--radius-md);
+  color: var(--text-secondary);
+  font-size: 0.9rem;
+  font-weight: 500;
+  cursor: pointer;
+  transition: all var(--transition-fast);
+}
+
+.group-filter:hover {
+  background: var(--surface-hover);
+  color: var(--text-primary);
+}
+
+.group-filter.active {
+  background: var(--interactive-primary);
+  color: white;
+  border-color: var(--interactive-primary);
+}
+
+.group-icon {
+  font-size: 1rem;
+}
+
+.group-name {
+  text-transform: capitalize;
+}
+
+.group-count {
+  font-size: 0.8rem;
+  opacity: 0.8;
+}
+
+.timeline-content {
+  padding: var(--space-xl);
+}
+
+.timeline-group {
+  margin-bottom: var(--space-xl);
+}
+
+.timeline-group:last-child {
+  margin-bottom: 0;
+}
+
+.group-header {
+  display: flex;
+  align-items: center;
+  gap: var(--space-md);
+  margin-bottom: var(--space-lg);
+}
+
+.group-title {
+  display: flex;
+  align-items: center;
+  gap: var(--space-sm);
+  font-weight: 600;
+  color: var(--text-primary);
+  font-size: 1.1rem;
+}
+
+.group-bar {
+  height: 4px;
+  flex: 1;
+  border-radius: var(--radius-sm);
+}
+
+.group-memories {
+  position: relative;
+  padding-left: var(--space-lg);
+}
+
+.group-memories::before {
+  content: '';
+  position: absolute;
+  left: 8px;
+  top: 0;
+  bottom: 0;
+  width: 2px;
+  background: var(--border-light);
+}
+
+.timeline-item {
+  position: relative;
+  margin-bottom: var(--space-lg);
+  display: flex;
+  align-items: flex-start;
+  gap: var(--space-md);
+}
+
+.timeline-item:last-child {
+  margin-bottom: 0;
+}
+
+.timeline-marker {
+  position: absolute;
+  left: -24px;
+  top: 8px;
+  width: 12px;
+  height: 12px;
+  border-radius: 50%;
+  border: 3px solid var(--surface-primary);
+  box-shadow: 0 0 0 2px var(--border-light);
+  z-index: 1;
+}
+
+.timeline-content-item {
+  flex: 1;
+  background: var(--soft-blue);
+  border-radius: var(--radius-md);
+  padding: var(--space-md);
+  transition: all var(--transition-fast);
+}
+
+.timeline-content-item:hover {
+  background: var(--surface-hover);
+  transform: translateX(4px);
+}
+
+.memory-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: var(--space-sm);
+}
+
+.memory-type {
+  background: var(--interactive-primary);
+  color: white;
+  padding: 2px 8px;
+  border-radius: var(--radius-sm);
+  font-size: 0.8rem;
+  font-weight: 500;
+  text-transform: capitalize;
+}
+
+.memory-date {
+  color: var(--text-muted);
+  font-size: 0.8rem;
+}
+
+.memory-content {
+  color: var(--text-primary);
+  line-height: 1.6;
+  margin-bottom: var(--space-sm);
+}
+
+.memory-tags {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--space-xs);
+  margin-bottom: var(--space-sm);
+}
+
+.tag {
+  background: var(--surface-primary);
+  color: var(--interactive-primary);
+  padding: 2px 6px;
+  border-radius: var(--radius-sm);
+  font-size: 0.7rem;
+  font-weight: 500;
+}
+
+.memory-importance {
+  display: flex;
+  justify-content: flex-end;
+}
+
+.importance-badge {
+  padding: 2px 8px;
+  border-radius: var(--radius-sm);
+  font-size: 0.8rem;
+  font-weight: 500;
+  text-transform: capitalize;
+}
+
+.importance-badge.high {
+  background: #ff4444;
+  color: white;
+}
+
+.importance-badge.medium {
+  background: #ffaa00;
+  color: white;
+}
+
+.importance-badge.low {
+  background: #44ff44;
+  color: white;
+}
+
+.empty-timeline {
+  text-align: center;
+  padding: var(--space-2xl);
+  color: var(--text-secondary);
+}
+
+.empty-icon {
+  font-size: 3rem;
+  margin-bottom: var(--space-md);
+  opacity: 0.6;
+}
+
+.empty-timeline p {
+  margin: 0;
+  font-size: 1.1rem;
+}
+
+/* Responsive Design */
+@media (max-width: 768px) {
+  .timeline-header {
+    flex-direction: column;
+    gap: var(--space-md);
+    align-items: flex-start;
+    padding: var(--space-md) var(--space-lg);
+  }
+  
+  .timeline-controls {
+    align-items: flex-start;
+    width: 100%;
+  }
+  
+  .group-filters {
+    width: 100%;
+    justify-content: flex-start;
+  }
+  
+  .group-filter {
+    flex: 1;
+    min-width: 120px;
+    justify-content: center;
+  }
+  
+  .timeline-content {
+    padding: var(--space-lg);
+  }
+  
+  .group-memories {
+    padding-left: var(--space-md);
+  }
+  
+  .timeline-marker {
+    left: -16px;
+  }
+  
+  .memory-header {
+    flex-direction: column;
+    gap: var(--space-xs);
+    align-items: flex-start;
+  }
+  
+  .memory-importance {
+    justify-content: flex-start;
+  }
+}
+
+@media (max-width: 480px) {
+  .timeline-header {
+    padding: var(--space-sm) var(--space-md);
+  }
+  
+  .timeline-content {
+    padding: var(--space-md);
+  }
+  
+  .group-memories {
+    padding-left: var(--space-sm);
+  }
+  
+  .timeline-marker {
+    left: -12px;
+    width: 8px;
+    height: 8px;
+  }
+  
+  .timeline-content-item {
+    padding: var(--space-sm);
+  }
+  
+  .group-title {
+    font-size: 1rem;
+  }
+  
+  .memory-content {
+    font-size: 0.9rem;
+  }
+  
+  .group-filter {
+    min-width: 100px;
+    padding: 4px 8px;
+    font-size: 0.8rem;
+  }
+}
