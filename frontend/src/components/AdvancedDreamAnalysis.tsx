@@ -1,7 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { fetchAuthSession } from 'aws-amplify/auth';
 import { getUserPhoneNumber } from '../helpers/user';
-import { PremiumGate } from './PremiumGate';
 
 interface ArchetypeAnalysis {
   archetypes_found: string[];
@@ -202,7 +201,6 @@ export const AdvancedDreamAnalysis: React.FC = () => {
   }
 
   return (
-    <PremiumGate feature="Advanced Dream Analysis">
       <div className="advanced-dream-analysis">
         <div className="section-header">
           <h2>Advanced Dream Analysis</h2>
@@ -536,6 +534,5 @@ export const AdvancedDreamAnalysis: React.FC = () => {
         )}
       </div>
       </div>
-    </PremiumGate>
   );
 };

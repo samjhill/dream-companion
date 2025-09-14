@@ -8,6 +8,7 @@ import { LucidDreamGuide } from './components/LucidDreamGuide';
 import { SubscriptionManager } from './components/SubscriptionManager';
 import { AdvancedDreamAnalysis } from './components/AdvancedDreamAnalysis';
 import { MemoryManagement } from './components/MemoryManagement';
+import { PremiumGate } from './components/PremiumGate';
 import { usePremiumStatus } from './hooks/usePremiumStatus';
 import { useState } from 'react';
 import { clearUserAttributesCache } from './helpers/user';
@@ -54,13 +55,21 @@ function App() {
       case 'themes':
         return <Themes />;
       case 'analysis':
-        return <AdvancedDreamAnalysis />;
+        return (
+          <PremiumGate feature="Advanced Dream Analysis">
+            <AdvancedDreamAnalysis />
+          </PremiumGate>
+        );
       case 'guide':
         return <LucidDreamGuide />;
       case 'waking':
         return <WakingLife />;
       case 'memory':
-        return <MemoryManagement />;
+        return (
+          <PremiumGate feature="Memory Management">
+            <MemoryManagement />
+          </PremiumGate>
+        );
       case 'premium':
         return <SubscriptionManager />;
       default:
@@ -85,9 +94,8 @@ function App() {
                   <span>Explore Themes</span>
                 </button>
                 <button
-                  className={`btn ${premiumStatus?.has_premium ? 'btn-secondary' : 'btn-disabled'} action-card`}
+                  className={`btn btn-secondary action-card`}
                   onClick={() => setActiveSection('analysis')}
-                  disabled={!premiumStatus?.has_premium}
                 >
                   <span className="action-icon">🔍</span>
                   <span>Advanced Analysis</span>
@@ -144,7 +152,6 @@ function App() {
               key={item.id}
               className={`nav-item ${activeSection === item.id ? 'active' : ''} ${item.premium ? 'premium-feature' : ''} ${item.premium && !premiumStatus?.has_premium ? 'premium-locked' : ''}`}
               onClick={() => setActiveSection(item.id)}
-              disabled={item.premium && !premiumStatus?.has_premium}
             >
               <span className="nav-icon">{item.icon}</span>
               <span className="nav-label">{item.label}</span>
