@@ -102,7 +102,7 @@ export const DreamHeatmap: React.FC<DreamHeatmapProps> = ({
                 width: `${boxSize}px`,
                 height: `${boxSize}px`,
                 backgroundColor,
-                border: isToday ? '2px solid #1f2937' : '1px solid #e5e7eb',
+                border: isToday ? '2px solid var(--text-primary)' : '1px solid var(--border-light)',
                 transform: hoveredDay === dateStr ? 'scale(1.2)' : 'scale(1)',
                 zIndex: hoveredDay === dateStr ? 10 : 1,
               }}
@@ -151,15 +151,15 @@ const styles: { [key: string]: React.CSSProperties } = {
   container: {
     textAlign: 'center',
     padding: '20px',
-    backgroundColor: '#ffffff',
+    backgroundColor: 'var(--surface-primary)',
     borderRadius: '12px',
-    boxShadow: '0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06)',
-    border: '1px solid #e5e7eb',
+    boxShadow: '0 4px 6px -1px var(--shadow-soft), 0 2px 4px -1px var(--shadow-soft)',
+    border: '1px solid var(--border-light)',
   },
   title: {
     fontSize: '1.25rem',
     fontWeight: '600',
-    color: '#1f2937',
+    color: 'var(--text-primary)',
     marginBottom: '20px',
     marginTop: '0',
   },
@@ -168,9 +168,9 @@ const styles: { [key: string]: React.CSSProperties } = {
     gridTemplateColumns: 'repeat(7, 1fr)', // 7 days per row
     margin: '0 auto',
     padding: '10px',
-    backgroundColor: '#f9fafb',
+    backgroundColor: 'var(--bg-secondary)',
     borderRadius: '8px',
-    border: '1px solid #e5e7eb',
+    border: '1px solid var(--border-light)',
   },
   dayBox: {
     display: 'flex',
@@ -178,7 +178,7 @@ const styles: { [key: string]: React.CSSProperties } = {
     justifyContent: 'center',
     alignItems: 'center',
     borderRadius: '3px',
-    color: '#374151',
+    color: 'var(--text-secondary)',
     fontSize: '10px',
     fontWeight: '500',
     cursor: 'pointer',
@@ -204,13 +204,13 @@ const styles: { [key: string]: React.CSSProperties } = {
     gap: '8px',
     marginTop: '20px',
     padding: '15px',
-    backgroundColor: '#f9fafb',
+    backgroundColor: 'var(--bg-secondary)',
     borderRadius: '8px',
-    border: '1px solid #e5e7eb',
+    border: '1px solid var(--border-light)',
   },
   legendText: {
     fontSize: '12px',
-    color: '#6b7280',
+    color: 'var(--text-muted)',
     fontWeight: '500',
   },
   legendItems: {
@@ -220,6 +220,6 @@ const styles: { [key: string]: React.CSSProperties } = {
   },
   legendItem: {
     borderRadius: '2px',
-    border: '1px solid #d1d5db',
+    border: '1px solid var(--border-light)',
   },
 };
