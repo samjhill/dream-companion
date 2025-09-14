@@ -1356,7 +1356,7 @@ a:hover {
 }
 
 .status-card {
-  background: white;
+  background: var(--surface-primary);
   border-radius: var(--radius-lg);
   padding: var(--space-xl);
   box-shadow: var(--shadow-medium);
@@ -1464,7 +1464,7 @@ a:hover {
 }
 
 .plan-card {
-  background: white;
+  background: var(--surface-primary);
   border-radius: var(--radius-lg);
   padding: var(--space-xl);
   box-shadow: var(--shadow-medium);
@@ -1566,7 +1566,7 @@ a:hover {
 }
 
 .benefit-card {
-  background: white;
+  background: var(--surface-primary);
   border-radius: var(--radius-lg);
   padding: var(--space-lg);
   box-shadow: var(--shadow-medium);
@@ -1608,7 +1608,7 @@ a:hover {
 }
 
 .summary-card {
-  background: white;
+  background: var(--surface-primary);
   border-radius: var(--radius-lg);
   padding: var(--space-xl);
   box-shadow: var(--shadow-medium);
@@ -1688,7 +1688,7 @@ a:hover {
 }
 
 .tab-content {
-  background: white;
+  background: var(--surface-primary);
   border-radius: var(--radius-lg);
   padding: var(--space-xl);
   box-shadow: var(--shadow-medium);
@@ -1746,7 +1746,7 @@ a:hover {
   justify-content: space-between;
   align-items: center;
   padding: var(--space-sm);
-  background: white;
+  background: var(--surface-primary);
   border-radius: var(--radius-sm);
 }
 
@@ -1807,7 +1807,7 @@ a:hover {
 }
 
 .time-dream-item {
-  background: white;
+  background: var(--surface-primary);
   border-radius: var(--radius-sm);
   padding: var(--space-md);
   margin-bottom: var(--space-sm);
@@ -1847,7 +1847,7 @@ a:hover {
   justify-content: space-between;
   align-items: center;
   padding: var(--space-sm);
-  background: white;
+  background: var(--surface-primary);
   border-radius: var(--radius-sm);
 }
 
@@ -1902,7 +1902,7 @@ a:hover {
 }
 
 .archetype-card {
-  background: white;
+  background: var(--surface-primary);
   border-radius: var(--radius-lg);
   padding: var(--space-lg);
   box-shadow: var(--shadow-medium);
@@ -2076,7 +2076,7 @@ a:hover {
   justify-content: space-between;
   align-items: center;
   padding: var(--space-sm);
-  background: white;
+  background: var(--surface-primary);
   border-radius: var(--radius-sm);
 }
 
