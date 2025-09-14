@@ -165,8 +165,6 @@ jobs:
       if: always()
       with:
         sarif_file: 'trivy-results.sarif'
-      permissions:
-        security-events: write
 
   build-and-deploy:
     runs-on: ubuntu-latest
