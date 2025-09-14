@@ -28,19 +28,23 @@ def add_cors_headers(response):
     return response
 
 # Initialize S3 client
-s3_client = boto3.client('s3')
+def get_s3_client():
+    """Get S3 client - can be mocked for testing"""
+    return boto3.client('s3')
 
 @routes_bp.route('/', methods=['GET'])
+@cross_origin(supports_credentials=True)
 def api_health_check():
     """Health check endpoint for the API"""
     print("Received health check request")
     return jsonify({"status": "OK"}), 200
 
 @routes_bp.route('/<path:proxy>', methods=['OPTIONS'])
+@cross_origin(supports_credentials=True)
 def handle_options(proxy):
     """Handle OPTIONS requests for CORS preflight"""
     response = jsonify({"status": "OK"})
-    return add_cors_headers(response), 200
+    return response, 200
 
 @routes_bp.route('/themes/<phone_number>', methods=['GET'])
 @require_auth
@@ -51,6 +55,7 @@ def get_themes(phone_number):
         if not S3_BUCKET_NAME:
             return jsonify({"error": "S3 bucket not configured"}), 500
 
+        s3_client = get_s3_client()
         response = s3_client.get_object(
             Bucket=S3_BUCKET_NAME,
             Key=f'{phone_number}/themes.txt'
@@ -76,6 +81,7 @@ def get_dreams(phone_number):
         offset = request.args.get('offset', default=0, type=int)
 
         # List all objects in the user's S3 directory
+        s3_client = get_s3_client()
         response = s3_client.list_objects_v2(
             Bucket=S3_BUCKET_NAME,
             Prefix=f'{phone_number}/'
@@ -127,6 +133,7 @@ def get_dream(phone_number, dream_id):
             return jsonify({"error": "S3 bucket not configured"}), 500
 
         # Retrieve the specific dream object from S3
+        s3_client = get_s3_client()
         key = f'{phone_number}/{dream_id}'
         response = s3_client.get_object(
             Bucket=S3_BUCKET_NAME,

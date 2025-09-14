@@ -13,8 +13,8 @@ Resources:
       Cors:
         AllowMethods: '''GET,POST,PUT,DELETE,OPTIONS'''
         AllowHeaders: '''Content-Type,X-Amz-Date,Authorization,X-Api-Key,X-Amz-Security-Token'''
-        AllowOrigin: '''https://clarasdreamguide.com'''
-        AllowCredentials: '''true'''
+        AllowOrigin: '''*'''
+        AllowCredentials: '''false'''
         MaxAge: '''300'''
   DreamCompanionFunction:
     Type: AWS::Serverless::Function

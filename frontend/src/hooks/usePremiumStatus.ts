@@ -32,37 +32,21 @@ export const usePremiumStatus = (): PremiumStatusHook => {
       const session = await fetchAuthSession();
       const phoneNumber = await getUserPhoneNumber();
 
-      console.log("Premium Status Debug:", { 
-        hasSession: !!session, 
-        hasPhoneNumber: !!phoneNumber, 
-        phoneNumber: phoneNumber 
-      });
-
       if (!phoneNumber) {
         setError("No phone number found. Please check your profile settings.");
         return;
       }
 
-      const url = `${API_BASE_URL}/api/premium/subscription/status/${phoneNumber.replace("+", "")}`;
-      console.log("Fetching premium status from:", url);
-
-      const response = await fetch(url, {
-        headers: { 'Authorization': `Bearer ${session?.tokens?.idToken?.toString()}` }
-      });
-
-      console.log("Premium status response:", { 
-        status: response.status, 
-        ok: response.ok 
-      });
+      const response = await fetch(
+        `${API_BASE_URL}/api/premium/subscription/status/${phoneNumber.replace("+", "")}`,
+        { headers: { 'Authorization': `Bearer ${session?.tokens?.idToken?.toString()}` } }
+      );
 
       if (!response.ok) {
-        const errorText = await response.text();
-        console.error("Premium status API error:", errorText);
-        throw new Error(`Failed to fetch premium status: ${response.status} - ${errorText}`);
+        throw new Error(`Failed to fetch premium status: ${response.status}`);
       }
 
       const data = await response.json();
-      console.log("Premium status data:", data);
       setPremiumStatus(data);
     } catch (error) {
       console.error("Error fetching premium status:", error);

@@ -15,6 +15,7 @@ Flask-Cognito==1.21
 # JWT and authentication
 PyJWT==2.9.0
 cryptography==43.0.0
+joserfc==0.6.0
 
 # AWS and cloud dependencies
 boto3==1.35.3

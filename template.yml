@@ -16,8 +16,8 @@ Resources:
       Cors:
         AllowMethods: "'GET,POST,PUT,DELETE,OPTIONS'"
         AllowHeaders: "'Content-Type,X-Amz-Date,Authorization,X-Api-Key,X-Amz-Security-Token'"
-        AllowOrigin: "'https://clarasdreamguide.com,http://localhost:3000,http://localhost:5173,http://localhost:5174,http://localhost:8080'"
-        AllowCredentials: "'true'"
+        AllowOrigin: "'*'"
+        AllowCredentials: "'false'"
         MaxAge: "'300'"
 
   DreamCompanionFunction:

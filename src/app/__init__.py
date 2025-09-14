@@ -25,7 +25,7 @@ def create_app(config_override=None):
         'http://localhost:5173',
         'http://localhost:5174',
         'http://localhost:8080'
-    ], supports_credentials=True)
+    ], supports_credentials=True, vary_header=False)
 
     # Register blueprints
     with app.app_context():

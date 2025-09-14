@@ -19,7 +19,13 @@ def create_app(config_override=None):
         app.config.update(config_override)
 
     # Enable CORS for the /api routes and allow requests from your frontend
-    CORS(app, origins=['https://clarasdreamguide.com'], supports_credentials=True)
+    CORS(app, origins=[
+        'https://clarasdreamguide.com',
+        'http://localhost:3000',
+        'http://localhost:5173',
+        'http://localhost:5174',
+        'http://localhost:8080'
+    ], supports_credentials=True, vary_header=False)
 
     # Register blueprints
     with app.app_context():

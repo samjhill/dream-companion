@@ -15,15 +15,6 @@ export const PremiumGate: React.FC<PremiumGateProps> = ({
 }) => {
   const { premiumStatus, loading, error } = usePremiumStatus();
 
-  // Debug logging
-  console.log("PremiumGate Debug:", {
-    feature,
-    premiumStatus,
-    loading,
-    error,
-    hasPremium: premiumStatus?.has_premium
-  });
-
   if (loading) {
     return (
       <div className="premium-gate-loading" data-testid="premium-gate-loading">
