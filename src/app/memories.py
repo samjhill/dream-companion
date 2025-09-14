@@ -16,31 +16,8 @@ dynamodb = boto3.resource('dynamodb')
 memories_table_name = os.getenv('MEMORIES_TABLE_NAME', 'dream-companion-memories')
 
 def get_memories_table():
-    """Get or create the memories table"""
-    try:
-        table = dynamodb.Table(memories_table_name)
-        table.load()
-        return table
-    except:
-        # Create table if it doesn't exist
-        table = dynamodb.create_table(
-            TableName=memories_table_name,
-            KeySchema=[
-                {
-                    'AttributeName': 'user_id',
-                    'KeyType': 'HASH'
-                }
-            ],
-            AttributeDefinitions=[
-                {
-                    'AttributeName': 'user_id',
-                    'AttributeType': 'S'
-                }
-            ],
-            BillingMode='PAY_PER_REQUEST'
-        )
-        table.wait_until_exists()
-        return table
+    """Get the memories table"""
+    return dynamodb.Table(memories_table_name)
 
 def get_default_user_memories(user_id):
     """Get default user memories structure"""
@@ -80,6 +57,7 @@ def get_user_memories(user_id):
         return jsonify(response['Item']), 200
 
     except Exception as e:
+        print(f"Error in get_user_memories: {str(e)}")
         return jsonify({"error": f"Failed to get user memories: {str(e)}"}), 500
 
 @memories_bp.route('/user/<user_id>/summary', methods=['GET'])
