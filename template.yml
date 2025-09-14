@@ -31,6 +31,7 @@ Resources:
           FLASK_ENV: production
           S3_BUCKET_NAME: dream.storage
           PREMIUM_TABLE_NAME: dream-companion-premium-users
+          MEMORIES_TABLE_NAME: dream-companion-memories
           STRIPE_SECRETS_ARN: arn:aws:secretsmanager:us-east-1:732408661603:secret:stripe-jm2Ua6-Kg9uMo
       Events:
         DreamCompanionApiEvent:
@@ -65,6 +66,8 @@ Resources:
               Resource: 
                 - "arn:aws:dynamodb:*:*:table/dream-companion-premium-users"
                 - "arn:aws:dynamodb:*:*:table/dream-companion-premium-users/*"
+                - "arn:aws:dynamodb:*:*:table/dream-companion-memories"
+                - "arn:aws:dynamodb:*:*:table/dream-companion-memories/*"
             - Effect: "Allow"
               Action:
                 - "secretsmanager:GetSecretValue"
