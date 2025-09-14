@@ -105,6 +105,21 @@
   padding: var(--space-xl);
 }
 
+.form-error {
+  background: #fee;
+  border: 1px solid #fcc;
+  border-radius: var(--radius-md);
+  padding: var(--space-md);
+  margin-bottom: var(--space-lg);
+  color: #c33;
+  font-size: 0.9rem;
+}
+
+.form-error p {
+  margin: 0;
+  font-weight: 500;
+}
+
 .form-field {
   margin-bottom: var(--space-lg);
 }

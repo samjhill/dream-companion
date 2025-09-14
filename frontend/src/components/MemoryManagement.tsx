@@ -70,8 +70,14 @@ export const MemoryManagement: React.FC = () => {
   const [error, setError] = useState<string | null>(null);
   const [currentUserId, setCurrentUserId] = useState<string | null>(null);
 
+
   useEffect(() => {
-    loadCurrentUserMemories();
+    try {
+      loadCurrentUserMemories();
+    } catch (error) {
+      console.error('Error in useEffect:', error);
+      setError(`Failed to initialize: ${error instanceof Error ? error.message : 'Unknown error'}`);
+    }
   }, []);
 
   const loadCurrentUserMemories = async () => {
@@ -105,11 +111,12 @@ export const MemoryManagement: React.FC = () => {
     if (!currentUserId) return;
     
     try {
+      setError(null); // Clear any previous errors
       await MemoryAPI.addTrait(currentUserId, traitData);
       await loadCurrentUserMemories();
     } catch (err) {
-      setError('Failed to add trait');
       console.error('Error adding trait:', err);
+      setError(`Failed to add trait: ${err instanceof Error ? err.message : 'Unknown error'}`);
     }
   };
 
@@ -117,11 +124,12 @@ export const MemoryManagement: React.FC = () => {
     if (!currentUserId) return;
     
     try {
+      setError(null); // Clear any previous errors
       await MemoryAPI.addMemory(currentUserId, memoryData);
       await loadCurrentUserMemories();
     } catch (err) {
-      setError('Failed to add memory');
       console.error('Error adding memory:', err);
+      setError(`Failed to add memory: ${err instanceof Error ? err.message : 'Unknown error'}`);
     }
   };
 
@@ -129,11 +137,12 @@ export const MemoryManagement: React.FC = () => {
     if (!currentUserId) return;
     
     try {
+      setError(null); // Clear any previous errors
       await MemoryAPI.addContext(currentUserId, contextData);
       await loadCurrentUserMemories();
     } catch (err) {
-      setError('Failed to add context');
       console.error('Error adding context:', err);
+      setError(`Failed to add context: ${err instanceof Error ? err.message : 'Unknown error'}`);
     }
   };
 

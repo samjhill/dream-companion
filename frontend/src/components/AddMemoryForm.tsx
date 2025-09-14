@@ -14,6 +14,7 @@ export const AddMemoryForm: React.FC<AddMemoryFormProps> = ({
   const [isOpen, setIsOpen] = useState(false);
   const [formData, setFormData] = useState<any>({});
   const [loading, setLoading] = useState(false);
+  const [error, setError] = useState<string | null>(null);
 
   const getFormFields = () => {
     switch (memoryType) {
@@ -25,7 +26,7 @@ export const AddMemoryForm: React.FC<AddMemoryFormProps> = ({
         };
       case 'context':
         return {
-          context_type: { type: 'select', label: 'Context Type', required: true, options: ['life_events', 'goals', 'challenges', 'relationships'] },
+          context_type: { type: 'select', label: 'Context Type', required: true, options: ['life_event', 'goal'] },
           context_value: { type: 'textarea', label: 'Context Value', required: true },
           importance: { type: 'select', label: 'Importance', required: true, options: ['low', 'medium', 'high'] },
           source: { type: 'select', label: 'Source', required: true, options: ['conversation', 'dream', 'observation', 'user_input'] }
@@ -45,6 +46,7 @@ export const AddMemoryForm: React.FC<AddMemoryFormProps> = ({
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setLoading(true);
+    setError(null);
     
     try {
       // Process tags if present
@@ -57,6 +59,7 @@ export const AddMemoryForm: React.FC<AddMemoryFormProps> = ({
       setIsOpen(false);
     } catch (error) {
       console.error('Error submitting form:', error);
+      setError(`Failed to submit: ${error instanceof Error ? error.message : 'Unknown error'}`);
     } finally {
       setLoading(false);
     }
@@ -191,6 +194,12 @@ export const AddMemoryForm: React.FC<AddMemoryFormProps> = ({
         </div>
 
         <form onSubmit={handleSubmit} className="form-content">
+          {error && (
+            <div className="form-error">
+              <p>{error}</p>
+            </div>
+          )}
+          
           {Object.entries(fields).map(([fieldName, fieldConfig]) => (
             <div key={fieldName} className="form-field">
               <label className="form-label">
