@@ -38,6 +38,13 @@ function App() {
   const [activeSection, setActiveSection] = useState<NavigationItem['id']>('overview');
   const { premiumStatus } = usePremiumStatus();
 
+  // Debug logging
+  console.log("App Premium Status Debug:", {
+    premiumStatus,
+    hasPremium: premiumStatus?.has_premium,
+    loading: !premiumStatus
+  });
+
   const handleSignOut = async () => {
     try {
       // Clear user data cache before signing out
