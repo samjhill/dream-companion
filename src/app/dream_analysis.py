@@ -8,6 +8,7 @@ from datetime import datetime, timedelta
 from collections import Counter
 from functools import wraps
 from .premium import require_premium, check_premium_access
+from .auth import require_cognito_auth
 
 dream_analysis_bp = Blueprint('dream_analysis_bp', __name__)
 
@@ -112,6 +113,7 @@ def extract_meaningful_words(text: str):
 
 @dream_analysis_bp.route('/advanced/<phone_number>', methods=['GET'])
 @cross_origin(supports_credentials=True)
+@require_cognito_auth
 @require_premium
 def get_advanced_analysis(phone_number):
     """Get advanced dream analysis including archetypes, patterns, and insights"""
@@ -157,6 +159,7 @@ def get_advanced_analysis(phone_number):
 
 @dream_analysis_bp.route('/archetypes/<phone_number>', methods=['GET'])
 @cross_origin(supports_credentials=True)
+@require_cognito_auth
 @require_premium
 def get_dream_archetypes(phone_number):
     """Get dream archetype analysis for a user"""
@@ -196,6 +199,7 @@ def get_dream_archetypes(phone_number):
 
 @dream_analysis_bp.route('/patterns/<phone_number>', methods=['GET'])
 @cross_origin(supports_credentials=True)
+@require_cognito_auth
 @require_premium
 def get_dream_patterns(phone_number):
     """Get psychological pattern analysis for a user"""
