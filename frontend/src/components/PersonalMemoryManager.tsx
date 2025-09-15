@@ -90,6 +90,7 @@ export const PersonalMemoryManager: React.FC = () => {
       }
 
       const data = await response.json();
+      console.log('Fetched user memories:', data);
       setUserMemories(data);
     } catch (err) {
       setError('Failed to load your personal memories');
@@ -188,6 +189,13 @@ export const PersonalMemoryManager: React.FC = () => {
 
   const renderTabContent = () => {
     if (!userMemories) return null;
+    
+    console.log('Rendering tab content for:', activeTab, {
+      memories: userMemories.memories?.length || 0,
+      traits: Object.keys(userMemories.traits || {}).length,
+      lifeEvents: userMemories.personal_context?.life_events?.length || 0,
+      goals: userMemories.personal_context?.goals?.length || 0
+    });
 
     switch (activeTab) {
       case 'memories':
