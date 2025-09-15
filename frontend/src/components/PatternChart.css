@@ -2,48 +2,51 @@
 .pattern-chart {
   background: var(--surface-primary);
   border-radius: var(--radius-lg);
+  padding: var(--space-lg);
   box-shadow: 0 2px 8px var(--shadow-soft);
   border: 1px solid var(--border-light);
-  overflow: hidden;
+  margin-bottom: var(--space-lg);
 }
 
 .chart-header {
   display: flex;
   justify-content: space-between;
   align-items: center;
-  padding: var(--space-lg) var(--space-xl);
-  background: var(--soft-blue);
-  border-bottom: 1px solid var(--border-light);
+  margin-bottom: var(--space-lg);
+  padding-bottom: var(--space-md);
+  border-bottom: 2px solid var(--border-light);
 }
 
 .chart-header h4 {
+  color: var(--text-primary);
+  margin: 0;
+  font-size: 1.2rem;
+  font-weight: 600;
   display: flex;
   align-items: center;
   gap: var(--space-sm);
-  margin: 0;
-  color: var(--text-primary);
-  font-size: 1.3rem;
-  font-weight: 600;
 }
 
 .type-icon {
-  font-size: 1.2rem;
+  font-size: 1.3rem;
 }
 
 .chart-stats {
   display: flex;
   gap: var(--space-lg);
+  font-size: 0.85rem;
   color: var(--text-secondary);
-  font-size: 0.9rem;
 }
 
 .total-patterns,
 .max-frequency {
-  font-weight: 500;
+  display: flex;
+  align-items: center;
+  gap: var(--space-xs);
 }
 
 .chart-content {
-  padding: var(--space-xl);
+  width: 100%;
 }
 
 .patterns-list {
@@ -54,37 +57,37 @@
 
 .pattern-item {
   display: flex;
+  justify-content: space-between;
   align-items: center;
-  gap: var(--space-lg);
   padding: var(--space-md);
   background: var(--soft-blue);
   border-radius: var(--radius-md);
+  border: 1px solid var(--border-light);
   transition: all var(--transition-fast);
 }
 
 .pattern-item:hover {
   background: var(--surface-hover);
-  transform: translateX(4px);
+  transform: translateY(-1px);
+  box-shadow: 0 2px 4px var(--shadow-soft);
 }
 
 .pattern-info {
   flex: 1;
-  display: flex;
-  flex-direction: column;
-  gap: var(--space-xs);
 }
 
 .pattern-name {
-  font-weight: 600;
   color: var(--text-primary);
-  font-size: 1.1rem;
+  font-weight: 600;
+  margin-bottom: var(--space-xs);
+  font-size: 1rem;
 }
 
 .pattern-dates {
   display: flex;
-  gap: var(--space-lg);
+  gap: var(--space-md);
+  font-size: 0.8rem;
   color: var(--text-secondary);
-  font-size: 0.9rem;
 }
 
 .first-seen,
@@ -98,126 +101,105 @@
   display: flex;
   align-items: center;
   gap: var(--space-md);
-  min-width: 200px;
+  min-width: 150px;
 }
 
 .frequency-bar {
   flex: 1;
   height: 20px;
-  background: var(--border-light);
+  background: var(--surface-secondary);
   border-radius: var(--radius-sm);
   overflow: hidden;
-  position: relative;
+  border: 1px solid var(--border-light);
 }
 
 .frequency-fill {
   height: 100%;
+  transition: all var(--transition-fast);
   border-radius: var(--radius-sm);
-  transition: width 0.3s ease;
-  position: relative;
-}
-
-.frequency-fill::after {
-  content: '';
-  position: absolute;
-  top: 0;
-  left: 0;
-  right: 0;
-  bottom: 0;
-  background: linear-gradient(90deg, transparent 0%, rgba(255,255,255,0.2) 50%, transparent 100%);
-  animation: shimmer 2s infinite;
-}
-
-@keyframes shimmer {
-  0% { transform: translateX(-100%); }
-  100% { transform: translateX(100%); }
 }
 
 .frequency-count {
-  background: var(--interactive-primary);
-  color: white;
-  padding: var(--space-xs) var(--space-sm);
-  border-radius: var(--radius-sm);
-  font-weight: 600;
-  font-size: 0.9rem;
-  min-width: 40px;
-  text-align: center;
-}
-
-.empty-patterns {
-  text-align: center;
-  padding: var(--space-2xl);
-  color: var(--text-secondary);
-}
-
-.empty-patterns p {
-  margin: 0;
+  color: var(--interactive-primary);
+  font-weight: 700;
   font-size: 1.1rem;
+  min-width: 30px;
+  text-align: center;
 }
 
-/* Trend Analysis */
 .trend-analysis {
-  margin-top: var(--space-xl);
-  padding-top: var(--space-xl);
+  margin-top: var(--space-lg);
+  padding-top: var(--space-lg);
   border-top: 1px solid var(--border-light);
 }
 
 .trend-analysis h5 {
   color: var(--text-primary);
-  margin: 0 0 var(--space-lg) 0;
-  font-size: 1.2rem;
+  margin: 0 0 var(--space-md) 0;
+  font-size: 1rem;
   font-weight: 600;
 }
 
 .trend-stats {
-  display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
-  gap: var(--space-lg);
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-sm);
 }
 
 .trend-stat {
   display: flex;
-  flex-direction: column;
-  gap: var(--space-xs);
-  padding: var(--space-md);
-  background: var(--soft-blue);
-  border-radius: var(--radius-md);
+  justify-content: space-between;
+  align-items: center;
+  padding: var(--space-sm) var(--space-md);
+  background: var(--surface-secondary);
+  border-radius: var(--radius-sm);
+  border: 1px solid var(--border-light);
 }
 
 .trend-label {
   color: var(--text-secondary);
   font-size: 0.9rem;
-  font-weight: 500;
 }
 
 .trend-value {
   color: var(--text-primary);
-  font-size: 1.1rem;
   font-weight: 600;
+  font-size: 0.9rem;
+}
+
+.empty-patterns {
+  text-align: center;
+  padding: var(--space-xl);
+  color: var(--text-secondary);
+}
+
+.empty-patterns p {
+  margin: 0;
+  font-size: 1rem;
 }
 
 /* Responsive Design */
 @media (max-width: 768px) {
+  .pattern-chart {
+    padding: var(--space-md);
+  }
+  
   .chart-header {
     flex-direction: column;
-    gap: var(--space-md);
     align-items: flex-start;
-    padding: var(--space-md) var(--space-lg);
+    gap: var(--space-sm);
   }
   
   .chart-stats {
     flex-direction: column;
     gap: var(--space-sm);
-  }
-  
-  .chart-content {
-    padding: var(--space-lg);
+    width: 100%;
   }
   
   .pattern-item {
     flex-direction: column;
-    gap: var(--space-md);
     align-items: flex-start;
+    gap: var(--space-md);
   }
   
   .pattern-visualization {
@@ -231,21 +213,23 @@
   }
   
   .trend-stats {
-    grid-template-columns: 1fr;
+    gap: var(--space-xs);
+  }
+  
+  .trend-stat {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: var(--space-xs);
   }
 }
 
 @media (max-width: 480px) {
-  .chart-header {
-    padding: var(--space-sm) var(--space-md);
+  .pattern-chart {
+    padding: var(--space-sm);
   }
   
   .chart-header h4 {
     font-size: 1.1rem;
-  }
-  
-  .chart-content {
-    padding: var(--space-md);
   }
   
   .pattern-item {
@@ -253,27 +237,14 @@
   }
   
   .pattern-name {
-    font-size: 1rem;
-  }
-  
-  .pattern-dates {
-    font-size: 0.8rem;
+    font-size: 0.9rem;
   }
   
   .frequency-count {
-    font-size: 0.8rem;
-    padding: 2px 6px;
+    font-size: 1rem;
   }
   
   .trend-stat {
-    padding: var(--space-sm);
-  }
-  
-  .trend-label {
-    font-size: 0.8rem;
-  }
-  
-  .trend-value {
-    font-size: 1rem;
+    padding: var(--space-xs) var(--space-sm);
   }
 }

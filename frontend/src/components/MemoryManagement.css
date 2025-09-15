@@ -1,11 +1,15 @@
 /* Memory Management Styles */
 .memory-management {
-  max-width: 1200px;
+  max-width: 1400px;
   margin: 0 auto;
   padding: var(--space-lg);
 }
 
-.memory-header {
+.memory-management-container {
+  width: 100%;
+}
+
+.management-header {
   text-align: center;
   margin-bottom: var(--space-xl);
   padding: var(--space-xl);
@@ -15,70 +19,30 @@
   border: 1px solid var(--border-light);
 }
 
-.memory-header h2 {
+.management-header h2 {
   color: var(--text-primary);
   margin-bottom: var(--space-md);
-  font-size: 2rem;
+  font-size: 2.2rem;
+  font-weight: 700;
 }
 
-.memory-header p {
+.management-header p {
   color: var(--text-secondary);
   font-size: 1.1rem;
   line-height: 1.6;
-  margin: 0;
-}
-
-.memory-controls {
-  margin-bottom: var(--space-xl);
-}
-
-.memory-tabs {
-  display: flex;
-  gap: var(--space-sm);
   margin-bottom: var(--space-lg);
-  background: var(--surface-primary);
-  border-radius: var(--radius-lg);
-  padding: var(--space-sm);
-  box-shadow: 0 2px 8px var(--shadow-soft);
-  border: 1px solid var(--border-light);
-  overflow-x: auto;
 }
 
-.memory-tab {
+.management-actions {
   display: flex;
-  align-items: center;
-  gap: var(--space-xs);
-  padding: var(--space-md) var(--space-lg);
-  background: transparent;
-  border: none;
-  border-radius: var(--radius-md);
-  color: var(--text-secondary);
+  justify-content: center;
+  gap: var(--space-md);
+}
+
+.management-actions .btn {
+  padding: var(--space-md) var(--space-xl);
   font-size: 1rem;
   font-weight: 500;
-  cursor: pointer;
-  transition: all var(--transition-fast);
-  white-space: nowrap;
-  min-width: 120px;
-  justify-content: center;
-}
-
-.memory-tab:hover {
-  background: var(--surface-hover);
-  color: var(--text-primary);
-}
-
-.memory-tab.active {
-  background: var(--interactive-primary);
-  color: white;
-  box-shadow: 0 2px 4px var(--shadow-soft);
-}
-
-.memory-content {
-  background: var(--surface-primary);
-  border-radius: var(--radius-lg);
-  box-shadow: 0 2px 8px var(--shadow-soft);
-  border: 1px solid var(--border-light);
-  min-height: 400px;
 }
 
 /* Overview Section */
