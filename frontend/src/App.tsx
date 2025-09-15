@@ -7,7 +7,7 @@ import { signOut } from 'aws-amplify/auth';
 import { LucidDreamGuide } from './components/LucidDreamGuide';
 import { SubscriptionManager } from './components/SubscriptionManager';
 import { AdvancedDreamAnalysis } from './components/AdvancedDreamAnalysis';
-import { MemoryManagement } from './components/MemoryManagement';
+import { PersonalMemoryManager } from './components/PersonalMemoryManager';
 import { PremiumGate } from './components/PremiumGate';
 import { usePremiumStatus } from './hooks/usePremiumStatus';
 import { useState } from 'react';
@@ -66,8 +66,8 @@ function App() {
         return <WakingLife />;
       case 'memory':
         return (
-          <PremiumGate feature="Memory Management">
-            <MemoryManagement />
+          <PremiumGate feature="Personal Memory Management">
+            <PersonalMemoryManager />
           </PremiumGate>
         );
       case 'premium':
