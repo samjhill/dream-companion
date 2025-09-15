@@ -1,15 +1,11 @@
 /* Memory Management Styles */
 .memory-management {
-  max-width: 1400px;
+  max-width: 1200px;
   margin: 0 auto;
   padding: var(--space-lg);
 }
 
-.memory-management-container {
-  width: 100%;
-}
-
-.management-header {
+.memory-header {
   text-align: center;
   margin-bottom: var(--space-xl);
   padding: var(--space-xl);
@@ -19,30 +15,70 @@
   border: 1px solid var(--border-light);
 }
 
-.management-header h2 {
+.memory-header h2 {
   color: var(--text-primary);
   margin-bottom: var(--space-md);
-  font-size: 2.2rem;
-  font-weight: 700;
+  font-size: 2rem;
 }
 
-.management-header p {
+.memory-header p {
   color: var(--text-secondary);
   font-size: 1.1rem;
   line-height: 1.6;
-  margin-bottom: var(--space-lg);
+  margin: 0;
 }
 
-.management-actions {
+.memory-controls {
+  margin-bottom: var(--space-xl);
+}
+
+.memory-tabs {
   display: flex;
-  justify-content: center;
-  gap: var(--space-md);
+  gap: var(--space-sm);
+  margin-bottom: var(--space-lg);
+  background: var(--surface-primary);
+  border-radius: var(--radius-lg);
+  padding: var(--space-sm);
+  box-shadow: 0 2px 8px var(--shadow-soft);
+  border: 1px solid var(--border-light);
+  overflow-x: auto;
 }
 
-.management-actions .btn {
-  padding: var(--space-md) var(--space-xl);
+.memory-tab {
+  display: flex;
+  align-items: center;
+  gap: var(--space-xs);
+  padding: var(--space-md) var(--space-lg);
+  background: transparent;
+  border: none;
+  border-radius: var(--radius-md);
+  color: var(--text-secondary);
   font-size: 1rem;
   font-weight: 500;
+  cursor: pointer;
+  transition: all var(--transition-fast);
+  white-space: nowrap;
+  min-width: 120px;
+  justify-content: center;
+}
+
+.memory-tab:hover {
+  background: var(--surface-hover);
+  color: var(--text-primary);
+}
+
+.memory-tab.active {
+  background: var(--interactive-primary);
+  color: white;
+  box-shadow: 0 2px 4px var(--shadow-soft);
+}
+
+.memory-content {
+  background: var(--surface-primary);
+  border-radius: var(--radius-lg);
+  box-shadow: 0 2px 8px var(--shadow-soft);
+  border: 1px solid var(--border-light);
+  min-height: 400px;
 }
 
 /* Overview Section */
