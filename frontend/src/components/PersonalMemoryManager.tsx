@@ -1,11 +1,9 @@
 import React, { useState, useEffect } from 'react';
-import { fetchAuthSession } from 'aws-amplify/auth';
 import { getUserPhoneNumber } from '../helpers/user';
 import { MemoryCard } from './MemoryCard';
 import { AddMemoryForm } from './AddMemoryForm';
+import { MemoryAPI } from '../services/MemoryAPI';
 import './PersonalMemoryManager.css';
-
-const API_BASE_URL = "https://jj1rq9vx9l.execute-api.us-east-1.amazonaws.com/Prod";
 
 interface PersonalMemory {
   id: string;
@@ -75,25 +73,15 @@ export const PersonalMemoryManager: React.FC = () => {
       const userId = phoneNumber.replace('+', '');
       setCurrentUserId(userId);
       
-      const session = await fetchAuthSession();
-      const response = await fetch(
-        `${API_BASE_URL}/api/memories/user/${userId}`,
-        { headers: { 'Authorization': `Bearer ${session?.tokens?.idToken?.toString()}` } }
-      );
-
-      if (!response.ok) {
-        if (response.status === 403) {
-          setError('Premium subscription required for memory management features.');
-          return;
-        }
-        throw new Error(`Failed to fetch memories: ${response.status}`);
-      }
-
-      const data = await response.json();
+      const data = await MemoryAPI.getUserMemories(userId);
       console.log('Fetched user memories:', data);
       setUserMemories(data);
     } catch (err) {
-      setError('Failed to load your personal memories');
+      if (err instanceof Error && err.message.includes('403')) {
+        setError('Premium subscription required for memory management features.');
+      } else {
+        setError('Failed to load your personal memories');
+      }
       console.error('Error loading user memories:', err);
     } finally {
       setLoading(false);
@@ -105,23 +93,7 @@ export const PersonalMemoryManager: React.FC = () => {
     
     try {
       setError(null);
-      const session = await fetchAuthSession();
-      const response = await fetch(
-        `${API_BASE_URL}/api/memories/user/${currentUserId}/memory`,
-        {
-          method: 'POST',
-          headers: {
-            'Content-Type': 'application/json',
-            'Authorization': `Bearer ${session?.tokens?.idToken?.toString()}`
-          },
-          body: JSON.stringify(memoryData)
-        }
-      );
-
-      if (!response.ok) {
-        throw new Error(`Failed to add memory: ${response.status}`);
-      }
-
+      await MemoryAPI.addMemory(currentUserId, memoryData);
       await loadUserMemories();
     } catch (err) {
       console.error('Error adding memory:', err);
@@ -134,23 +106,7 @@ export const PersonalMemoryManager: React.FC = () => {
     
     try {
       setError(null);
-      const session = await fetchAuthSession();
-      const response = await fetch(
-        `${API_BASE_URL}/api/memories/user/${currentUserId}/trait`,
-        {
-          method: 'POST',
-          headers: {
-            'Content-Type': 'application/json',
-            'Authorization': `Bearer ${session?.tokens?.idToken?.toString()}`
-          },
-          body: JSON.stringify(traitData)
-        }
-      );
-
-      if (!response.ok) {
-        throw new Error(`Failed to add trait: ${response.status}`);
-      }
-
+      await MemoryAPI.addTrait(currentUserId, traitData);
       await loadUserMemories();
     } catch (err) {
       console.error('Error adding trait:', err);
@@ -163,23 +119,7 @@ export const PersonalMemoryManager: React.FC = () => {
     
     try {
       setError(null);
-      const session = await fetchAuthSession();
-      const response = await fetch(
-        `${API_BASE_URL}/api/memories/user/${currentUserId}/context`,
-        {
-          method: 'POST',
-          headers: {
-            'Content-Type': 'application/json',
-            'Authorization': `Bearer ${session?.tokens?.idToken?.toString()}`
-          },
-          body: JSON.stringify(contextData)
-        }
-      );
-
-      if (!response.ok) {
-        throw new Error(`Failed to add context: ${response.status}`);
-      }
-
+      await MemoryAPI.addContext(currentUserId, contextData);
       await loadUserMemories();
     } catch (err) {
       console.error('Error adding context:', err);

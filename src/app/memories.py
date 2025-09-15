@@ -38,6 +38,20 @@ def get_default_user_memories(user_id):
         'last_updated': datetime.utcnow().isoformat()
     }
 
+def validate_user_access(user_id):
+    """Validate that the user_id matches the authenticated user's phone number"""
+    user_info = get_cognito_user_info()
+    if not user_info:
+        return False
+    
+    # Get the phone number from the token and remove the + prefix
+    phone_number = user_info.get('phone_number', '')
+    if phone_number.startswith('+'):
+        phone_number = phone_number[1:]
+    
+    # Compare with the user_id from the URL
+    return phone_number == user_id
+
 @memories_bp.route('/user/<user_id>', methods=['GET'])
 @cross_origin(supports_credentials=True)
 @require_cognito_auth
@@ -45,6 +59,10 @@ def get_default_user_memories(user_id):
 def get_user_memories(user_id):
     """Get user memories"""
     try:
+        # Validate that the user can only access their own data
+        if not validate_user_access(user_id):
+            return jsonify({"error": "Access denied: You can only access your own memories"}), 403
+        
         table = get_memories_table()
         response = table.get_item(Key={'user_id': user_id})
 
@@ -67,6 +85,10 @@ def get_user_memories(user_id):
 def get_user_memory_summary(user_id):
     """Get user memory summary"""
     try:
+        # Validate that the user can only access their own data
+        if not validate_user_access(user_id):
+            return jsonify({"error": "Access denied: You can only access your own memories"}), 403
+        
         table = get_memories_table()
         response = table.get_item(Key={'user_id': user_id})
 
@@ -88,6 +110,10 @@ def get_user_memory_summary(user_id):
 def add_trait(user_id):
     """Add or update a user trait"""
     try:
+        # Validate that the user can only access their own data
+        if not validate_user_access(user_id):
+            return jsonify({"error": "Access denied: You can only modify your own memories"}), 403
+        
         data = request.get_json()
         trait_type = data.get('trait_type')
         trait_value = data.get('trait_value')
@@ -128,6 +154,10 @@ def add_trait(user_id):
 def add_memory(user_id):
     """Add a new memory entry"""
     try:
+        # Validate that the user can only access their own data
+        if not validate_user_access(user_id):
+            return jsonify({"error": "Access denied: You can only modify your own memories"}), 403
+        
         data = request.get_json()
         content = data.get('content')
         memory_type = data.get('memory_type')
@@ -174,6 +204,10 @@ def add_memory(user_id):
 def add_context(user_id):
     """Add personal context information"""
     try:
+        # Validate that the user can only access their own data
+        if not validate_user_access(user_id):
+            return jsonify({"error": "Access denied: You can only modify your own memories"}), 403
+        
         data = request.get_json()
         context_type = data.get('context_type')
         context_value = data.get('context_value')
@@ -225,6 +259,10 @@ def add_context(user_id):
 def cleanup_memories(user_id):
     """Clean up old, low-importance memories"""
     try:
+        # Validate that the user can only access their own data
+        if not validate_user_access(user_id):
+            return jsonify({"error": "Access denied: You can only modify your own memories"}), 403
+        
         data = request.get_json()
         days_to_keep = data.get('days_to_keep', 30)
 

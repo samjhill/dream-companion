@@ -33,8 +33,6 @@ class MemoryAPI {
     }
   }
 
-  // Removed getUsers method as we only work with current user
-
   // Get detailed memories for a specific user
   static async getUserMemories(userId: string) {
     return this.request<{
