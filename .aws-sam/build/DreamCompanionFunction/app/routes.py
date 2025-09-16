@@ -82,10 +82,19 @@ def get_dreams(phone_number):
 
         # List all objects in the user's S3 directory
         s3_client = get_s3_client()
+        
+        # Try new path structure first (s3/user/dreams/)
         response = s3_client.list_objects_v2(
             Bucket=S3_BUCKET_NAME,
-            Prefix=f'{phone_number}/'
+            Prefix=f'{phone_number}/dreams/'
         )
+        
+        # If no dreams found in new path, try old path for backwards compatibility
+        if 'Contents' not in response or not response['Contents']:
+            response = s3_client.list_objects_v2(
+                Bucket=S3_BUCKET_NAME,
+                Prefix=f'{phone_number}/'
+            )
 
         if 'Contents' in response:
             # Filter out metadata and themes files, sort by creation date (newest first)
@@ -134,11 +143,21 @@ def get_dream(phone_number, dream_id):
 
         # Retrieve the specific dream object from S3
         s3_client = get_s3_client()
-        key = f'{phone_number}/{dream_id}'
-        response = s3_client.get_object(
-            Bucket=S3_BUCKET_NAME,
-            Key=key
-        )
+        
+        # Try new path structure first (s3/user/dreams/)
+        key = f'{phone_number}/dreams/{dream_id}'
+        try:
+            response = s3_client.get_object(
+                Bucket=S3_BUCKET_NAME,
+                Key=key
+            )
+        except s3_client.exceptions.NoSuchKey:
+            # Fallback to old path structure for backwards compatibility
+            key = f'{phone_number}/{dream_id}'
+            response = s3_client.get_object(
+                Bucket=S3_BUCKET_NAME,
+                Key=key
+            )
 
         dream_content = json.loads(response['Body'].read().decode('utf-8'))
 
