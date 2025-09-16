@@ -191,6 +191,14 @@ def get_dream(phone_number, dream_id):
         # Debug logging to understand dream data structure
         print(f"DEBUG: Dream data keys: {list(dream_content.keys())}")
         print(f"DEBUG: Dream content sample: {str(dream_content)[:200]}...")
+        
+        # Debug specific fields we're looking for
+        for field in ["dreamContent", "dream_content", "content", "text", "dream"]:
+            if field in dream_content:
+                value = dream_content[field]
+                print(f"DEBUG: Found field '{field}': {str(value)[:100]}...")
+            else:
+                print(f"DEBUG: Field '{field}' not found")
 
         # Handle response field safely - it might be a list or string
         response_text = ""
@@ -207,10 +215,20 @@ def get_dream(phone_number, dream_id):
             from datetime import datetime
             created_at = datetime.utcnow().isoformat()
         
+        # Handle dream content field - it might have different names
+        dream_content_text = (
+            dream_content.get("dreamContent") or 
+            dream_content.get("dream_content") or 
+            dream_content.get("content") or 
+            dream_content.get("text") or 
+            dream_content.get("dream") or
+            ""
+        )
+        
         to_return = {
             **dream_content,
             "response": response_text,
-            "dream_content": urllib.parse.unquote_plus(dream_content.get("dreamContent", "")),
+            "dream_content": urllib.parse.unquote_plus(dream_content_text),
             "createdAt": created_at
         }
         return jsonify(to_return), 200
