@@ -43,6 +43,15 @@ root.render(
             </Authenticator>
           }
         />
+        {/* Catch-all route for any unmatched paths */}
+        <Route
+          path="*"
+          element={
+            <Authenticator>
+               <App />
+            </Authenticator>
+          }
+        />
       </Routes>
     </Router>
   </Authenticator.Provider>
