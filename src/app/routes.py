@@ -187,6 +187,10 @@ def get_dream(phone_number, dream_id):
             )
 
         dream_content = json.loads(response['Body'].read().decode('utf-8'))
+        
+        # Debug logging to understand dream data structure
+        print(f"DEBUG: Dream data keys: {list(dream_content.keys())}")
+        print(f"DEBUG: Dream content sample: {str(dream_content)[:200]}...")
 
         # Handle response field safely - it might be a list or string
         response_text = ""
@@ -196,10 +200,18 @@ def get_dream(phone_number, dream_id):
             else:
                 response_text = str(dream_content["response"])
         
+        # Handle createdAt field - it might be missing or have different names
+        created_at = dream_content.get("createdAt") or dream_content.get("created_at") or dream_content.get("timestamp")
+        if not created_at:
+            # Fallback to current time if no creation date is found
+            from datetime import datetime
+            created_at = datetime.utcnow().isoformat()
+        
         to_return = {
             **dream_content,
             "response": response_text,
-            "dream_content": urllib.parse.unquote_plus(dream_content.get("dreamContent", ""))
+            "dream_content": urllib.parse.unquote_plus(dream_content.get("dreamContent", "")),
+            "createdAt": created_at
         }
         return jsonify(to_return), 200
 
