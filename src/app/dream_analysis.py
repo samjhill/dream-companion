@@ -16,47 +16,55 @@ dream_analysis_bp = Blueprint('dream_analysis_bp', __name__)
 s3_client = boto3.client('s3')
 S3_BUCKET_NAME = os.getenv('S3_BUCKET_NAME')
 
-# Dream archetypes and their meanings
+# Dream archetypes and their meanings with comprehensive keyword lists
 DREAM_ARCHETYPES = {
     'water': {
         'meaning': 'Emotions, subconscious, purification, change',
         'positive': 'Emotional healing, spiritual growth, renewal',
-        'negative': 'Emotional overwhelm, feeling lost, fear of change'
+        'negative': 'Emotional overwhelm, feeling lost, fear of change',
+        'keywords': ['water', 'ocean', 'sea', 'lake', 'river', 'stream', 'pool', 'rain', 'flood', 'drowning', 'swimming', 'bathing', 'waves', 'tide', 'sink', 'drain', 'thirsty', 'wet', 'moisture', 'liquid']
     },
     'flying': {
         'meaning': 'Freedom, transcendence, spiritual elevation, escape',
         'positive': 'Achievement, breaking limitations, spiritual awakening',
-        'negative': 'Avoiding problems, unrealistic expectations, escapism'
+        'negative': 'Avoiding problems, unrealistic expectations, escapism',
+        'keywords': ['flying', 'fly', 'soaring', 'floating', 'airplane', 'plane', 'bird', 'wings', 'sky', 'air', 'elevation', 'height', 'gliding', 'hovering', 'ascending', 'upward', 'clouds', 'altitude']
     },
     'falling': {
         'meaning': 'Loss of control, fear, anxiety, letting go',
         'positive': 'Surrendering to change, releasing control, transformation',
-        'negative': 'Fear of failure, loss of security, anxiety'
+        'negative': 'Fear of failure, loss of security, anxiety',
+        'keywords': ['falling', 'fall', 'dropping', 'plummeting', 'descending', 'downward', 'cliff', 'height', 'drop', 'sink', 'collapse', 'tumbling', 'crashing', 'landing', 'ground', 'bottom']
     },
     'chase': {
         'meaning': 'Avoiding problems, running from fears, pursuit of goals',
         'positive': 'Facing challenges, determination, goal pursuit',
-        'negative': 'Avoidance, fear, unresolved issues'
+        'negative': 'Avoidance, fear, unresolved issues',
+        'keywords': ['chase', 'chasing', 'running', 'pursuing', 'following', 'hunting', 'escaping', 'fleeing', 'chased', 'pursued', 'tracking', 'stalking', 'catching', 'caught', 'hide', 'hiding', 'seek', 'seeking']
     },
     'house': {
         'meaning': 'Self, mind, personality, life structure',
         'positive': 'Self-discovery, personal growth, stability',
-        'negative': 'Identity crisis, instability, feeling lost'
+        'negative': 'Identity crisis, instability, feeling lost',
+        'keywords': ['house', 'home', 'building', 'room', 'rooms', 'door', 'doors', 'window', 'windows', 'kitchen', 'bedroom', 'bathroom', 'living room', 'basement', 'attic', 'stairs', 'hallway', 'mansion', 'apartment', 'dwelling']
     },
     'death': {
         'meaning': 'Transformation, change, ending of old patterns',
         'positive': 'Personal growth, new beginnings, transformation',
-        'negative': 'Fear of change, loss, anxiety about endings'
+        'negative': 'Fear of change, loss, anxiety about endings',
+        'keywords': ['death', 'dying', 'dead', 'funeral', 'grave', 'cemetery', 'coffin', 'burial', 'ghost', 'spirit', 'soul', 'afterlife', 'heaven', 'hell', 'reincarnation', 'passed away', 'deceased', 'mortal', 'immortal']
     },
     'teeth': {
         'meaning': 'Communication, power, confidence, appearance',
         'positive': 'Clear communication, confidence, self-expression',
-        'negative': 'Communication issues, loss of power, insecurity'
+        'negative': 'Communication issues, loss of power, insecurity',
+        'keywords': ['teeth', 'tooth', 'dental', 'smile', 'bite', 'chewing', 'mouth', 'gums', 'dentist', 'braces', 'cavity', 'toothache', 'grinding', 'gnashing', 'incisors', 'molars', 'canines', 'wisdom teeth']
     },
     'naked': {
         'meaning': 'Vulnerability, authenticity, exposure, truth',
         'positive': 'Being authentic, revealing true self, honesty',
-        'negative': 'Feeling exposed, vulnerability, shame'
+        'negative': 'Feeling exposed, vulnerability, shame',
+        'keywords': ['naked', 'nude', 'bare', 'clothes', 'clothing', 'dressed', 'undressed', 'exposed', 'vulnerable', 'shame', 'embarrassed', 'nakedness', 'stripped', 'unclothed', 'garment', 'outfit', 'attire']
     }
 }
 
@@ -268,14 +276,19 @@ def perform_advanced_analysis(dreams):
     return analysis
 
 def analyze_archetypes_in_dreams(dreams):
-    """Analyze dream archetypes across all dreams"""
+    """Analyze dream archetypes across all dreams using keyword-based detection"""
     archetype_counts = Counter()
     archetype_details = {}
 
     for dream in dreams:
         dream_text = dream.get('dreamContent', '').lower()
+        dream_summary = dream.get('summary', '').lower()
+        combined_text = f"{dream_text} {dream_summary}"
+        
         for archetype, info in DREAM_ARCHETYPES.items():
-            if archetype in dream_text:
+            # Check if any keywords for this archetype appear in the dream
+            keywords = info.get('keywords', [archetype])  # Fallback to archetype name if no keywords
+            if any(keyword in combined_text for keyword in keywords):
                 archetype_counts[archetype] += 1
                 if archetype not in archetype_details:
                     archetype_details[archetype] = {
@@ -288,7 +301,7 @@ def analyze_archetypes_in_dreams(dreams):
                 archetype_details[archetype]['count'] += 1
                 archetype_details[archetype]['appearances'].append({
                     'date': dream.get('createdAt', 'Unknown'),
-                    'context': dream.get('summary', '')[:100] + '...'
+                    'context': dream.get('summary', dream_text)[:100] + '...'
                 })
 
     return {
@@ -524,9 +537,12 @@ def analyze_dream_archetypes(dream_keys, phone_number):
             dream_data = json.loads(dream_response['Body'].read().decode('utf-8'))
 
             dream_text = dream_data.get('dreamContent', '').lower()
+            dream_summary = dream_data.get('summary', '').lower()
+            combined_text = f"{dream_text} {dream_summary}"
 
             for archetype, info in DREAM_ARCHETYPES.items():
-                if archetype in dream_text:
+                keywords = info.get('keywords', [archetype])  # Fallback to archetype name if no keywords
+                if any(keyword in combined_text for keyword in keywords):
                     if archetype not in archetype_analysis['archetypes_found']:
                         archetype_analysis['archetypes_found'].append(archetype)
 
@@ -540,7 +556,7 @@ def analyze_dream_archetypes(dream_keys, phone_number):
 
                     archetype_analysis['archetype_details'][archetype]['appearances'].append({
                         'date': dream_data.get('createdAt', 'Unknown'),
-                        'context': dream_data.get('summary', '')[:100] + '...'
+                        'context': dream_data.get('summary', dream_text)[:100] + '...'
                     })
         except Exception as e:
             continue
@@ -553,6 +569,16 @@ def analyze_dream_archetypes(dream_keys, phone_number):
             archetype_analysis['recommendations'].append("Flying dreams indicate freedom and transcendence. Reflect on what you want to achieve.")
         elif archetype == 'falling':
             archetype_analysis['recommendations'].append("Falling dreams may indicate anxiety. Practice grounding techniques like deep breathing.")
+        elif archetype == 'chase':
+            archetype_analysis['recommendations'].append("Chase dreams often reflect avoidance or pursuit. Consider what you're running from or toward.")
+        elif archetype == 'house':
+            archetype_analysis['recommendations'].append("House dreams represent your inner self. Reflect on your personal growth and stability.")
+        elif archetype == 'death':
+            archetype_analysis['recommendations'].append("Death dreams symbolize transformation. Embrace change and new beginnings.")
+        elif archetype == 'teeth':
+            archetype_analysis['recommendations'].append("Teeth dreams relate to communication and confidence. Consider your self-expression.")
+        elif archetype == 'naked':
+            archetype_analysis['recommendations'].append("Naked dreams suggest vulnerability and authenticity. Embrace your true self.")
 
     return archetype_analysis
 
