@@ -319,19 +319,64 @@ def analyze_emotional_patterns(dreams):
         # Extract emotional content from dream text
         dream_text = dream.get('dreamContent', '').lower()
 
-        # Simple emotion detection (in a real implementation, you'd use NLP)
+        # Enhanced emotion detection with more comprehensive word lists
         emotional_words = {
-            'fear': ['afraid', 'scared', 'terrified', 'fear', 'panic'],
-            'joy': ['happy', 'joy', 'excited', 'elated', 'ecstatic'],
-            'sadness': ['sad', 'depressed', 'melancholy', 'grief', 'sorrow'],
-            'anger': ['angry', 'furious', 'rage', 'irritated', 'mad'],
-            'peace': ['calm', 'peaceful', 'serene', 'tranquil', 'relaxed']
+            'fear': ['afraid', 'scared', 'terrified', 'fear', 'panic', 'anxiety', 'worried', 'nervous', 'dread', 'frightened', 'alarmed', 'apprehensive'],
+            'joy': ['happy', 'joy', 'excited', 'elated', 'ecstatic', 'cheerful', 'delighted', 'thrilled', 'euphoric', 'blissful', 'jubilant', 'gleeful'],
+            'sadness': ['sad', 'depressed', 'melancholy', 'grief', 'sorrow', 'mourning', 'dejected', 'downcast', 'blue', 'gloomy', 'despondent', 'heartbroken'],
+            'anger': ['angry', 'furious', 'rage', 'irritated', 'mad', 'enraged', 'livid', 'outraged', 'fuming', 'incensed', 'wrathful', 'hostile'],
+            'peace': ['calm', 'peaceful', 'serene', 'tranquil', 'relaxed', 'content', 'satisfied', 'at ease', 'composed', 'placid', 'untroubled', 'harmonious'],
+            'love': ['love', 'loving', 'affectionate', 'caring', 'tender', 'romantic', 'passionate', 'devoted', 'adoring', 'fond', 'cherished', 'beloved'],
+            'surprise': ['surprised', 'shocked', 'amazed', 'astonished', 'startled', 'bewildered', 'stunned', 'astounded', 'flabbergasted', 'dumbfounded'],
+            'disgust': ['disgusted', 'repulsed', 'revolted', 'sickened', 'nauseated', 'appalled', 'horrified', 'repugnant', 'abhorrent', 'loathsome']
         }
 
         dream_emotions = []
         for emotion, words in emotional_words.items():
             if any(word in dream_text for word in words):
                 dream_emotions.append(emotion)
+
+        # If no specific emotions found, try broader sentiment analysis
+        if not dream_emotions:
+            # Expanded negative sentiment words
+            negative_words = [
+                'bad', 'terrible', 'awful', 'horrible', 'nightmare', 'scary', 'frightening',
+                'worried', 'anxious', 'stressed', 'troubled', 'disturbed', 'upset', 'concerned',
+                'difficult', 'hard', 'challenging', 'struggling', 'fighting', 'conflict',
+                'dark', 'cold', 'lonely', 'lost', 'confused', 'overwhelmed', 'trapped',
+                'hurt', 'pain', 'suffering', 'agony', 'torment', 'misery', 'despair',
+                'angry', 'frustrated', 'annoyed', 'irritated', 'mad', 'furious', 'rage',
+                'sad', 'depressed', 'gloomy', 'melancholy', 'sorrow', 'grief', 'mourning',
+                'disappointed', 'discouraged', 'hopeless', 'helpless', 'powerless'
+            ]
+            
+            # Expanded positive sentiment words
+            positive_words = [
+                'good', 'great', 'wonderful', 'amazing', 'beautiful', 'fantastic', 'excellent',
+                'happy', 'joyful', 'cheerful', 'delighted', 'pleased', 'content', 'satisfied',
+                'peaceful', 'calm', 'serene', 'tranquil', 'relaxed', 'comfortable', 'safe',
+                'bright', 'warm', 'sunny', 'light', 'clear', 'free', 'liberated',
+                'successful', 'achieving', 'winning', 'victorious', 'triumphant', 'accomplished',
+                'loved', 'cared', 'cherished', 'valued', 'appreciated', 'accepted', 'welcomed',
+                'excited', 'thrilled', 'enthusiastic', 'energetic', 'vibrant', 'alive', 'inspired',
+                'hopeful', 'optimistic', 'confident', 'strong', 'powerful', 'capable', 'able'
+            ]
+            
+            # Count sentiment words
+            negative_count = sum(1 for word in negative_words if word in dream_text)
+            positive_count = sum(1 for word in positive_words if word in dream_text)
+            
+            # Determine emotion based on sentiment word counts
+            if negative_count > positive_count and negative_count > 0:
+                dream_emotions.append('negative')
+            elif positive_count > negative_count and positive_count > 0:
+                dream_emotions.append('positive')
+            elif negative_count > 0 or positive_count > 0:
+                # If both are present, choose the stronger one
+                dream_emotions.append('positive' if positive_count >= negative_count else 'negative')
+            else:
+                # Only default to neutral if absolutely no emotional indicators found
+                dream_emotions.append('neutral')
 
         emotions.extend(dream_emotions)
 
@@ -496,10 +541,22 @@ def generate_recommendations(dreams):
     emotions = []
     for dream in dreams:
         dream_text = dream.get('dreamContent', '').lower()
-        if any(word in dream_text for word in ['fear', 'anxiety', 'stress']):
+        
+        # Enhanced emotion detection
+        negative_words = ['fear', 'anxiety', 'stress', 'worried', 'scared', 'terrified', 'angry', 'sad', 'depressed', 'frustrated', 'hurt', 'pain', 'struggling', 'difficult', 'hard', 'bad', 'terrible', 'awful', 'nightmare']
+        positive_words = ['joy', 'peace', 'happiness', 'happy', 'calm', 'serene', 'content', 'satisfied', 'good', 'great', 'wonderful', 'amazing', 'beautiful', 'successful', 'achieving', 'loved', 'caring', 'safe', 'comfortable']
+        
+        negative_count = sum(1 for word in negative_words if word in dream_text)
+        positive_count = sum(1 for word in positive_words if word in dream_text)
+        
+        if negative_count > positive_count and negative_count > 0:
             emotions.append('negative')
-        elif any(word in dream_text for word in ['joy', 'peace', 'happiness']):
+        elif positive_count > negative_count and positive_count > 0:
             emotions.append('positive')
+        elif negative_count > 0 or positive_count > 0:
+            emotions.append('positive' if positive_count >= negative_count else 'negative')
+        else:
+            emotions.append('neutral')
 
     if emotions.count('negative') > emotions.count('positive'):
         recommendations.append("Consider incorporating stress-reduction techniques like meditation or journaling into your daily routine.")
@@ -629,11 +686,44 @@ def analyze_psychological_patterns(dreams):
         
         # If no specific emotions found, try broader sentiment analysis
         if not dream_emotions:
-            if any(word in dream_text for word in ['bad', 'terrible', 'awful', 'horrible', 'nightmare', 'scary', 'frightening']):
+            # Expanded negative sentiment words
+            negative_words = [
+                'bad', 'terrible', 'awful', 'horrible', 'nightmare', 'scary', 'frightening',
+                'worried', 'anxious', 'stressed', 'troubled', 'disturbed', 'upset', 'concerned',
+                'difficult', 'hard', 'challenging', 'struggling', 'fighting', 'conflict',
+                'dark', 'cold', 'lonely', 'lost', 'confused', 'overwhelmed', 'trapped',
+                'hurt', 'pain', 'suffering', 'agony', 'torment', 'misery', 'despair',
+                'angry', 'frustrated', 'annoyed', 'irritated', 'mad', 'furious', 'rage',
+                'sad', 'depressed', 'gloomy', 'melancholy', 'sorrow', 'grief', 'mourning',
+                'disappointed', 'discouraged', 'hopeless', 'helpless', 'powerless'
+            ]
+            
+            # Expanded positive sentiment words
+            positive_words = [
+                'good', 'great', 'wonderful', 'amazing', 'beautiful', 'fantastic', 'excellent',
+                'happy', 'joyful', 'cheerful', 'delighted', 'pleased', 'content', 'satisfied',
+                'peaceful', 'calm', 'serene', 'tranquil', 'relaxed', 'comfortable', 'safe',
+                'bright', 'warm', 'sunny', 'light', 'clear', 'free', 'liberated',
+                'successful', 'achieving', 'winning', 'victorious', 'triumphant', 'accomplished',
+                'loved', 'cared', 'cherished', 'valued', 'appreciated', 'accepted', 'welcomed',
+                'excited', 'thrilled', 'enthusiastic', 'energetic', 'vibrant', 'alive', 'inspired',
+                'hopeful', 'optimistic', 'confident', 'strong', 'powerful', 'capable', 'able'
+            ]
+            
+            # Count sentiment words
+            negative_count = sum(1 for word in negative_words if word in dream_text)
+            positive_count = sum(1 for word in positive_words if word in dream_text)
+            
+            # Determine emotion based on sentiment word counts
+            if negative_count > positive_count and negative_count > 0:
                 dream_emotions.append('negative')
-            elif any(word in dream_text for word in ['good', 'great', 'wonderful', 'amazing', 'beautiful', 'fantastic', 'excellent']):
+            elif positive_count > negative_count and positive_count > 0:
                 dream_emotions.append('positive')
+            elif negative_count > 0 or positive_count > 0:
+                # If both are present, choose the stronger one
+                dream_emotions.append('positive' if positive_count >= negative_count else 'negative')
             else:
+                # Only default to neutral if absolutely no emotional indicators found
                 dream_emotions.append('neutral')
         
         emotions.extend(dream_emotions)
