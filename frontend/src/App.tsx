@@ -7,7 +7,7 @@ import { signOut } from 'aws-amplify/auth';
 import { LucidDreamGuide } from './components/LucidDreamGuide';
 import { SubscriptionManager } from './components/SubscriptionManager';
 import { AdvancedDreamAnalysis } from './components/AdvancedDreamAnalysis';
-import { PersonalMemoryManager } from './components/PersonalMemoryManager';
+// import { PersonalMemoryManager } from './components/PersonalMemoryManager'; // Temporarily hidden
 import { PremiumGate } from './components/PremiumGate';
 import { usePremiumStatus } from './hooks/usePremiumStatus';
 import { useState } from 'react';
@@ -17,7 +17,7 @@ import { ThemeToggle } from './components/ThemeToggle';
 
 // Constants
 interface NavigationItem {
-  id: 'overview' | 'dreams' | 'themes' | 'analysis' | 'guide' | 'waking' | 'premium' | 'memory';
+  id: 'overview' | 'dreams' | 'themes' | 'analysis' | 'guide' | 'waking' | 'premium'; // 'memory' temporarily removed
   label: string;
   icon: string;
   premium?: boolean;
@@ -30,7 +30,7 @@ const NAVIGATION_ITEMS: NavigationItem[] = [
   { id: 'analysis', label: 'Advanced Analysis', icon: '🔍', premium: true },
   { id: 'guide', label: 'Lucid Guide', icon: '✨' },
   { id: 'waking', label: 'Waking Life', icon: '🌅' },
-  { id: 'memory', label: 'Memory Management', icon: '🧠', premium: true },
+  // { id: 'memory', label: 'Memory Management', icon: '🧠', premium: true }, // Temporarily hidden
   { id: 'premium', label: 'Premium', icon: '💎' }
 ];
 
@@ -64,12 +64,12 @@ function App() {
         return <LucidDreamGuide />;
       case 'waking':
         return <WakingLife />;
-      case 'memory':
-        return (
-          <PremiumGate feature="Personal Memory Management">
-            <PersonalMemoryManager />
-          </PremiumGate>
-        );
+      // case 'memory': // Temporarily hidden
+      //   return (
+      //     <PremiumGate feature="Personal Memory Management">
+      //       <PersonalMemoryManager />
+      //     </PremiumGate>
+      //   );
       case 'premium':
         return <SubscriptionManager />;
       default:

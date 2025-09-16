@@ -579,16 +579,38 @@ def analyze_psychological_patterns(dreams):
         'themes': dict(sorted(recurring_themes.items(), key=lambda x: x[1], reverse=True)[:10])
     }
 
-    # Analyze emotional patterns
+    # Analyze emotional patterns using comprehensive emotion detection
     emotions = []
     for dream in dreams:
         dream_text = dream.get('dreamContent', '').lower()
-        if any(word in dream_text for word in ['fear', 'anxiety', 'stress', 'worry']):
-            emotions.append('negative')
-        elif any(word in dream_text for word in ['joy', 'happiness', 'peace', 'excitement']):
-            emotions.append('positive')
-        else:
-            emotions.append('neutral')
+        
+        # Comprehensive emotion detection
+        emotional_words = {
+            'fear': ['afraid', 'scared', 'terrified', 'fear', 'panic', 'anxiety', 'worried', 'nervous', 'dread'],
+            'joy': ['happy', 'joy', 'excited', 'elated', 'ecstatic', 'cheerful', 'delighted', 'thrilled', 'euphoric'],
+            'sadness': ['sad', 'depressed', 'melancholy', 'grief', 'sorrow', 'mourning', 'dejected', 'downcast', 'blue'],
+            'anger': ['angry', 'furious', 'rage', 'irritated', 'mad', 'enraged', 'livid', 'outraged', 'fuming'],
+            'peace': ['calm', 'peaceful', 'serene', 'tranquil', 'relaxed', 'content', 'satisfied', 'at ease', 'composed'],
+            'love': ['love', 'loving', 'affectionate', 'caring', 'tender', 'romantic', 'passionate', 'devoted'],
+            'surprise': ['surprised', 'shocked', 'amazed', 'astonished', 'startled', 'bewildered', 'stunned'],
+            'disgust': ['disgusted', 'repulsed', 'revolted', 'sickened', 'nauseated', 'appalled', 'horrified']
+        }
+        
+        dream_emotions = []
+        for emotion, words in emotional_words.items():
+            if any(word in dream_text for word in words):
+                dream_emotions.append(emotion)
+        
+        # If no specific emotions found, try broader sentiment analysis
+        if not dream_emotions:
+            if any(word in dream_text for word in ['bad', 'terrible', 'awful', 'horrible', 'nightmare', 'scary', 'frightening']):
+                dream_emotions.append('negative')
+            elif any(word in dream_text for word in ['good', 'great', 'wonderful', 'amazing', 'beautiful', 'fantastic', 'excellent']):
+                dream_emotions.append('positive')
+            else:
+                dream_emotions.append('neutral')
+        
+        emotions.extend(dream_emotions)
 
     emotion_counts = Counter(emotions)
     pattern_analysis['emotional_patterns'] = {
@@ -600,7 +622,29 @@ def analyze_psychological_patterns(dreams):
     if pattern_analysis['recurring_themes']['count'] > 5:
         pattern_analysis['insights'].append("You have many recurring themes, suggesting deep engagement with specific life areas.")
 
-    if emotion_counts['negative'] > emotion_counts['positive']:
-        pattern_analysis['insights'].append("Your dreams show more negative emotions. Consider stress management techniques.")
+    # Enhanced emotional insights
+    if emotion_counts:
+        dominant_emotion = emotion_counts.most_common(1)[0][0]
+        total_emotions = sum(emotion_counts.values())
+        
+        if dominant_emotion == 'fear':
+            pattern_analysis['insights'].append("Fear appears frequently in your dreams. This may indicate anxiety or unresolved concerns in your waking life.")
+        elif dominant_emotion == 'joy':
+            pattern_analysis['insights'].append("Joy and happiness dominate your dreams, suggesting a positive emotional state and optimistic outlook.")
+        elif dominant_emotion == 'sadness':
+            pattern_analysis['insights'].append("Sadness appears often in your dreams. Consider exploring these feelings and their connection to your waking life.")
+        elif dominant_emotion == 'anger':
+            pattern_analysis['insights'].append("Anger is prominent in your dreams. This may reflect frustration or unresolved conflicts.")
+        elif dominant_emotion == 'peace':
+            pattern_analysis['insights'].append("Your dreams show a peaceful emotional landscape, indicating emotional balance and tranquility.")
+        elif dominant_emotion == 'love':
+            pattern_analysis['insights'].append("Love and affection feature prominently in your dreams, reflecting strong emotional connections.")
+        
+        # Check for emotional diversity
+        emotion_diversity = len(emotion_counts) / total_emotions if total_emotions > 0 else 0
+        if emotion_diversity > 0.6:
+            pattern_analysis['insights'].append("Your dreams show rich emotional diversity, indicating a complex and nuanced inner life.")
+        elif emotion_diversity < 0.3:
+            pattern_analysis['insights'].append("Your dreams show focused emotional patterns, suggesting specific areas of emotional processing.")
 
     return pattern_analysis
