@@ -188,10 +188,18 @@ def get_dream(phone_number, dream_id):
 
         dream_content = json.loads(response['Body'].read().decode('utf-8'))
 
+        # Handle response field safely - it might be a list or string
+        response_text = ""
+        if "response" in dream_content:
+            if isinstance(dream_content["response"], list):
+                response_text = " ".join(dream_content["response"])
+            else:
+                response_text = str(dream_content["response"])
+        
         to_return = {
             **dream_content,
-            "response": " ".join(dream_content["response"]),
-            "dream_content": urllib.parse.unquote_plus(dream_content["dreamContent"])
+            "response": response_text,
+            "dream_content": urllib.parse.unquote_plus(dream_content.get("dreamContent", ""))
         }
         return jsonify(to_return), 200
 

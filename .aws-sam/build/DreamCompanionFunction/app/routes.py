@@ -172,7 +172,7 @@ def get_dream(phone_number, dream_id):
         s3_client = get_s3_client()
         
         # Try new path structure first (s3/user/dreams/)
-        key = f'{phone_number}/dreams/{dream_id}'
+        key = f'{phone_number}/dreams/{dream_id}.json'
         try:
             response = s3_client.get_object(
                 Bucket=S3_BUCKET_NAME,
@@ -180,7 +180,7 @@ def get_dream(phone_number, dream_id):
             )
         except s3_client.exceptions.NoSuchKey:
             # Fallback to old path structure for backwards compatibility
-            key = f'{phone_number}/{dream_id}'
+            key = f'{phone_number}/{dream_id}.json'
             response = s3_client.get_object(
                 Bucket=S3_BUCKET_NAME,
                 Key=key
