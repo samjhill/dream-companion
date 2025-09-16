@@ -255,6 +255,21 @@ def get_dream(phone_number, dream_id):
         }
         
         print(f"DEBUG: Final response dream_content: '{to_return['dream_content'][:100]}...'")
+        
+        # Add debug information to the response for troubleshooting
+        debug_info = {
+            "debug_keys": list(dream_content.keys()),
+            "debug_dream_content_fields": {
+                "dreamContent": dream_content.get("dreamContent", "NOT_FOUND"),
+                "dream_content": dream_content.get("dream_content", "NOT_FOUND"),
+                "content": dream_content.get("content", "NOT_FOUND"),
+                "text": dream_content.get("text", "NOT_FOUND"),
+                "dream": dream_content.get("dream", "NOT_FOUND")
+            },
+            "debug_final_dream_content": to_return['dream_content'][:200] if to_return['dream_content'] else "EMPTY"
+        }
+        
+        to_return["_debug"] = debug_info
         return jsonify(to_return), 200
 
     except s3_client.exceptions.NoSuchKey:

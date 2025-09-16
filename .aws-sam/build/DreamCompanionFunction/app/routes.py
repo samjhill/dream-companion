@@ -39,6 +39,13 @@ def api_health_check():
     print("Received health check request")
     return jsonify({"status": "OK"}), 200
 
+@routes_bp.route('/debug/test', methods=['GET'])
+@cross_origin(supports_credentials=True)
+def debug_test():
+    """Debug test endpoint"""
+    print("DEBUG: Test endpoint called")
+    return jsonify({"debug": "Test endpoint working", "timestamp": "2025-09-16T12:00:00Z"}), 200
+
 @routes_bp.route('/<path:proxy>', methods=['OPTIONS'])
 @cross_origin(supports_credentials=True)
 def handle_options(proxy):
