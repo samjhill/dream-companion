@@ -225,12 +225,24 @@ def get_dream(phone_number, dream_id):
             ""
         )
         
+        # Try to decode URL encoding, but handle cases where it's not encoded
+        try:
+            decoded_content = urllib.parse.unquote_plus(dream_content_text)
+        except Exception as e:
+            print(f"DEBUG: URL decode failed: {e}, using original content")
+            decoded_content = dream_content_text
+        
+        print(f"DEBUG: Original dream content: '{dream_content_text[:100]}...'")
+        print(f"DEBUG: Decoded dream content: '{decoded_content[:100]}...'")
+        
         to_return = {
             **dream_content,
             "response": response_text,
-            "dream_content": urllib.parse.unquote_plus(dream_content_text),
+            "dream_content": decoded_content,
             "createdAt": created_at
         }
+        
+        print(f"DEBUG: Final response dream_content: '{to_return['dream_content'][:100]}...'")
         return jsonify(to_return), 200
 
     except s3_client.exceptions.NoSuchKey:
