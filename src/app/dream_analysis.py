@@ -117,6 +117,71 @@ def extract_meaningful_words(text: str):
     filtered = [t for t in tokens if len(t) > 2 and t not in STOPWORDS]
     return filtered
 
+def calculate_emotional_intensity(dream_text: str, dream_emotions: list) -> float:
+    """Calculate emotional intensity based on emotional word density and strength.
+    
+    Args:
+        dream_text: The dream content text
+        dream_emotions: List of detected emotions for this dream
+    
+    Returns:
+        Float between 0.0 and 1.0 representing emotional intensity
+    """
+    if not dream_text or not dream_emotions:
+        return 0.0
+    
+    # Define emotional word strength weights
+    emotion_strength_weights = {
+        'fear': 0.9, 'terror': 1.0, 'panic': 1.0, 'horror': 1.0,
+        'joy': 0.8, 'ecstatic': 1.0, 'euphoric': 1.0, 'blissful': 1.0,
+        'sadness': 0.7, 'grief': 1.0, 'despair': 1.0, 'heartbroken': 1.0,
+        'anger': 0.8, 'rage': 1.0, 'furious': 1.0, 'livid': 1.0,
+        'peace': 0.6, 'serene': 0.8, 'tranquil': 0.8, 'harmonious': 0.8,
+        'love': 0.8, 'passionate': 1.0, 'devoted': 0.9, 'cherished': 0.9,
+        'surprise': 0.7, 'shocked': 0.9, 'astonished': 0.9, 'stunned': 0.9,
+        'disgust': 0.8, 'repulsed': 1.0, 'horrified': 1.0, 'appalled': 0.9,
+        'positive': 0.6, 'negative': 0.7, 'neutral': 0.1
+    }
+    
+    # Count emotional words and their strength
+    words = dream_text.lower().split()
+    total_words = len(words)
+    
+    if total_words == 0:
+        return 0.0
+    
+    emotional_word_count = 0
+    total_emotional_strength = 0.0
+    
+    # Check each word against emotional strength weights
+    for word in words:
+        # Clean word (remove punctuation)
+        clean_word = re.sub(r'[^\w]', '', word)
+        if clean_word in emotion_strength_weights:
+            emotional_word_count += 1
+            total_emotional_strength += emotion_strength_weights[clean_word]
+    
+    # Calculate intensity based on:
+    # 1. Density of emotional words (emotional_words / total_words)
+    # 2. Average strength of emotional words
+    # 3. Number of different emotions detected
+    
+    if emotional_word_count == 0:
+        return 0.0
+    
+    # Base intensity from emotional word density and strength
+    density_factor = min(emotional_word_count / total_words * 10, 1.0)  # Scale up density
+    strength_factor = total_emotional_strength / emotional_word_count if emotional_word_count > 0 else 0
+    
+    # Bonus for multiple emotions (emotional complexity)
+    emotion_diversity_bonus = min(len(set(dream_emotions)) * 0.1, 0.3)
+    
+    # Calculate final intensity
+    intensity = (density_factor * 0.4 + strength_factor * 0.4 + emotion_diversity_bonus)
+    
+    # Ensure intensity is between 0.0 and 1.0
+    return min(max(intensity, 0.0), 1.0)
+
 # Premium decorator is now imported from premium module
 
 @dream_analysis_bp.route('/advanced/<phone_number>', methods=['GET'])
@@ -380,9 +445,9 @@ def analyze_emotional_patterns(dreams):
 
         emotions.extend(dream_emotions)
 
-        # Estimate emotional intensity based on dream content length and keywords
-        intensity = len(dream_text.split()) / 100  # Simple heuristic
-        intensity_levels.append(min(intensity, 1.0))
+        # Calculate emotional intensity based on emotional word density and strength
+        intensity = calculate_emotional_intensity(dream_text, dream_emotions)
+        intensity_levels.append(intensity)
 
     emotion_counts = Counter(emotions)
 
