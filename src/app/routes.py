@@ -268,7 +268,14 @@ def get_dream(phone_number, dream_id):
                 "dream": dream_content.get("dream", "NOT_FOUND"),
                 "raw_text": dream_content.get("raw_text", "NOT_FOUND")
             },
-            "debug_final_dream_content": to_return['dream_content'][:200] if to_return['dream_content'] else "EMPTY"
+            "debug_summary_fields": {
+                "response": dream_content.get("response", "NOT_FOUND"),
+                "summary": dream_content.get("summary", "NOT_FOUND"),
+                "analysis": dream_content.get("analysis", "NOT_FOUND"),
+                "interpretation": dream_content.get("interpretation", "NOT_FOUND")
+            },
+            "debug_final_dream_content": to_return['dream_content'][:200] if to_return['dream_content'] else "EMPTY",
+            "debug_final_response": to_return['response'][:200] if to_return['response'] else "EMPTY"
         }
         
         to_return["_debug"] = debug_info
