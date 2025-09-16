@@ -53,7 +53,7 @@ interface DreamHeatmapProps {
 const calculateDreamIntensity = (dream: Dream): number => {
   if (!dream.dream_content && !dream.summary) return 0.1;
   
-  const content = (dream.dream_content || '') + ' ' + (dream.summary || '');
+  const content = `${dream.dream_content || ''} ${dream.summary || ''}`;
   const words = content.toLowerCase().split(' ');
   
   // Emotional intensity words
@@ -81,7 +81,7 @@ const calculateDreamIntensity = (dream: Dream): number => {
 const calculateDreamQuality = (dream: Dream): number => {
   if (!dream.dream_content && !dream.summary) return 0.1;
   
-  const content = (dream.dream_content || '') + ' ' + (dream.summary || '');
+  const content = `${dream.dream_content || ''} ${dream.summary || ''}`;
   const words = content.split(' ');
   
   // Quality indicators
