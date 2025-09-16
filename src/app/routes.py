@@ -234,6 +234,7 @@ def get_dream(phone_number, dream_id):
             dream_content.get("content") or 
             dream_content.get("text") or 
             dream_content.get("dream") or
+            dream_content.get("raw_text") or  # Add raw_text field
             ""
         )
         
@@ -264,7 +265,8 @@ def get_dream(phone_number, dream_id):
                 "dream_content": dream_content.get("dream_content", "NOT_FOUND"),
                 "content": dream_content.get("content", "NOT_FOUND"),
                 "text": dream_content.get("text", "NOT_FOUND"),
-                "dream": dream_content.get("dream", "NOT_FOUND")
+                "dream": dream_content.get("dream", "NOT_FOUND"),
+                "raw_text": dream_content.get("raw_text", "NOT_FOUND")
             },
             "debug_final_dream_content": to_return['dream_content'][:200] if to_return['dream_content'] else "EMPTY"
         }
