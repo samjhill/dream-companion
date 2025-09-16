@@ -141,8 +141,13 @@ def get_dreams(phone_number):
             total_dreams = len(dream_keys)
             paginated_dreams = dream_keys[offset:offset + limit]
 
+            dream_keys = [{'key': dream['key']} for dream in paginated_dreams]
+            print(f"DEBUG: Returning {len(dream_keys)} dreams for user {phone_number}")
+            for i, dream in enumerate(dream_keys):
+                print(f"DEBUG: Dream {i+1}: {dream['key']}")
+            
             return jsonify({
-                'dreams': [{'key': dream['key']} for dream in paginated_dreams],
+                'dreams': dream_keys,
                 'total': total_dreams,
                 'limit': limit,
                 'offset': offset,
