@@ -83,18 +83,45 @@ def get_dreams(phone_number):
         # List all objects in the user's S3 directory
         s3_client = get_s3_client()
         
-        # Try new path structure first (s3/user/dreams/)
-        response = s3_client.list_objects_v2(
+        # Get dreams from new path structure (s3/user/dreams/)
+        new_response = s3_client.list_objects_v2(
             Bucket=S3_BUCKET_NAME,
             Prefix=f'{phone_number}/dreams/'
         )
         
-        # If no dreams found in new path, try old path for backwards compatibility
-        if 'Contents' not in response or not response['Contents']:
-            response = s3_client.list_objects_v2(
-                Bucket=S3_BUCKET_NAME,
-                Prefix=f'{phone_number}/'
-            )
+        # Get dreams from old path structure for backwards compatibility
+        old_response = s3_client.list_objects_v2(
+            Bucket=S3_BUCKET_NAME,
+            Prefix=f'{phone_number}/'
+        )
+        
+        # Combine dreams from both locations, avoiding duplicates
+        all_contents = []
+        seen_keys = set()
+        
+        # Add dreams from new path
+        if 'Contents' in new_response:
+            for obj in new_response['Contents']:
+                key = obj['Key']
+                if key not in seen_keys:
+                    all_contents.append(obj)
+                    seen_keys.add(key)
+        
+        # Add dreams from old path (only root-level dreams, not subdirectories)
+        if 'Contents' in old_response:
+            for obj in old_response['Contents']:
+                key = obj['Key']
+                # Only include root-level dreams (not in subdirectories) and not metadata/themes
+                if (key not in seen_keys and 
+                    not key.endswith('metadata.json') and 
+                    not key.endswith('metadata') and 
+                    not key.endswith('themes.txt') and
+                    not key.startswith(f'{phone_number}/dreams/')):
+                    all_contents.append(obj)
+                    seen_keys.add(key)
+        
+        # Create a mock response object with combined contents
+        response = {'Contents': all_contents}
 
         if 'Contents' in response:
             # Filter out metadata and themes files, sort by creation date (newest first)

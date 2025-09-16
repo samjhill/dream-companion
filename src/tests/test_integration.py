@@ -22,7 +22,7 @@ class TestAPIIntegration:
         
         # Mock get_object for the specific dream
         def mock_get_object(Bucket, Key):
-            if Key == '1234567890/test-dream-1':
+            if Key == '1234567890/test-dream-1.json':
                 dream_data = {
                     'id': 'test-dream-1',
                     'dreamContent': 'I%20was%20flying%20over%20a%20beautiful%20landscape',
@@ -38,7 +38,7 @@ class TestAPIIntegration:
         # Mock list_objects_v2 to return only 1 dream
         custom_mock_s3_client.list_objects_v2.return_value = {
             'Contents': [{
-                'Key': '1234567890/test-dream-1',
+                'Key': '1234567890/test-dream-1.json',
                 'LastModified': '2024-01-01T00:00:00Z',
                 'Size': 100
             }],
@@ -57,7 +57,7 @@ class TestAPIIntegration:
             
             custom_mock_s3_client.put_object(
                 Bucket='test-dream-bucket',
-                Key='1234567890/test-dream-1',
+                Key='1234567890/test-dream-1.json',
                 Body=json.dumps(dream_data)
             )
             
