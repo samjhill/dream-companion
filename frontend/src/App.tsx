@@ -10,7 +10,8 @@ import { AdvancedDreamAnalysis } from './components/AdvancedDreamAnalysis';
 // import { PersonalMemoryManager } from './components/PersonalMemoryManager'; // Temporarily hidden
 import { PremiumGate } from './components/PremiumGate';
 import { usePremiumStatus } from './hooks/usePremiumStatus';
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
+import { useNavigate, useLocation } from 'react-router-dom';
 import { clearUserAttributesCache } from './helpers/user';
 import { ThemeProvider } from './contexts/ThemeContext';
 import { ThemeToggle } from './components/ThemeToggle';
@@ -35,8 +36,31 @@ const NAVIGATION_ITEMS: NavigationItem[] = [
 ];
 
 function App() {
-  const [activeSection, setActiveSection] = useState<NavigationItem['id']>('overview');
+  const navigate = useNavigate();
+  const location = useLocation();
   const { premiumStatus } = usePremiumStatus();
+  
+  // Get current section from URL or default to overview
+  const getCurrentSection = (): NavigationItem['id'] => {
+    const path = location.pathname.replace('/app', '') || '/';
+    const section = path === '/' ? 'overview' : path.slice(1) as NavigationItem['id'];
+    return NAVIGATION_ITEMS.some(item => item.id === section) ? section : 'overview';
+  };
+  
+  const [activeSection, setActiveSection] = useState<NavigationItem['id']>(getCurrentSection());
+  
+  // Update active section when URL changes
+  useEffect(() => {
+    const newSection = getCurrentSection();
+    setActiveSection(newSection);
+  }, [location.pathname]);
+  
+  // Navigate to section and update URL
+  const navigateToSection = (section: NavigationItem['id']) => {
+    setActiveSection(section);
+    const path = section === 'overview' ? '/app' : `/app/${section}`;
+    navigate(path);
+  };
 
   const handleSignOut = async () => {
     try {
@@ -81,21 +105,21 @@ function App() {
               <div className="action-grid">
                 <button
                   className="btn btn-primary action-card"
-                  onClick={() => setActiveSection('dreams')}
+                  onClick={() => navigateToSection('dreams')}
                 >
                   <span className="action-icon">📖</span>
                   <span>View Dream Journal</span>
                 </button>
                 <button
                   className="btn btn-secondary action-card"
-                  onClick={() => setActiveSection('themes')}
+                  onClick={() => navigateToSection('themes')}
                 >
                   <span className="action-icon">🎨</span>
                   <span>Explore Themes</span>
                 </button>
                 <button
                   className={`btn btn-secondary action-card`}
-                  onClick={() => setActiveSection('analysis')}
+                  onClick={() => navigateToSection('analysis')}
                 >
                   <span className="action-icon">🔍</span>
                   <span>Advanced Analysis</span>
@@ -103,14 +127,14 @@ function App() {
                 </button>
                 <button
                   className="btn btn-secondary action-card"
-                  onClick={() => setActiveSection('guide')}
+                  onClick={() => navigateToSection('guide')}
                 >
                   <span className="action-icon">✨</span>
                   <span>Lucid Dream Guide</span>
                 </button>
                 <button
                   className="btn btn-secondary action-card"
-                  onClick={() => setActiveSection('premium')}
+                  onClick={() => navigateToSection('premium')}
                 >
                   <span className="action-icon">💎</span>
                   <span>Premium Features</span>
@@ -151,7 +175,7 @@ function App() {
             <button
               key={item.id}
               className={`nav-item ${activeSection === item.id ? 'active' : ''} ${item.premium ? 'premium-feature' : ''} ${item.premium && !premiumStatus?.has_premium ? 'premium-locked' : ''}`}
-              onClick={() => setActiveSection(item.id)}
+              onClick={() => navigateToSection(item.id)}
             >
               <span className="nav-icon">{item.icon}</span>
               <span className="nav-label">{item.label}</span>

@@ -28,7 +28,15 @@ root.render(
         <Route path="/sms-consent" element={<SmsConsent />} />
         {/* Authenticated routes */}
         <Route
-          path="/app/*"
+          path="/app"
+          element={
+            <Authenticator>
+               <App />
+            </Authenticator>
+          }
+        />
+        <Route
+          path="/app/:section"
           element={
             <Authenticator>
                <App />
