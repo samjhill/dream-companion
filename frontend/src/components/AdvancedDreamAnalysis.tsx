@@ -286,22 +286,26 @@ export const AdvancedDreamAnalysis: React.FC = () => {
                 <div className="pattern-card">
                   <h4>Emotional Stability</h4>
                   <p className="stability-label">
-                    {getEmotionalStabilityLabel(analysis.emotional_patterns.emotional_stability.stability_level || analysis.emotional_patterns.emotional_stability)}
+                    {getEmotionalStabilityLabel(
+                      typeof analysis.emotional_patterns.emotional_stability === 'string' 
+                        ? analysis.emotional_patterns.emotional_stability
+                        : (analysis.emotional_patterns.emotional_stability as any).stability_level
+                    )}
                   </p>
                   <div className="intensity-info">
                     <p>Average Intensity: {(analysis.emotional_patterns.emotional_intensity_trend.average_intensity * 100).toFixed(1)}%</p>
                     <p>Range: {(analysis.emotional_patterns.emotional_intensity_trend.intensity_range.min * 100).toFixed(1)}% - {(analysis.emotional_patterns.emotional_intensity_trend.intensity_range.max * 100).toFixed(1)}%</p>
-                    {analysis.emotional_patterns.emotional_stability.volatility_score !== undefined && (
+                    {typeof analysis.emotional_patterns.emotional_stability === 'object' && (analysis.emotional_patterns.emotional_stability as any).volatility_score !== undefined && (
                       <>
-                        <p>Volatility: {(analysis.emotional_patterns.emotional_stability.volatility_score * 100).toFixed(1)}%</p>
-                        <p>Diversity: {(analysis.emotional_patterns.emotional_stability.diversity_score * 100).toFixed(1)}%</p>
+                        <p>Volatility: {((analysis.emotional_patterns.emotional_stability as any).volatility_score * 100).toFixed(1)}%</p>
+                        <p>Diversity: {((analysis.emotional_patterns.emotional_stability as any).diversity_score * 100).toFixed(1)}%</p>
                       </>
                     )}
                   </div>
-                  {analysis.emotional_patterns.emotional_stability.stability_insights && (
+                  {typeof analysis.emotional_patterns.emotional_stability === 'object' && (analysis.emotional_patterns.emotional_stability as any).stability_insights && (
                     <div className="stability-insights">
                       <h5>Stability Insights:</h5>
-                      {analysis.emotional_patterns.emotional_stability.stability_insights.map((insight, index) => (
+                      {(analysis.emotional_patterns.emotional_stability as any).stability_insights.map((insight: string, index: number) => (
                         <p key={index} className="insight-text">{insight}</p>
                       ))}
                     </div>
