@@ -117,6 +117,395 @@ def extract_meaningful_words(text: str):
     filtered = [t for t in tokens if len(t) > 2 and t not in STOPWORDS]
     return filtered
 
+def extract_dream_symbols(dreams):
+    """Extract all potential symbols from dreams using comprehensive analysis"""
+    symbol_categories = {
+        'nature': ['water', 'ocean', 'sea', 'lake', 'river', 'stream', 'rain', 'storm', 'tree', 'forest', 'mountain', 'hill', 'valley', 'desert', 'beach', 'island', 'sky', 'cloud', 'sun', 'moon', 'stars', 'earth', 'fire', 'wind', 'snow', 'ice'],
+        'structures': ['house', 'home', 'building', 'castle', 'tower', 'bridge', 'tunnel', 'road', 'street', 'path', 'door', 'window', 'room', 'kitchen', 'bedroom', 'bathroom', 'basement', 'attic', 'stairs', 'elevator', 'wall', 'floor', 'ceiling'],
+        'transportation': ['car', 'truck', 'bus', 'train', 'plane', 'airplane', 'boat', 'ship', 'bicycle', 'motorcycle', 'taxi', 'subway', 'helicopter', 'rocket', 'spaceship'],
+        'animals': ['dog', 'cat', 'bird', 'fish', 'horse', 'cow', 'pig', 'sheep', 'lion', 'tiger', 'bear', 'wolf', 'elephant', 'monkey', 'snake', 'spider', 'butterfly', 'bee', 'dragon', 'unicorn'],
+        'people': ['person', 'man', 'woman', 'child', 'baby', 'friend', 'family', 'mother', 'father', 'brother', 'sister', 'teacher', 'doctor', 'stranger', 'crowd', 'group'],
+        'objects': ['book', 'phone', 'computer', 'key', 'money', 'jewelry', 'clothes', 'shoes', 'bag', 'box', 'mirror', 'clock', 'watch', 'camera', 'guitar', 'piano', 'ball', 'toy'],
+        'food': ['food', 'meal', 'bread', 'cake', 'fruit', 'apple', 'banana', 'orange', 'meat', 'vegetable', 'drink', 'water', 'coffee', 'tea', 'wine', 'beer'],
+        'emotions': ['love', 'hate', 'fear', 'joy', 'sadness', 'anger', 'peace', 'excitement', 'anxiety', 'calm', 'confusion', 'surprise'],
+        'activities': ['running', 'walking', 'swimming', 'flying', 'dancing', 'singing', 'playing', 'working', 'sleeping', 'eating', 'driving', 'reading', 'writing', 'drawing'],
+        'abstract': ['dream', 'memory', 'thought', 'idea', 'problem', 'solution', 'secret', 'mystery', 'magic', 'power', 'freedom', 'escape', 'journey', 'adventure']
+    }
+    
+    all_symbols = set()
+    for category_symbols in symbol_categories.values():
+        all_symbols.update(category_symbols)
+    
+    return list(all_symbols)
+
+def extract_symbols_from_text(text, symbol_list):
+    """Extract symbols present in text with fuzzy matching"""
+    found_symbols = []
+    words = text.lower().split()
+    
+    for symbol in symbol_list:
+        # Exact match
+        if symbol in words:
+            found_symbols.append(symbol)
+        # Partial match (symbol is part of a word)
+        elif any(symbol in word for word in words):
+            found_symbols.append(symbol)
+        # Plural/singular variations
+        elif symbol.endswith('s') and symbol[:-1] in words:
+            found_symbols.append(symbol[:-1])
+        elif symbol + 's' in words:
+            found_symbols.append(symbol)
+    
+    return found_symbols
+
+def extract_symbol_context(text, symbol, context_window=5):
+    """Extract context words around a symbol"""
+    words = text.lower().split()
+    context_words = []
+    
+    for i, word in enumerate(words):
+        if symbol in word:
+            # Get words before and after
+            start = max(0, i - context_window)
+            end = min(len(words), i + context_window + 1)
+            context_words.extend(words[start:end])
+    
+    # Remove duplicates and filter meaningful words
+    context_words = list(set(context_words))
+    meaningful_context = [word for word in context_words if len(word) > 2 and word not in STOPWORDS]
+    
+    return meaningful_context[:10]  # Limit to 10 most relevant words
+
+def analyze_symbol_emotional_context(context_words):
+    """Analyze the emotional context around a symbol"""
+    emotional_words = {
+        'positive': ['happy', 'joy', 'love', 'peace', 'beautiful', 'wonderful', 'amazing', 'good', 'great', 'safe', 'comfortable', 'bright', 'warm'],
+        'negative': ['scared', 'afraid', 'angry', 'sad', 'dark', 'cold', 'dangerous', 'terrible', 'awful', 'bad', 'frightening', 'worried', 'anxious'],
+        'neutral': ['normal', 'regular', 'usual', 'common', 'typical', 'ordinary', 'standard']
+    }
+    
+    context_text = ' '.join(context_words).lower()
+    emotion_scores = {}
+    
+    for emotion, words in emotional_words.items():
+        score = sum(1 for word in words if word in context_text)
+        emotion_scores[emotion] = score
+    
+    # Determine dominant emotion
+    if emotion_scores['positive'] > emotion_scores['negative'] and emotion_scores['positive'] > emotion_scores['neutral']:
+        return 'positive'
+    elif emotion_scores['negative'] > emotion_scores['positive'] and emotion_scores['negative'] > emotion_scores['neutral']:
+        return 'negative'
+    else:
+        return 'neutral'
+
+def calculate_symbol_evolution_metrics(symbol, appearances, frequency_tracking, context_analysis):
+    """Calculate comprehensive evolution metrics for a symbol"""
+    if len(appearances) < 2:
+        return {'evolution_score': 0}
+    
+    # Frequency evolution
+    frequencies = [entry['frequency'] for entry in frequency_tracking]
+    frequency_trend = 'increasing' if frequencies[-1] > frequencies[0] else 'decreasing' if frequencies[-1] < frequencies[0] else 'stable'
+    
+    # Context evolution
+    contexts = [entry['emotional_context'] for entry in context_analysis]
+    context_changes = len(set(contexts)) - 1  # Number of different emotional contexts
+    
+    # Temporal spread
+    dates = [appearance['date'] for appearance in appearances]
+    temporal_spread = len(set(dates))  # Number of different days
+    
+    # Evolution score calculation
+    evolution_score = (
+        len(appearances) * 0.3 +  # Frequency of appearance
+        context_changes * 0.4 +   # Context diversity
+        temporal_spread * 0.2 +    # Temporal spread
+        (1 if frequency_trend == 'increasing' else 0.5) * 0.1  # Growth trend
+    )
+    
+    return {
+        'evolution_score': evolution_score,
+        'appearance_count': len(appearances),
+        'frequency_trend': frequency_trend,
+        'context_diversity': context_changes,
+        'temporal_spread': temporal_spread,
+        'dominant_context': max(set(contexts), key=contexts.count) if contexts else 'neutral'
+    }
+
+def generate_symbol_evolution_insights(evolution_metrics):
+    """Generate insights about symbol evolution patterns"""
+    insights = []
+    
+    if not evolution_metrics:
+        return ["No recurring symbols found in your dreams yet. Continue journaling to discover patterns!"]
+    
+    # Find most evolving symbols
+    top_symbols = sorted(evolution_metrics.items(), key=lambda x: x[1]['evolution_score'], reverse=True)[:3]
+    
+    for symbol, metrics in top_symbols:
+        if metrics['frequency_trend'] == 'increasing':
+            insights.append(f"'{symbol}' appears more frequently over time, suggesting growing significance in your dream life.")
+        elif metrics['context_diversity'] > 2:
+            insights.append(f"'{symbol}' appears in diverse emotional contexts, indicating complex symbolic meaning.")
+        elif metrics['temporal_spread'] > 5:
+            insights.append(f"'{symbol}' appears consistently across many dreams, showing it's a core symbol in your psyche.")
+    
+    # Overall pattern insights
+    if len(evolution_metrics) > 5:
+        insights.append("You have many evolving symbols, indicating rich symbolic activity in your dreams.")
+    elif len(evolution_metrics) > 2:
+        insights.append("Your dreams show focused symbolic patterns, suggesting specific areas of psychological processing.")
+    
+    return insights
+
+def analyze_temporal_content(text, temporal_patterns):
+    """Analyze temporal content in text with sophisticated detection"""
+    time_scores = {'past': 0, 'present': 0, 'future': 0}
+    keywords_found = {'past': [], 'present': [], 'future': []}
+    context_indicators = []
+    
+    words = text.lower().split()
+    
+    # Score each time period
+    for time_period, patterns in temporal_patterns.items():
+        # Explicit keywords (higher weight)
+        for keyword in patterns['explicit']:
+            if keyword in words:
+                time_scores[time_period] += 2
+                keywords_found[time_period].append(keyword)
+        
+        # Implicit keywords (medium weight)
+        for keyword in patterns['implicit']:
+            if keyword in words:
+                time_scores[time_period] += 1
+                keywords_found[time_period].append(keyword)
+        
+        # Context phrases (highest weight)
+        for context in patterns['context']:
+            if context in text:
+                time_scores[time_period] += 3
+                context_indicators.append(context)
+    
+    # Determine primary time period
+    max_score = max(time_scores.values())
+    if max_score == 0:
+        return {
+            'has_temporal_content': False,
+            'primary_time_period': 'neutral',
+            'confidence': 0,
+            'keywords_found': [],
+            'context': []
+        }
+    
+    primary_time_period = max(time_scores, key=time_scores.get)
+    confidence = min(max_score / 10, 1.0)  # Normalize confidence to 0-1
+    
+    return {
+        'has_temporal_content': True,
+        'primary_time_period': primary_time_period,
+        'confidence': confidence,
+        'keywords_found': keywords_found[primary_time_period],
+        'context': context_indicators
+    }
+
+def analyze_temporal_relationships(text):
+    """Analyze temporal relationships between events in dreams"""
+    relationships = []
+    
+    # Temporal connectors
+    temporal_connectors = {
+        'sequence': ['then', 'after', 'next', 'following', 'subsequently', 'later', 'afterwards'],
+        'simultaneous': ['while', 'during', 'meanwhile', 'at the same time', 'simultaneously'],
+        'cause_effect': ['because', 'since', 'as a result', 'therefore', 'consequently', 'due to'],
+        'contrast': ['but', 'however', 'although', 'despite', 'nevertheless', 'yet']
+    }
+    
+    words = text.lower().split()
+    
+    for relationship_type, connectors in temporal_connectors.items():
+        for connector in connectors:
+            if connector in words:
+                relationships.append({
+                    'type': relationship_type,
+                    'connector': connector,
+                    'context': extract_context_around_word(text, connector)
+                })
+    
+    return relationships
+
+def extract_context_around_word(text, word, window=3):
+    """Extract context around a specific word"""
+    words = text.lower().split()
+    context_words = []
+    
+    for i, w in enumerate(words):
+        if word in w:
+            start = max(0, i - window)
+            end = min(len(words), i + window + 1)
+            context_words.extend(words[start:end])
+    
+    return ' '.join(context_words[:10])
+
+def calculate_temporal_confidence(time_related_dreams):
+    """Calculate overall confidence in temporal analysis"""
+    if not time_related_dreams:
+        return 0
+    
+    total_confidence = sum(dream['confidence'] for dream in time_related_dreams)
+    return total_confidence / len(time_related_dreams)
+
+def generate_temporal_insights(past_dreams, present_dreams, future_dreams, temporal_relationships):
+    """Generate insights about temporal patterns in dreams"""
+    insights = []
+    
+    total_temporal_dreams = len(past_dreams) + len(present_dreams) + len(future_dreams)
+    
+    if total_temporal_dreams == 0:
+        return ["Your dreams don't show strong temporal patterns. This suggests you're focused on the present moment."]
+    
+    # Analyze temporal distribution
+    if len(past_dreams) > len(future_dreams) and len(past_dreams) > len(present_dreams):
+        insights.append("Your dreams frequently reference the past, suggesting you're processing memories or reflecting on previous experiences.")
+    elif len(future_dreams) > len(past_dreams) and len(future_dreams) > len(present_dreams):
+        insights.append("Your dreams often look toward the future, indicating forward-thinking and goal-oriented mindset.")
+    elif len(present_dreams) > len(past_dreams) and len(present_dreams) > len(future_dreams):
+        insights.append("Your dreams focus on the present moment, showing mindfulness and current awareness.")
+    
+    # Analyze temporal relationships
+    if temporal_relationships:
+        relationship_types = [rel['type'] for rel in temporal_relationships]
+        relationship_counts = Counter(relationship_types)
+        
+        if relationship_counts.get('sequence', 0) > 2:
+            insights.append("Your dreams show strong sequential patterns, indicating structured thinking and logical progression.")
+        if relationship_counts.get('cause_effect', 0) > 1:
+            insights.append("Your dreams demonstrate cause-and-effect thinking, showing analytical processing of events.")
+        if relationship_counts.get('simultaneous', 0) > 1:
+            insights.append("Your dreams involve simultaneous events, suggesting multitasking or complex mental processing.")
+    
+    # Overall temporal awareness
+    if total_temporal_dreams > len(past_dreams) + len(present_dreams) + len(future_dreams) * 0.3:
+        insights.append("You have strong temporal awareness in your dreams, indicating good time perception and planning abilities.")
+    
+    return insights
+
+def calculate_emotional_volatility(emotions):
+    """Calculate emotional volatility based on emotion changes over time"""
+    if len(emotions) < 2:
+        return 0
+    
+    # Count emotion transitions
+    transitions = 0
+    for i in range(1, len(emotions)):
+        if emotions[i] != emotions[i-1]:
+            transitions += 1
+    
+    # Calculate volatility as ratio of transitions to total possible transitions
+    volatility = transitions / (len(emotions) - 1)
+    return volatility
+
+def analyze_emotional_patterns_advanced(emotions):
+    """Analyze emotional patterns with advanced pattern recognition"""
+    if len(emotions) < 3:
+        return {'consistency': 0, 'trends': []}
+    
+    # Analyze for patterns
+    patterns = []
+    trends = []
+    
+    # Look for recurring patterns
+    for i in range(len(emotions) - 2):
+        pattern = emotions[i:i+3]
+        patterns.append(tuple(pattern))
+    
+    # Count pattern occurrences
+    pattern_counts = Counter(patterns)
+    
+    # Calculate consistency (how often patterns repeat)
+    consistency = len([count for count in pattern_counts.values() if count > 1]) / len(pattern_counts) if pattern_counts else 0
+    
+    # Analyze trends (increasing/decreasing emotional intensity)
+    emotion_intensity_map = {
+        'neutral': 0, 'peace': 1, 'love': 2, 'joy': 3, 'surprise': 2,
+        'sadness': -2, 'anger': -3, 'fear': -3, 'disgust': -2, 'negative': -2, 'positive': 2
+    }
+    
+    intensities = [emotion_intensity_map.get(emotion, 0) for emotion in emotions]
+    
+    # Calculate trend direction
+    if len(intensities) >= 3:
+        recent_avg = sum(intensities[-3:]) / 3
+        earlier_avg = sum(intensities[:3]) / 3
+        
+        if recent_avg > earlier_avg + 0.5:
+            trends.append('increasing_positive')
+        elif recent_avg < earlier_avg - 0.5:
+            trends.append('increasing_negative')
+        else:
+            trends.append('stable')
+    
+    return {
+        'consistency': consistency,
+        'trends': trends,
+        'pattern_counts': dict(pattern_counts.most_common(5))
+    }
+
+def determine_emotional_stability_level(diversity, volatility, consistency):
+    """Determine emotional stability level based on multiple factors"""
+    # Calculate composite stability score
+    stability_score = (
+        diversity * 0.3 +      # Higher diversity = more stable
+        (1 - volatility) * 0.4 +  # Lower volatility = more stable
+        consistency * 0.3       # Higher consistency = more stable
+    )
+    
+    if stability_score > 0.7:
+        return "emotionally_balanced"
+    elif stability_score > 0.4:
+        return "moderately_stable"
+    elif stability_score > 0.2:
+        return "emotionally_focused"
+    else:
+        return "emotionally_volatile"
+
+def generate_emotional_stability_insights(diversity, volatility, pattern_analysis, emotion_counts):
+    """Generate insights about emotional stability patterns"""
+    insights = []
+    
+    # Diversity insights
+    if diversity > 0.6:
+        insights.append("You experience a wide range of emotions in your dreams, indicating emotional richness and adaptability.")
+    elif diversity < 0.3:
+        insights.append("Your dreams show focused emotional patterns, suggesting you're processing specific emotional themes.")
+    
+    # Volatility insights
+    if volatility > 0.7:
+        insights.append("Your dreams show high emotional variability, indicating active emotional processing and responsiveness.")
+    elif volatility < 0.3:
+        insights.append("Your dreams demonstrate emotional consistency, suggesting stable emotional patterns.")
+    
+    # Pattern insights
+    if pattern_analysis['consistency'] > 0.5:
+        insights.append("Your dreams show recurring emotional patterns, indicating consistent emotional themes.")
+    
+    # Trend insights
+    if 'increasing_positive' in pattern_analysis['trends']:
+        insights.append("Your recent dreams show increasingly positive emotional trends, suggesting emotional growth.")
+    elif 'increasing_negative' in pattern_analysis['trends']:
+        insights.append("Your recent dreams show increasing negative emotional trends, which may indicate stress or challenges.")
+    
+    # Dominant emotion insights
+    if emotion_counts:
+        dominant_emotion, count = emotion_counts.most_common(1)[0]
+        total_emotions = sum(emotion_counts.values())
+        dominance_ratio = count / total_emotions
+        
+        if dominance_ratio > 0.5:
+            insights.append(f"'{dominant_emotion}' dominates your dream emotions ({int(dominance_ratio*100)}%), indicating this is a key emotional theme.")
+    
+    return insights
+
 def calculate_emotional_intensity(dream_text: str, dream_emotions: list) -> float:
     """Calculate emotional intensity based on emotional word density and strength.
     
@@ -464,36 +853,70 @@ def analyze_emotional_patterns(dreams):
     }
 
 def analyze_temporal_patterns(dreams):
-    """Analyze temporal patterns in dreams"""
+    """Analyze temporal patterns in dreams with sophisticated NLP and context understanding"""
     time_related_dreams = []
     past_dreams = []
     future_dreams = []
     present_dreams = []
-
-    time_keywords = {
-        'past': ['yesterday', 'childhood', 'old', 'remember', 'memory'],
-        'future': ['tomorrow', 'next', 'will', 'going to', 'plan'],
-        'present': ['now', 'today', 'current', 'happening']
+    temporal_relationships = []
+    temporal_insights = []
+    
+    # Enhanced temporal keyword detection with context analysis
+    temporal_patterns = {
+        'past': {
+            'explicit': ['yesterday', 'childhood', 'old', 'remember', 'memory', 'ago', 'before', 'earlier', 'previously', 'once', 'used to', 'was', 'were'],
+            'implicit': ['former', 'ex', 'previous', 'last', 'past', 'ancient', 'historical', 'retro', 'vintage', 'nostalgic'],
+            'context': ['reminiscing', 'recalling', 'revisiting', 'looking back', 'in the past', 'back then']
+        },
+        'future': {
+            'explicit': ['tomorrow', 'next', 'will', 'going to', 'plan', 'soon', 'later', 'eventually', 'someday', 'shall', 'gonna'],
+            'implicit': ['upcoming', 'forthcoming', 'prospective', 'potential', 'anticipated', 'expected', 'predicted'],
+            'context': ['planning', 'preparing', 'anticipating', 'looking forward', 'in the future', 'ahead']
+        },
+        'present': {
+            'explicit': ['now', 'today', 'current', 'happening', 'currently', 'right now', 'at this moment', 'presently'],
+            'implicit': ['ongoing', 'active', 'live', 'real-time', 'immediate', 'instant', 'contemporary'],
+            'context': ['happening now', 'taking place', 'in progress', 'at present', 'currently']
+        }
     }
-
+    
     for dream in dreams:
         dream_text = dream.get('dreamContent', '').lower()
-
-        for time_period, keywords in time_keywords.items():
-            if any(keyword in dream_text for keyword in keywords):
-                time_related_dreams.append({
-                    'date': dream.get('createdAt', 'Unknown'),
-                    'time_period': time_period,
-                    'content': dream.get('summary', '')[:100] + '...'
-                })
-
-                if time_period == 'past':
-                    past_dreams.append(dream)
-                elif time_period == 'future':
-                    future_dreams.append(dream)
-                elif time_period == 'present':
-                    present_dreams.append(dream)
-
+        dream_summary = dream.get('summary', '').lower()
+        combined_text = f"{dream_text} {dream_summary}"
+        
+        # Analyze temporal content with sophisticated detection
+        temporal_analysis = analyze_temporal_content(combined_text, temporal_patterns)
+        
+        if temporal_analysis['has_temporal_content']:
+            primary_time_period = temporal_analysis['primary_time_period']
+            confidence = temporal_analysis['confidence']
+            temporal_keywords_found = temporal_analysis['keywords_found']
+            
+            time_related_dreams.append({
+                'date': dream.get('createdAt', 'Unknown'),
+                'time_period': primary_time_period,
+                'confidence': confidence,
+                'keywords_found': temporal_keywords_found,
+                'content': dream.get('summary', '')[:100] + '...',
+                'temporal_context': temporal_analysis['context']
+            })
+            
+            # Categorize dreams
+            if primary_time_period == 'past':
+                past_dreams.append(dream)
+            elif primary_time_period == 'future':
+                future_dreams.append(dream)
+            elif primary_time_period == 'present':
+                present_dreams.append(dream)
+            
+            # Analyze temporal relationships
+            relationships = analyze_temporal_relationships(combined_text)
+            temporal_relationships.extend(relationships)
+    
+    # Generate temporal insights
+    temporal_insights = generate_temporal_insights(past_dreams, present_dreams, future_dreams, temporal_relationships)
+    
     return {
         'time_related_dreams_count': len(time_related_dreams),
         'temporal_distribution': {
@@ -501,61 +924,124 @@ def analyze_temporal_patterns(dreams):
             'present': len(present_dreams),
             'future': len(future_dreams)
         },
-        'time_related_dreams': time_related_dreams[:10]  # Limit to 10 most recent
+        'temporal_confidence': calculate_temporal_confidence(time_related_dreams),
+        'temporal_relationships': temporal_relationships[:10],
+        'temporal_insights': temporal_insights,
+        'time_related_dreams': time_related_dreams[:10]
     }
 
 def analyze_symbol_evolution(dreams):
-    """Analyze how dream symbols evolve over time"""
+    """Analyze how dream symbols evolve over time with sophisticated extraction and analysis"""
     # Sort dreams by date
     sorted_dreams = sorted(dreams, key=lambda x: x.get('createdAt', ''))
-
+    
+    # Extract symbols dynamically from all dreams
+    all_symbols = extract_dream_symbols(sorted_dreams)
+    
+    # Analyze symbol evolution patterns
     symbol_evolution = {}
-
+    symbol_frequency_tracking = {}
+    symbol_context_analysis = {}
+    
     for dream in sorted_dreams:
         dream_text = dream.get('dreamContent', '').lower()
+        dream_summary = dream.get('summary', '').lower()
         date = dream.get('createdAt', 'Unknown')
-
-        # Track common symbols over time
-        common_symbols = ['water', 'house', 'car', 'tree', 'animal', 'person', 'door', 'window']
-
-        for symbol in common_symbols:
-            if symbol in dream_text:
-                if symbol not in symbol_evolution:
-                    symbol_evolution[symbol] = []
-
-                symbol_evolution[symbol].append({
-                    'date': date,
-                    'context': dream.get('summary', '')[:100] + '...',
-                    'evolution_stage': len(symbol_evolution[symbol]) + 1
-                })
-
+        combined_text = f"{dream_text} {dream_summary}"
+        
+        # Extract symbols present in this dream
+        dream_symbols = extract_symbols_from_text(combined_text, all_symbols)
+        
+        for symbol in dream_symbols:
+            if symbol not in symbol_evolution:
+                symbol_evolution[symbol] = []
+                symbol_frequency_tracking[symbol] = []
+                symbol_context_analysis[symbol] = []
+            
+            # Track symbol appearance
+            symbol_evolution[symbol].append({
+                'date': date,
+                'context': dream.get('summary', '')[:100] + '...',
+                'evolution_stage': len(symbol_evolution[symbol]) + 1,
+                'dream_length': len(dream_text.split()),
+                'symbol_frequency': dream_symbols.count(symbol)
+            })
+            
+            # Track frequency over time
+            symbol_frequency_tracking[symbol].append({
+                'date': date,
+                'frequency': dream_symbols.count(symbol),
+                'relative_frequency': dream_symbols.count(symbol) / len(dream_text.split()) if dream_text else 0
+            })
+            
+            # Analyze context around symbol
+            context = extract_symbol_context(combined_text, symbol)
+            symbol_context_analysis[symbol].append({
+                'date': date,
+                'context_words': context,
+                'emotional_context': analyze_symbol_emotional_context(context)
+            })
+    
+    # Calculate evolution metrics for each symbol
+    evolution_metrics = {}
+    for symbol, appearances in symbol_evolution.items():
+        if len(appearances) > 1:  # Only analyze symbols that appear multiple times
+            evolution_metrics[symbol] = calculate_symbol_evolution_metrics(
+                symbol, appearances, symbol_frequency_tracking[symbol], symbol_context_analysis[symbol]
+            )
+    
     return {
         'symbols_tracked': len(symbol_evolution),
         'symbol_evolution': symbol_evolution,
         'most_evolving_symbols': sorted(
-            symbol_evolution.items(),
-            key=lambda x: len(x[1]),
+            evolution_metrics.items(),
+            key=lambda x: x[1]['evolution_score'],
             reverse=True
-        )[:5]
+        )[:10],
+        'symbol_frequency_trends': symbol_frequency_tracking,
+        'symbol_context_evolution': symbol_context_analysis,
+        'evolution_insights': generate_symbol_evolution_insights(evolution_metrics)
     }
 
 def analyze_emotional_stability(emotions):
-    """Analyze emotional stability based on dream emotions"""
+    """Analyze emotional stability based on dream emotions with sophisticated volatility and pattern analysis"""
     if not emotions:
-        return "insufficient_data"
+        return {
+            'stability_level': "insufficient_data",
+            'volatility_score': 0,
+            'diversity_score': 0,
+            'pattern_consistency': 0,
+            'emotional_trends': [],
+            'stability_insights': ["Insufficient emotional data for analysis. Continue journaling to build emotional patterns."]
+        }
 
     emotion_counts = Counter(emotions)
     total_emotions = len(emotions)
-
+    
     # Calculate emotional diversity
     diversity = len(emotion_counts) / total_emotions if total_emotions > 0 else 0
-
-    if diversity > 0.6:
-        return "emotionally_balanced"
-    elif diversity > 0.3:
-        return "moderately_stable"
-    else:
-        return "emotionally_focused"
+    
+    # Calculate emotional volatility (how much emotions change)
+    volatility = calculate_emotional_volatility(emotions)
+    
+    # Analyze emotional patterns and trends
+    pattern_analysis = analyze_emotional_patterns_advanced(emotions)
+    
+    # Determine stability level based on multiple factors
+    stability_level = determine_emotional_stability_level(diversity, volatility, pattern_analysis['consistency'])
+    
+    # Generate insights
+    insights = generate_emotional_stability_insights(diversity, volatility, pattern_analysis, emotion_counts)
+    
+    return {
+        'stability_level': stability_level,
+        'volatility_score': volatility,
+        'diversity_score': diversity,
+        'pattern_consistency': pattern_analysis['consistency'],
+        'emotional_trends': pattern_analysis['trends'],
+        'dominant_emotions': emotion_counts.most_common(3),
+        'stability_insights': insights
+    }
 
 def generate_personal_insights(dreams):
     """Generate personalized insights based on dream analysis"""

@@ -1,6 +1,5 @@
 import React, { useState } from 'react';
 import { format, eachDayOfInterval, subDays, startOfToday } from 'date-fns';
-import { processDreamsForHeatmap } from '../helpers/process-dreams';
 
 // Constants
 const SHADING_LEVELS = {
@@ -21,13 +20,21 @@ const COMPACT_GAP = 2;
  */
 interface Dream {
   createdAt: string;
+  dream_content?: string;
+  summary?: string;
+  response?: string;
 }
 
 /**
- * Type for mapping dates to dream counts
+ * Type for mapping dates to dream data with enhanced metrics
  */
 type DreamData = {
-  [date: string]: number;
+  [date: string]: {
+    count: number;
+    intensity: number;
+    quality: number;
+    weightedScore: number;
+  };
 };
 
 /**
@@ -41,16 +48,122 @@ interface DreamHeatmapProps {
 }
 
 /**
- * Determines the background color based on the number of dreams
+ * Calculates dream intensity based on content analysis
+ */
+const calculateDreamIntensity = (dream: Dream): number => {
+  if (!dream.dream_content && !dream.summary) return 0.1;
+  
+  const content = (dream.dream_content || '') + ' ' + (dream.summary || '');
+  const words = content.toLowerCase().split(' ');
+  
+  // Emotional intensity words
+  const intensityWords = {
+    high: ['terrified', 'ecstatic', 'furious', 'devastated', 'euphoric', 'horrified', 'blissful', 'enraged', 'thrilled', 'petrified'],
+    medium: ['scared', 'happy', 'angry', 'sad', 'excited', 'worried', 'joyful', 'frustrated', 'peaceful', 'anxious'],
+    low: ['calm', 'content', 'mild', 'gentle', 'quiet', 'serene', 'soft', 'light', 'easy', 'simple']
+  };
+  
+  let intensityScore = 0;
+  words.forEach(word => {
+    if (intensityWords.high.includes(word)) intensityScore += 3;
+    else if (intensityWords.medium.includes(word)) intensityScore += 2;
+    else if (intensityWords.low.includes(word)) intensityScore += 1;
+  });
+  
+  // Normalize by content length
+  const normalizedIntensity = Math.min(intensityScore / Math.max(words.length / 10, 1), 1);
+  return Math.max(normalizedIntensity, 0.1); // Minimum intensity
+};
+
+/**
+ * Calculates dream quality based on content richness
+ */
+const calculateDreamQuality = (dream: Dream): number => {
+  if (!dream.dream_content && !dream.summary) return 0.1;
+  
+  const content = (dream.dream_content || '') + ' ' + (dream.summary || '');
+  const words = content.split(' ');
+  
+  // Quality indicators
+  const qualityFactors = {
+    length: Math.min(words.length / 100, 1), // Longer dreams are generally richer
+    detail: content.includes('because') || content.includes('when') || content.includes('where') ? 0.3 : 0,
+    sensory: (content.match(/saw|heard|felt|smelled|tasted/g) || []).length * 0.1,
+    dialogue: (content.match(/said|told|asked|answered/g) || []).length * 0.1,
+    action: (content.match(/ran|walked|flew|swam|drove/g) || []).length * 0.1
+  };
+  
+  const qualityScore = Object.values(qualityFactors).reduce((sum, factor) => sum + factor, 0);
+  return Math.min(qualityScore, 1);
+};
+
+/**
+ * Determines the background color based on enhanced dream metrics
  * Uses a green color scale similar to GitHub's contribution graph
  */
-const getShadingLevel = (dreamCount: number): string => {
-  if (dreamCount === 0) return SHADING_LEVELS.NO_DREAMS;
-  if (dreamCount === 1) return SHADING_LEVELS.ONE_DREAM;
-  if (dreamCount === 2) return SHADING_LEVELS.TWO_DREAMS;
-  if (dreamCount === 3) return SHADING_LEVELS.THREE_DREAMS;
-  if (dreamCount >= 4) return SHADING_LEVELS.FOUR_PLUS_DREAMS;
-  return SHADING_LEVELS.NO_DREAMS;
+const getShadingLevel = (dreamData: DreamData[string]): string => {
+  if (!dreamData || dreamData.count === 0) return SHADING_LEVELS.NO_DREAMS;
+  
+  // Use weighted score for shading (combines count, intensity, and quality)
+  const score = dreamData.weightedScore;
+  
+  if (score < 0.2) return SHADING_LEVELS.ONE_DREAM;
+  if (score < 0.4) return SHADING_LEVELS.TWO_DREAMS;
+  if (score < 0.6) return SHADING_LEVELS.THREE_DREAMS;
+  if (score < 0.8) return SHADING_LEVELS.FOUR_PLUS_DREAMS;
+  return SHADING_LEVELS.FOUR_PLUS_DREAMS; // Maximum intensity
+};
+
+/**
+ * Enhanced dream processing for heatmap with intensity and quality metrics
+ */
+const processDreamsForHeatmapEnhanced = (dreams: Dream[]): DreamData => {
+  const dreamData: DreamData = {};
+
+  if (!Array.isArray(dreams)) {
+    console.warn('processDreamsForHeatmapEnhanced: dreams parameter is not an array');
+    return dreamData;
+  }
+
+  dreams.forEach((dream, index) => {
+    if (!dream.createdAt) {
+      console.warn(`processDreamsForHeatmapEnhanced: Invalid dream at index ${index}:`, dream);
+      return;
+    }
+
+    try {
+      const dreamDate = new Date(dream.createdAt);
+      const dateStr = format(dreamDate, 'yyyy-MM-dd');
+      
+      // Calculate metrics for this dream
+      const intensity = calculateDreamIntensity(dream);
+      const quality = calculateDreamQuality(dream);
+      
+      // Initialize day data if not exists
+      if (!dreamData[dateStr]) {
+        dreamData[dateStr] = { count: 0, intensity: 0, quality: 0, weightedScore: 0 };
+      }
+      
+      // Update day data
+      const dayData = dreamData[dateStr];
+      dayData.count += 1;
+      
+      // Average intensity and quality across dreams for the day
+      dayData.intensity = (dayData.intensity * (dayData.count - 1) + intensity) / dayData.count;
+      dayData.quality = (dayData.quality * (dayData.count - 1) + quality) / dayData.count;
+      
+      // Calculate weighted score (count * 0.4 + intensity * 0.3 + quality * 0.3)
+      dayData.weightedScore = Math.min(
+        (dayData.count * 0.4 + dayData.intensity * 0.3 + dayData.quality * 0.3) / 2,
+        1
+      );
+      
+    } catch (error) {
+      console.warn(`processDreamsForHeatmapEnhanced: Error processing dream at index ${index}:`, dream.createdAt, error);
+    }
+  });
+
+  return dreamData;
 };
 
 /**
@@ -72,8 +185,8 @@ export const DreamHeatmap: React.FC<DreamHeatmapProps> = ({
     end: today,
   });
 
-  // Generate dream data from the provided dreams
-  const dreamData: DreamData = processDreamsForHeatmap(dreams);
+  // Generate enhanced dream data from the provided dreams
+  const dreamData: DreamData = processDreamsForHeatmapEnhanced(dreams);
 
   // Calculate dimensions based on compact mode
   const boxSize = compact ? COMPACT_BOX_SIZE : DEFAULT_BOX_SIZE;
@@ -90,8 +203,8 @@ export const DreamHeatmap: React.FC<DreamHeatmapProps> = ({
       }}>
         {days.map((day, index) => {
           const dateStr = format(day, 'yyyy-MM-dd');
-          const dreamCount = dreamData[dateStr] || 0;
-          const backgroundColor = getShadingLevel(dreamCount);
+          const dayData = dreamData[dateStr] || { count: 0, intensity: 0, quality: 0, weightedScore: 0 };
+          const backgroundColor = getShadingLevel(dayData);
           const isToday = format(day, 'yyyy-MM-dd') === format(today, 'yyyy-MM-dd');
 
           return (
@@ -108,13 +221,13 @@ export const DreamHeatmap: React.FC<DreamHeatmapProps> = ({
               }}
               onMouseEnter={() => setHoveredDay(dateStr)}
               onMouseLeave={() => setHoveredDay(null)}
-              title={`${format(day, 'MMM dd, yyyy')}: ${dreamCount} ${dreamCount === 1 ? 'dream' : 'dreams'}`}
+              title={`${format(day, 'MMM dd, yyyy')}: ${dayData.count} ${dayData.count === 1 ? 'dream' : 'dreams'}${dayData.count > 0 ? ` (Intensity: ${Math.round(dayData.intensity * 100)}%, Quality: ${Math.round(dayData.quality * 100)}%)` : ''}`}
             >
               {!compact && (
                 <>
                   <span style={styles.dateLabel}>{format(day, 'dd')}</span>
-                  {dreamCount > 0 && (
-                    <span style={styles.dreamCountLabel}>{dreamCount}</span>
+                  {dayData.count > 0 && (
+                    <span style={styles.dreamCountLabel}>{dayData.count}</span>
                   )}
                 </>
               )}
@@ -127,12 +240,12 @@ export const DreamHeatmap: React.FC<DreamHeatmapProps> = ({
         <div style={styles.legend}>
           <span style={styles.legendText}>Less</span>
           <div style={styles.legendItems}>
-            {[0, 1, 2, 3, 4].map((count) => (
+            {[0, 0.2, 0.4, 0.6, 0.8].map((score) => (
               <div
-                key={count}
+                key={score}
                 style={{
                   ...styles.legendItem,
-                  backgroundColor: getShadingLevel(count),
+                  backgroundColor: getShadingLevel({ count: score > 0 ? 1 : 0, intensity: 0, quality: 0, weightedScore: score }),
                   width: `${boxSize}px`,
                   height: `${boxSize}px`,
                 }}
