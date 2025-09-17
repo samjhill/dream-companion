@@ -1,6 +1,7 @@
 import React, { useEffect, useRef, useState, useCallback } from 'react';
 import { fetchAuthSession } from 'aws-amplify/auth';
 import { getUserPhoneNumber } from '../helpers/user';
+import './DreamArt.css';
 
 // Constants
 const API_BASE_URL = "https://jj1rq9vx9l.execute-api.us-east-1.amazonaws.com/Prod";
@@ -369,12 +370,16 @@ const DreamArt: React.FC<DreamArtProps> = ({ className = '' }) => {
     const resizeCanvas = () => {
       const container = canvas.parentElement;
       if (container) {
-        canvas.width = container.clientWidth;
-        canvas.height = container.clientHeight;
+        const rect = container.getBoundingClientRect();
+        canvas.width = rect.width;
+        canvas.height = rect.height;
       }
     };
 
+    // Initial resize
     resizeCanvas();
+    
+    // Add resize listener
     window.addEventListener('resize', resizeCanvas);
 
     return () => {
@@ -406,6 +411,7 @@ const DreamArt: React.FC<DreamArtProps> = ({ className = '' }) => {
   }, [dreams, analyzeDreamsForArt]);
 
   if (loading) {
+    console.log('DreamArt: Loading state');
     return (
       <div className={`dream-art-container ${className}`}>
         <div className="dream-art-loading">
@@ -426,6 +432,8 @@ const DreamArt: React.FC<DreamArtProps> = ({ className = '' }) => {
     );
   }
 
+  console.log('DreamArt: Rendering with', dreams.length, 'dreams, artConfig:', artConfig);
+  
   return (
     <div className={`dream-art-container ${className}`}>
       <div className="dream-art-info">
