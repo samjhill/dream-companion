@@ -176,3 +176,28 @@
   opacity: 0.8;
   font-style: italic;
 }
+
+/* Overview Section Styles */
+.overview-section {
+  padding: 0;
+}
+
+.overview-footer {
+  margin-top: 24px;
+  text-align: center;
+  padding: 0 20px;
+}
+
+.overview-description {
+  color: #6b7280;
+  font-size: 0.95rem;
+  line-height: 1.6;
+  margin: 0;
+  max-width: 600px;
+  margin: 0 auto;
+}
+
+/* Dark theme support for overview */
+[data-theme="dark"] .overview-description {
+  color: #9ca3af;
+}

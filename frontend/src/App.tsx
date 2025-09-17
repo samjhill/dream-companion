@@ -2,6 +2,7 @@ import DreamList from './components/DreamList';
 import { WakingLife } from './components/WakingLife';
 import { Themes } from './components/Themes';
 import { Greet } from './components/Greet';
+import DreamArt from './components/DreamArt';
 import { withAuthenticator } from '@aws-amplify/ui-react';
 import { signOut } from 'aws-amplify/auth';
 import { LucidDreamGuide } from './components/LucidDreamGuide';
@@ -101,46 +102,12 @@ function App() {
         return (
           <div className="overview-section">
             <Greet />
-            <div className="quick-actions">
-              <h3>Quick Actions</h3>
-              <div className="action-grid">
-                <button
-                  className="btn btn-primary action-card"
-                  onClick={() => navigateToSection('dreams')}
-                >
-                  <span className="action-icon">📖</span>
-                  <span>View Dream Journal</span>
-                </button>
-                <button
-                  className="btn btn-secondary action-card"
-                  onClick={() => navigateToSection('themes')}
-                >
-                  <span className="action-icon">🎨</span>
-                  <span>Explore Themes</span>
-                </button>
-                <button
-                  className={`btn btn-secondary action-card`}
-                  onClick={() => navigateToSection('analysis')}
-                >
-                  <span className="action-icon">🔍</span>
-                  <span>Advanced Analysis</span>
-                  {!premiumStatus?.has_premium && <span className="premium-badge">💎</span>}
-                </button>
-                <button
-                  className="btn btn-secondary action-card"
-                  onClick={() => navigateToSection('guide')}
-                >
-                  <span className="action-icon">✨</span>
-                  <span>Lucid Dream Guide</span>
-                </button>
-                <button
-                  className="btn btn-secondary action-card"
-                  onClick={() => navigateToSection('premium')}
-                >
-                  <span className="action-icon">💎</span>
-                  <span>Premium Features</span>
-                </button>
-              </div>
+            <DreamArt />
+            <div className="overview-footer">
+              <p className="overview-description">
+                Your unique dream art evolves with every dream you share. 
+                Move your mouse over the canvas to interact with your personal dreamscape.
+              </p>
             </div>
           </div>
         );

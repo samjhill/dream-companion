@@ -75,3 +75,27 @@ Resources:
           - arn:aws:secretsmanager:us-east-1:732408661603:secret:stripe-jm2Ua6-Kg9uMo
     Metadata:
       SamResourceId: DreamCompanionFunction
+  FeedbackTable:
+    Type: AWS::DynamoDB::Table
+    Properties:
+      TableName: dream-companion-feedback
+      BillingMode: PAY_PER_REQUEST
+      AttributeDefinitions:
+      - AttributeName: feedback_id
+        AttributeType: S
+      - AttributeName: user_id
+        AttributeType: S
+      - AttributeName: created_at
+        AttributeType: S
+      KeySchema:
+      - AttributeName: feedback_id
+        KeyType: HASH
+      GlobalSecondaryIndexes:
+      - IndexName: user-feedback-index
+        KeySchema:
+        - AttributeName: user_id
+          KeyType: HASH
+        - AttributeName: created_at
+          KeyType: RANGE
+        Projection:
+          ProjectionType: ALL

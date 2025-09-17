@@ -1,0 +1,450 @@
+import React, { useEffect, useRef, useState, useCallback } from 'react';
+import { fetchAuthSession } from 'aws-amplify/auth';
+import { getUserPhoneNumber } from '../helpers/user';
+
+// Constants
+const API_BASE_URL = "https://jj1rq9vx9l.execute-api.us-east-1.amazonaws.com/Prod";
+
+interface Dream {
+  id: string;
+  createdAt: string;
+  dream_content: string;
+  response: string;
+  summary: string;
+}
+
+interface DreamArtProps {
+  className?: string;
+}
+
+interface ArtConfig {
+  style: 'minimal' | 'flowing' | 'cosmic' | 'forest' | 'ocean' | 'fire';
+  colors: string[];
+  patterns: {
+    circles: boolean;
+    lines: boolean;
+    spirals: boolean;
+    waves: boolean;
+    stars: boolean;
+  };
+  intensity: number;
+  complexity: number;
+}
+
+const DreamArt: React.FC<DreamArtProps> = ({ className = '' }) => {
+  const canvasRef = useRef<HTMLCanvasElement>(null);
+  const [dreams, setDreams] = useState<Dream[]>([]);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState<string | null>(null);
+  const [artConfig, setArtConfig] = useState<ArtConfig | null>(null);
+  const [animationId, setAnimationId] = useState<number | null>(null);
+  const [mousePos, setMousePos] = useState({ x: 0, y: 0 });
+
+  // Fetch user's dreams for art generation
+  const fetchDreams = useCallback(async () => {
+    try {
+      setLoading(true);
+      setError(null);
+
+      const session = await fetchAuthSession();
+      const phoneNumber = await getUserPhoneNumber();
+
+      if (!phoneNumber) {
+        setError("No phone number found");
+        return;
+      }
+
+      // Fetch a sample of dreams for analysis (limit to 50 for performance)
+      const response = await fetch(
+        `${API_BASE_URL}/api/dreams/${phoneNumber.replace("+", "")}?limit=50&offset=0`,
+        { headers: { 'Authorization': `Bearer ${session?.tokens?.idToken?.toString()}` } }
+      );
+
+      if (!response.ok) {
+        throw new Error(`Failed to fetch dreams: ${response.status}`);
+      }
+
+      const data = await response.json();
+      
+      // For art generation, we only need basic info
+      const dreamPromises = data.dreams.slice(0, 20).map(async (dream: any) => {
+        try {
+          const dreamResponse = await fetch(
+            `${API_BASE_URL}/api/dreams/${phoneNumber.replace("+", "")}/${dream.key.split('/').pop()?.replace('.json', '')}`,
+            { headers: { 'Authorization': `Bearer ${session?.tokens?.idToken?.toString()}` } }
+          );
+          if (dreamResponse.ok) {
+            return await dreamResponse.json();
+          }
+        } catch (error) {
+          console.warn('Failed to fetch individual dream:', error);
+        }
+        return null;
+      });
+
+      const dreamResults = await Promise.all(dreamPromises);
+      const validDreams = dreamResults.filter((dream): dream is Dream => dream !== null);
+      
+      setDreams(validDreams);
+    } catch (error) {
+      console.error("Error fetching dreams for art:", error);
+      setError("Failed to load dream data");
+    } finally {
+      setLoading(false);
+    }
+  }, []);
+
+  // Analyze dreams to determine art configuration
+  const analyzeDreamsForArt = useCallback((dreams: Dream[]): ArtConfig => {
+    if (dreams.length === 0) {
+      return {
+        style: 'minimal',
+        colors: ['#E8F4FD', '#B8E6FF', '#87CEEB'],
+        patterns: { circles: true, lines: false, spirals: false, waves: false, stars: false },
+        intensity: 0.3,
+        complexity: 0.2
+      };
+    }
+
+    const dreamCount = dreams.length;
+    const now = new Date();
+    const dreamTimes = dreams.map(dream => new Date(dream.createdAt));
+    
+    // Analyze timing patterns
+    const hourDistribution = new Array(24).fill(0);
+    dreamTimes.forEach(time => {
+      hourDistribution[time.getHours()]++;
+    });
+    
+    const mostActiveHour = hourDistribution.indexOf(Math.max(...hourDistribution));
+    const isNightOwl = mostActiveHour >= 22 || mostActiveHour <= 6;
+    const isEarlyBird = mostActiveHour >= 5 && mostActiveHour <= 9;
+    
+    // Analyze content themes
+    const allContent = dreams.map(d => `${d.dream_content} ${d.summary}`).join(' ').toLowerCase();
+    const hasWaterThemes = /\b(water|ocean|sea|river|lake|rain|swimming|drowning)\b/.test(allContent);
+    const hasFireThemes = /\b(fire|flame|burning|heat|light|sun|bright)\b/.test(allContent);
+    const hasNatureThemes = /\b(tree|forest|mountain|earth|ground|plant|flower|animal)\b/.test(allContent);
+    const hasSpaceThemes = /\b(space|star|moon|planet|sky|cosmic|universe|galaxy)\b/.test(allContent);
+    const hasFlyingThemes = /\b(flying|flight|soaring|floating|air|wind)\b/.test(allContent);
+
+    // Determine art style based on analysis
+    let style: ArtConfig['style'] = 'minimal';
+    let colors: string[] = [];
+    let patterns: ArtConfig['patterns'];
+
+    if (dreamCount < 5) {
+      style = 'minimal';
+      colors = ['#F0F8FF', '#E6F3FF', '#CCE7FF'];
+    } else if (dreamCount < 15) {
+      style = 'flowing';
+      colors = ['#E8F4FD', '#B8E6FF', '#87CEEB', '#4682B4'];
+    } else if (dreamCount < 30) {
+      style = 'cosmic';
+      colors = ['#191970', '#4169E1', '#87CEEB', '#F0F8FF'];
+    } else {
+      style = 'cosmic';
+      colors = ['#000080', '#4169E1', '#87CEEB', '#F0F8FF', '#FFD700'];
+    }
+
+    // Override style based on content themes
+    if (hasWaterThemes) {
+      style = 'ocean';
+      colors = ['#001F3F', '#0074D9', '#7FDBFF', '#E6F3FF'];
+    } else if (hasFireThemes) {
+      style = 'fire';
+      colors = ['#FF4500', '#FF6347', '#FFD700', '#FFF8DC'];
+    } else if (hasNatureThemes) {
+      style = 'forest';
+      colors = ['#228B22', '#32CD32', '#90EE90', '#F0FFF0'];
+    } else if (hasSpaceThemes || hasFlyingThemes) {
+      style = 'cosmic';
+      colors = ['#191970', '#4169E1', '#87CEEB', '#F0F8FF', '#FFD700'];
+    }
+
+    // Determine patterns based on dream characteristics
+    patterns = {
+      circles: dreamCount > 0,
+      lines: dreamCount > 3,
+      spirals: dreamCount > 8,
+      waves: hasWaterThemes || dreamCount > 12,
+      stars: hasSpaceThemes || dreamCount > 20
+    };
+
+    // Calculate intensity and complexity
+    const intensity = Math.min(0.2 + (dreamCount * 0.02), 1.0);
+    const complexity = Math.min(0.1 + (dreamCount * 0.015), 0.8);
+
+    return {
+      style,
+      colors,
+      patterns,
+      intensity,
+      complexity
+    };
+  }, []);
+
+  // Generate art based on configuration
+  const generateArt = useCallback((ctx: CanvasRenderingContext2D, config: ArtConfig, mouseX: number, mouseY: number) => {
+    const canvas = ctx.canvas;
+    const width = canvas.width;
+    const height = canvas.height;
+    
+    // Clear canvas with gradient background
+    const gradient = ctx.createLinearGradient(0, 0, width, height);
+    gradient.addColorStop(0, config.colors[0]);
+    gradient.addColorStop(1, config.colors[config.colors.length - 1]);
+    ctx.fillStyle = gradient;
+    ctx.fillRect(0, 0, width, height);
+
+    // Add patterns based on configuration
+    if (config.patterns.circles) {
+      drawCircles(ctx, config, width, height, mouseX, mouseY);
+    }
+    
+    if (config.patterns.lines) {
+      drawLines(ctx, config, width, height, mouseX, mouseY);
+    }
+    
+    if (config.patterns.spirals) {
+      drawSpirals(ctx, config, width, height, mouseX, mouseY);
+    }
+    
+    if (config.patterns.waves) {
+      drawWaves(ctx, config, width, height, mouseX, mouseY);
+    }
+    
+    if (config.patterns.stars) {
+      drawStars(ctx, config, width, height, mouseX, mouseY);
+    }
+  }, []);
+
+  // Drawing functions for different patterns
+  const drawCircles = (ctx: CanvasRenderingContext2D, config: ArtConfig, width: number, height: number, mouseX: number, mouseY: number) => {
+    const circleCount = Math.floor(config.complexity * 20) + 5;
+    
+    for (let i = 0; i < circleCount; i++) {
+      const x = (width / circleCount) * i + (Math.sin(Date.now() * 0.001 + i) * 50);
+      const y = height / 2 + (Math.cos(Date.now() * 0.001 + i) * 30);
+      const radius = 20 + (config.intensity * 40) + (Math.sin(Date.now() * 0.002 + i) * 10);
+      
+      // Mouse interaction
+      const distanceToMouse = Math.sqrt((x - mouseX) ** 2 + (y - mouseY) ** 2);
+      const mouseInfluence = Math.max(0, 1 - distanceToMouse / 200);
+      
+      ctx.beginPath();
+      ctx.arc(x, y, radius * (1 + mouseInfluence * 0.5), 0, Math.PI * 2);
+      ctx.fillStyle = config.colors[i % config.colors.length];
+      ctx.globalAlpha = 0.3 + (config.intensity * 0.4) + (mouseInfluence * 0.2);
+      ctx.fill();
+      ctx.globalAlpha = 1;
+    }
+  };
+
+  const drawLines = (ctx: CanvasRenderingContext2D, config: ArtConfig, width: number, height: number, mouseX: number, mouseY: number) => {
+    const lineCount = Math.floor(config.complexity * 15) + 3;
+    
+    for (let i = 0; i < lineCount; i++) {
+      const startX = (width / lineCount) * i;
+      const startY = height * 0.2 + (Math.sin(Date.now() * 0.001 + i) * 100);
+      const endX = startX + (Math.cos(Date.now() * 0.001 + i) * 200);
+      const endY = height * 0.8 + (Math.sin(Date.now() * 0.001 + i) * 100);
+      
+      ctx.beginPath();
+      ctx.moveTo(startX, startY);
+      ctx.lineTo(endX, endY);
+      ctx.strokeStyle = config.colors[i % config.colors.length];
+      ctx.lineWidth = 2 + (config.intensity * 3);
+      ctx.globalAlpha = 0.4 + (config.intensity * 0.3);
+      ctx.stroke();
+      ctx.globalAlpha = 1;
+    }
+  };
+
+  const drawSpirals = (ctx: CanvasRenderingContext2D, config: ArtConfig, width: number, height: number, mouseX: number, mouseY: number) => {
+    const spiralCount = Math.floor(config.complexity * 8) + 2;
+    
+    for (let i = 0; i < spiralCount; i++) {
+      const centerX = (width / spiralCount) * i + width / (spiralCount * 2);
+      const centerY = height / 2;
+      
+      ctx.beginPath();
+      ctx.moveTo(centerX, centerY);
+      
+      for (let angle = 0; angle < Math.PI * 4; angle += 0.1) {
+        const radius = angle * 2 + (Math.sin(Date.now() * 0.001 + i) * 20);
+        const x = centerX + Math.cos(angle) * radius;
+        const y = centerY + Math.sin(angle) * radius;
+        ctx.lineTo(x, y);
+      }
+      
+      ctx.strokeStyle = config.colors[i % config.colors.length];
+      ctx.lineWidth = 1 + (config.intensity * 2);
+      ctx.globalAlpha = 0.3 + (config.intensity * 0.4);
+      ctx.stroke();
+      ctx.globalAlpha = 1;
+    }
+  };
+
+  const drawWaves = (ctx: CanvasRenderingContext2D, config: ArtConfig, width: number, height: number, mouseX: number, mouseY: number) => {
+    const waveCount = Math.floor(config.complexity * 6) + 2;
+    
+    for (let i = 0; i < waveCount; i++) {
+      ctx.beginPath();
+      ctx.moveTo(0, height / 2);
+      
+      for (let x = 0; x < width; x += 5) {
+        const y = height / 2 + 
+          Math.sin((x * 0.01) + (Date.now() * 0.001 + i)) * (30 + config.intensity * 50) +
+          Math.sin((x * 0.02) + (Date.now() * 0.002 + i)) * (10 + config.intensity * 20);
+        ctx.lineTo(x, y);
+      }
+      
+      ctx.strokeStyle = config.colors[i % config.colors.length];
+      ctx.lineWidth = 2 + (config.intensity * 3);
+      ctx.globalAlpha = 0.4 + (config.intensity * 0.3);
+      ctx.stroke();
+      ctx.globalAlpha = 1;
+    }
+  };
+
+  const drawStars = (ctx: CanvasRenderingContext2D, config: ArtConfig, width: number, height: number, mouseX: number, mouseY: number) => {
+    const starCount = Math.floor(config.complexity * 25) + 10;
+    
+    for (let i = 0; i < starCount; i++) {
+      const x = Math.random() * width;
+      const y = Math.random() * height;
+      const size = 2 + (config.intensity * 4) + (Math.sin(Date.now() * 0.003 + i) * 2);
+      
+      // Mouse interaction - stars twinkle more when mouse is near
+      const distanceToMouse = Math.sqrt((x - mouseX) ** 2 + (y - mouseY) ** 2);
+      const twinkle = Math.sin(Date.now() * 0.005 + i) * 0.5 + 0.5;
+      const mouseInfluence = Math.max(0, 1 - distanceToMouse / 150);
+      
+      ctx.beginPath();
+      ctx.arc(x, y, size * (1 + twinkle * 0.5 + mouseInfluence * 0.3), 0, Math.PI * 2);
+      ctx.fillStyle = config.colors[i % config.colors.length];
+      ctx.globalAlpha = 0.6 + (twinkle * 0.4) + (mouseInfluence * 0.3);
+      ctx.fill();
+      ctx.globalAlpha = 1;
+    }
+  };
+
+  // Animation loop
+  const animate = useCallback(() => {
+    const canvas = canvasRef.current;
+    if (!canvas || !artConfig) return;
+
+    const ctx = canvas.getContext('2d');
+    if (!ctx) return;
+
+    generateArt(ctx, artConfig, mousePos.x, mousePos.y);
+    
+    const id = requestAnimationFrame(animate);
+    setAnimationId(id);
+  }, [artConfig, mousePos, generateArt]);
+
+  // Handle mouse movement
+  const handleMouseMove = useCallback((event: React.MouseEvent<HTMLCanvasElement>) => {
+    const canvas = canvasRef.current;
+    if (!canvas) return;
+
+    const rect = canvas.getBoundingClientRect();
+    const x = event.clientX - rect.left;
+    const y = event.clientY - rect.top;
+    setMousePos({ x, y });
+  }, []);
+
+  // Initialize canvas and start animation
+  useEffect(() => {
+    const canvas = canvasRef.current;
+    if (!canvas) return;
+
+    // Set canvas size
+    const resizeCanvas = () => {
+      const container = canvas.parentElement;
+      if (container) {
+        canvas.width = container.clientWidth;
+        canvas.height = container.clientHeight;
+      }
+    };
+
+    resizeCanvas();
+    window.addEventListener('resize', resizeCanvas);
+
+    return () => {
+      window.removeEventListener('resize', resizeCanvas);
+      if (animationId) {
+        cancelAnimationFrame(animationId);
+      }
+    };
+  }, [animationId]);
+
+  // Start animation when art config is ready
+  useEffect(() => {
+    if (artConfig && !animationId) {
+      animate();
+    }
+  }, [artConfig, animate, animationId]);
+
+  // Fetch dreams and generate art config
+  useEffect(() => {
+    fetchDreams();
+  }, [fetchDreams]);
+
+  // Update art config when dreams change
+  useEffect(() => {
+    if (dreams.length >= 0) { // Include empty state
+      const config = analyzeDreamsForArt(dreams);
+      setArtConfig(config);
+    }
+  }, [dreams, analyzeDreamsForArt]);
+
+  if (loading) {
+    return (
+      <div className={`dream-art-container ${className}`}>
+        <div className="dream-art-loading">
+          <div className="loading-spinner"></div>
+          <p>Generating your unique dream art...</p>
+        </div>
+      </div>
+    );
+  }
+
+  if (error) {
+    return (
+      <div className={`dream-art-container ${className}`}>
+        <div className="dream-art-error">
+          <p>Unable to generate art: {error}</p>
+        </div>
+      </div>
+    );
+  }
+
+  return (
+    <div className={`dream-art-container ${className}`}>
+      <div className="dream-art-info">
+        <h3>Your Dream Canvas</h3>
+        <p>
+          {dreams.length === 0 
+            ? "Your canvas awaits your first dream..."
+            : `Inspired by ${dreams.length} dream${dreams.length === 1 ? '' : 's'}`
+          }
+        </p>
+        {artConfig && (
+          <div className="art-style-info">
+            <span className="art-style-badge">{artConfig.style}</span>
+          </div>
+        )}
+      </div>
+      <canvas
+        ref={canvasRef}
+        className="dream-art-canvas"
+        onMouseMove={handleMouseMove}
+        style={{ cursor: 'crosshair' }}
+      />
+    </div>
+  );
+};
+
+export default DreamArt;
