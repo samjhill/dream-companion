@@ -294,9 +294,10 @@ def get_dream(phone_number, dream_id):
         print(f"DEBUG: Decoded dream content: '{decoded_content[:100]}...'")
         
         to_return = {
-            **dream_content,
+            "id": dream_content.get("id", dream_id),
             "response": response_text,
             "dream_content": decoded_content,
+            "summary": dream_content.get("summary", ""),
             "createdAt": created_at
         }
         
