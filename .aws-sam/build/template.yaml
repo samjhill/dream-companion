@@ -73,6 +73,10 @@ Resources:
           - secretsmanager:GetSecretValue
           Resource:
           - arn:aws:secretsmanager:us-east-1:732408661603:secret:stripe-jm2Ua6-Kg9uMo
+        - Effect: Allow
+          Action:
+          - sns:Publish
+          Resource: '*'
     Metadata:
       SamResourceId: DreamCompanionFunction
   FeedbackTable:

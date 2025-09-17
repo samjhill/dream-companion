@@ -117,9 +117,28 @@ def share_dream_art():
             # Create SMS message with link
             sms_message = f"{message}\n\n{share_link}\n\n🎭 Generated from {dream_count} dream{'s' if dream_count != 1 else ''} • Style: {art_config.get('style', 'unique')}"
             
-            # Send SMS (you'll need to implement SMS sending here)
-            # For now, we'll just return success
-            # In production, you'd integrate with Twilio, AWS SNS, or similar
+            # Send SMS using AWS SNS
+            try:
+                print(f"Attempting to send SMS to: {formatted_phone}")
+                print(f"SMS message: {sms_message}")
+                sns_client = boto3.client('sns')
+                response = sns_client.publish(
+                    PhoneNumber=formatted_phone,
+                    Message=sms_message
+                )
+                print(f"SMS sent successfully: {response['MessageId']}")
+            except Exception as sms_error:
+                print(f"Error sending SMS: {str(sms_error)}")
+                print(f"SMS error type: {type(sms_error)}")
+                # Still return success since the art was stored, but log the SMS error
+                return jsonify({
+                    "success": True,
+                    "message": "Art shared successfully (SMS delivery may be delayed)",
+                    "artId": art_id,
+                    "shareLink": share_link,
+                    "smsMessage": sms_message,
+                    "smsError": str(sms_error)
+                }), 200
             
             return jsonify({
                 "success": True,
