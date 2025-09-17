@@ -238,3 +238,160 @@
 [data-theme="dark"] .dream-art-page .page-description {
   color: #9ca3af;
 }
+
+/* Art Explanation Styles */
+.art-explanation {
+  background: white;
+  border-radius: 12px;
+  padding: 32px;
+  margin-top: 32px;
+  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.1);
+  border: 1px solid #e5e7eb;
+}
+
+.art-explanation h3 {
+  margin: 0 0 24px 0;
+  font-size: 1.5rem;
+  font-weight: 600;
+  color: #2c3e50;
+  text-align: center;
+}
+
+.explanation-content {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+  gap: 24px;
+  margin-bottom: 24px;
+}
+
+.explanation-step {
+  display: flex;
+  align-items: flex-start;
+  gap: 16px;
+  padding: 20px;
+  background: #f8fafc;
+  border-radius: 8px;
+  border: 1px solid #e2e8f0;
+}
+
+.step-icon {
+  font-size: 2rem;
+  flex-shrink: 0;
+  width: 48px;
+  height: 48px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: white;
+  border-radius: 50%;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+}
+
+.step-content h4 {
+  margin: 0 0 8px 0;
+  font-size: 1.1rem;
+  font-weight: 600;
+  color: #2c3e50;
+}
+
+.step-content p {
+  margin: 0;
+  color: #6b7280;
+  font-size: 0.95rem;
+  line-height: 1.5;
+}
+
+.explanation-note {
+  text-align: center;
+  padding: 16px 20px;
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  color: white;
+  border-radius: 8px;
+  margin-top: 20px;
+}
+
+.explanation-note p {
+  margin: 0;
+  font-size: 0.95rem;
+}
+
+/* Responsive design */
+@media (max-width: 768px) {
+  .art-explanation {
+    padding: 24px;
+    margin-top: 24px;
+  }
+  
+  .art-explanation h3 {
+    font-size: 1.3rem;
+    margin-bottom: 20px;
+  }
+  
+  .explanation-content {
+    grid-template-columns: 1fr;
+    gap: 16px;
+  }
+  
+  .explanation-step {
+    padding: 16px;
+    gap: 12px;
+  }
+  
+  .step-icon {
+    font-size: 1.5rem;
+    width: 40px;
+    height: 40px;
+  }
+  
+  .step-content h4 {
+    font-size: 1rem;
+  }
+  
+  .step-content p {
+    font-size: 0.9rem;
+  }
+}
+
+@media (max-width: 480px) {
+  .art-explanation {
+    padding: 20px;
+    margin-top: 20px;
+  }
+  
+  .explanation-step {
+    flex-direction: column;
+    text-align: center;
+    gap: 12px;
+  }
+  
+  .step-icon {
+    align-self: center;
+  }
+}
+
+/* Dark theme support for explanation */
+[data-theme="dark"] .art-explanation {
+  background: #1f2937;
+  border-color: #374151;
+}
+
+[data-theme="dark"] .art-explanation h3 {
+  color: #f9fafb;
+}
+
+[data-theme="dark"] .explanation-step {
+  background: #374151;
+  border-color: #4b5563;
+}
+
+[data-theme="dark"] .step-icon {
+  background: #2d3748;
+}
+
+[data-theme="dark"] .step-content h4 {
+  color: #f9fafb;
+}
+
+[data-theme="dark"] .step-content p {
+  color: #9ca3af;
+}

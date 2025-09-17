@@ -122,6 +122,42 @@ function App() {
                 dreamCount={dreamCount}
               />
             )}
+            <div className="art-explanation">
+              <h3>How Your Dream Art is Generated</h3>
+              <div className="explanation-content">
+                <div className="explanation-step">
+                  <div className="step-icon">📊</div>
+                  <div className="step-content">
+                    <h4>Dream Analysis</h4>
+                    <p>We analyze your dream content, timing patterns, and themes to understand your unique dream journey.</p>
+                  </div>
+                </div>
+                <div className="explanation-step">
+                  <div className="step-icon">🎨</div>
+                  <div className="step-content">
+                    <h4>Style Selection</h4>
+                    <p>Based on your dreams, we choose an art style: minimal, flowing, cosmic, ocean, fire, or forest themes.</p>
+                  </div>
+                </div>
+                <div className="explanation-step">
+                  <div className="step-icon">✨</div>
+                  <div className="step-content">
+                    <h4>Pattern Generation</h4>
+                    <p>We create unique patterns using circles, lines, spirals, waves, and stars that respond to your mouse movements.</p>
+                  </div>
+                </div>
+                <div className="explanation-step">
+                  <div className="step-icon">🔄</div>
+                  <div className="step-content">
+                    <h4>Evolution</h4>
+                    <p>Your art evolves with each new dream you share, becoming more complex and personalized over time.</p>
+                  </div>
+                </div>
+              </div>
+              <div className="explanation-note">
+                <p><strong>Interactive:</strong> Move your mouse over the canvas to see elements respond to your presence!</p>
+              </div>
+            </div>
           </div>
         );
       // case 'memory': // Temporarily hidden
