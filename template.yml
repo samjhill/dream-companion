@@ -32,6 +32,7 @@ Resources:
           S3_BUCKET_NAME: dream.storage
           PREMIUM_TABLE_NAME: dream-companion-premium-users
           MEMORIES_TABLE_NAME: dream-companion-memories
+          FEEDBACK_TABLE_NAME: dream-companion-feedback
           STRIPE_SECRETS_ARN: arn:aws:secretsmanager:us-east-1:732408661603:secret:stripe-jm2Ua6-Kg9uMo
       Events:
         DreamCompanionApiEvent:
@@ -68,6 +69,8 @@ Resources:
                 - "arn:aws:dynamodb:*:*:table/dream-companion-premium-users/*"
                 - "arn:aws:dynamodb:*:*:table/dream-companion-memories"
                 - "arn:aws:dynamodb:*:*:table/dream-companion-memories/*"
+                - "arn:aws:dynamodb:*:*:table/dream-companion-feedback"
+                - "arn:aws:dynamodb:*:*:table/dream-companion-feedback/*"
             - Effect: "Allow"
               Action:
                 - "secretsmanager:GetSecretValue"
