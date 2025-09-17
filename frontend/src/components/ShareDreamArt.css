@@ -1,0 +1,236 @@
+.share-dream-art {
+  background: white;
+  border-radius: 12px;
+  padding: 24px;
+  margin-top: 24px;
+  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.1);
+  border: 1px solid #e5e7eb;
+}
+
+.share-header {
+  text-align: center;
+  margin-bottom: 24px;
+}
+
+.share-header h3 {
+  margin: 0 0 8px 0;
+  font-size: 1.5rem;
+  font-weight: 600;
+  color: #2c3e50;
+}
+
+.share-header p {
+  margin: 0;
+  color: #6b7280;
+  font-size: 0.95rem;
+}
+
+.share-form {
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+}
+
+.form-group {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.form-group label {
+  font-weight: 500;
+  color: #374151;
+  font-size: 0.9rem;
+}
+
+.phone-input,
+.message-input {
+  padding: 12px 16px;
+  border: 2px solid #e5e7eb;
+  border-radius: 8px;
+  font-size: 1rem;
+  transition: border-color 0.2s ease;
+  font-family: inherit;
+}
+
+.phone-input:focus,
+.message-input:focus {
+  outline: none;
+  border-color: #667eea;
+  box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.1);
+}
+
+.phone-input:disabled,
+.message-input:disabled {
+  background-color: #f9fafb;
+  cursor: not-allowed;
+}
+
+.message-input {
+  resize: vertical;
+  min-height: 80px;
+}
+
+.share-button {
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  color: white;
+  border: none;
+  padding: 14px 24px;
+  border-radius: 8px;
+  font-size: 1rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  min-height: 48px;
+}
+
+.share-button:hover:not(:disabled) {
+  transform: translateY(-2px);
+  box-shadow: 0 8px 25px rgba(102, 126, 234, 0.3);
+}
+
+.share-button:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+  transform: none;
+  box-shadow: none;
+}
+
+.loading-spinner {
+  width: 16px;
+  height: 16px;
+  border: 2px solid rgba(255, 255, 255, 0.3);
+  border-top: 2px solid white;
+  border-radius: 50%;
+  animation: spin 1s linear infinite;
+}
+
+.error-message,
+.success-message {
+  padding: 12px 16px;
+  border-radius: 8px;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 0.9rem;
+  margin-top: 8px;
+}
+
+.error-message {
+  background-color: #fef2f2;
+  color: #dc2626;
+  border: 1px solid #fecaca;
+}
+
+.success-message {
+  background-color: #f0fdf4;
+  color: #16a34a;
+  border: 1px solid #bbf7d0;
+}
+
+.error-icon,
+.success-icon {
+  font-size: 1rem;
+}
+
+.share-info {
+  margin-top: 20px;
+  padding-top: 20px;
+  border-top: 1px solid #e5e7eb;
+}
+
+.share-note {
+  margin: 0;
+  font-size: 0.85rem;
+  color: #6b7280;
+  line-height: 1.5;
+}
+
+@keyframes spin {
+  0% { transform: rotate(0deg); }
+  100% { transform: rotate(360deg); }
+}
+
+/* Responsive design */
+@media (max-width: 768px) {
+  .share-dream-art {
+    padding: 20px;
+    margin-top: 20px;
+  }
+  
+  .share-header h3 {
+    font-size: 1.3rem;
+  }
+  
+  .phone-input,
+  .message-input {
+    padding: 10px 14px;
+  }
+  
+  .share-button {
+    padding: 12px 20px;
+    font-size: 0.95rem;
+  }
+}
+
+@media (max-width: 480px) {
+  .share-dream-art {
+    padding: 16px;
+    margin-top: 16px;
+  }
+  
+  .share-header h3 {
+    font-size: 1.2rem;
+  }
+  
+  .share-form {
+    gap: 16px;
+  }
+}
+
+/* Dark theme support */
+[data-theme="dark"] .share-dream-art {
+  background: #1f2937;
+  border-color: #374151;
+}
+
+[data-theme="dark"] .share-header h3 {
+  color: #f9fafb;
+}
+
+[data-theme="dark"] .share-header p {
+  color: #9ca3af;
+}
+
+[data-theme="dark"] .form-group label {
+  color: #d1d5db;
+}
+
+[data-theme="dark"] .phone-input,
+[data-theme="dark"] .message-input {
+  background-color: #374151;
+  border-color: #4b5563;
+  color: #f9fafb;
+}
+
+[data-theme="dark"] .phone-input:focus,
+[data-theme="dark"] .message-input:focus {
+  border-color: #667eea;
+}
+
+[data-theme="dark"] .phone-input:disabled,
+[data-theme="dark"] .message-input:disabled {
+  background-color: #2d3748;
+}
+
+[data-theme="dark"] .share-info {
+  border-color: #4b5563;
+}
+
+[data-theme="dark"] .share-note {
+  color: #9ca3af;
+}

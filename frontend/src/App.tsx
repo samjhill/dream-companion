@@ -3,6 +3,7 @@ import { WakingLife } from './components/WakingLife';
 import { Themes } from './components/Themes';
 import { Greet } from './components/Greet';
 import DreamArt from './components/DreamArt';
+import ShareDreamArt from './components/ShareDreamArt';
 import { withAuthenticator } from '@aws-amplify/ui-react';
 import { signOut } from 'aws-amplify/auth';
 import { LucidDreamGuide } from './components/LucidDreamGuide';
@@ -43,6 +44,11 @@ function App() {
   const location = useLocation();
   const { premiumStatus } = usePremiumStatus();
   
+  // State for Dream Art sharing
+  const [artConfig, setArtConfig] = useState<any>(null);
+  const [dreamCount, setDreamCount] = useState(0);
+  const [artCanvasRef, setArtCanvasRef] = useState<React.RefObject<HTMLCanvasElement> | null>(null);
+  
   // Get current section from URL or default to overview
   const getCurrentSection = (): NavigationItem['id'] => {
     const path = location.pathname.replace('/app', '') || '/';
@@ -75,6 +81,13 @@ function App() {
     }
   };
 
+  // Handle art ready callback
+  const handleArtReady = (config: any, count: number, canvasRef: React.RefObject<HTMLCanvasElement>) => {
+    setArtConfig(config);
+    setDreamCount(count);
+    setArtCanvasRef(canvasRef);
+  };
+
   const renderSection = () => {
     switch (activeSection) {
       case 'dreams':
@@ -101,7 +114,14 @@ function App() {
                 Move your mouse over the canvas to interact with your personal dreamscape.
               </p>
             </div>
-            <DreamArt />
+            <DreamArt onArtReady={handleArtReady} />
+            {artConfig && artCanvasRef && (
+              <ShareDreamArt 
+                canvasRef={artCanvasRef}
+                artConfig={artConfig}
+                dreamCount={dreamCount}
+              />
+            )}
           </div>
         );
       // case 'memory': // Temporarily hidden

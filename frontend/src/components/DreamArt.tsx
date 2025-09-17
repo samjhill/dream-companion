@@ -21,6 +21,7 @@ interface Dream {
 
 interface DreamArtProps {
   className?: string;
+  onArtReady?: (artConfig: ArtConfig | null, dreamCount: number, canvasRef: React.RefObject<HTMLCanvasElement>) => void;
 }
 
 interface ArtConfig {
@@ -37,7 +38,7 @@ interface ArtConfig {
   complexity: number;
 }
 
-const DreamArt: React.FC<DreamArtProps> = ({ className = '' }) => {
+const DreamArt: React.FC<DreamArtProps> = ({ className = '', onArtReady }) => {
   const canvasRef = useRef<HTMLCanvasElement>(null);
   const [dreams, setDreams] = useState<Dream[]>([]);
   const [loading, setLoading] = useState(true);
@@ -415,8 +416,12 @@ const DreamArt: React.FC<DreamArtProps> = ({ className = '' }) => {
     if (dreams.length >= 0) { // Include empty state
       const config = analyzeDreamsForArt(dreams);
       setArtConfig(config);
+      // Notify parent component when art is ready
+      if (onArtReady) {
+        onArtReady(config, dreams.length, canvasRef);
+      }
     }
-  }, [dreams, analyzeDreamsForArt]);
+  }, [dreams, analyzeDreamsForArt, onArtReady]);
 
   if (loading) {
     console.log('DreamArt: Loading state');
