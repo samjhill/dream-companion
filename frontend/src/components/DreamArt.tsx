@@ -252,8 +252,11 @@ const DreamArt: React.FC<DreamArtProps> = ({ className = '', onArtReady }) => {
       
       ctx.beginPath();
       ctx.arc(x, y, baseRadius * (1 + mouseInfluence * 0.8 + pulse * 0.2), 0, Math.PI * 2);
-      ctx.fillStyle = config.colors[i % config.colors.length];
-      ctx.globalAlpha = 0.6 + (config.intensity * 0.3) + (mouseInfluence * 0.3);
+      // Use contrasting colors that will be visible against the gradient
+      const contrastingColors = ['#ff6b6b', '#4ecdc4', '#45b7d1', '#96ceb4', '#feca57', '#ff9ff3'];
+      ctx.fillStyle = contrastingColors[i % contrastingColors.length];
+      ctx.globalAlpha = 0.8 + (config.intensity * 0.2) + (mouseInfluence * 0.2);
+      console.log(`Drawing circle ${i}: x=${x}, y=${y}, radius=${baseRadius}, color=${contrastingColors[i % contrastingColors.length]}, alpha=${ctx.globalAlpha}`);
       ctx.fill();
       ctx.globalAlpha = 1;
     }
@@ -271,9 +274,10 @@ const DreamArt: React.FC<DreamArtProps> = ({ className = '', onArtReady }) => {
       ctx.beginPath();
       ctx.moveTo(startX, startY);
       ctx.lineTo(endX, endY);
-      ctx.strokeStyle = config.colors[i % config.colors.length];
-      ctx.lineWidth = 2 + (config.intensity * 2);
-      ctx.globalAlpha = 0.7 + (config.intensity * 0.2);
+      const contrastingColors = ['#ff6b6b', '#4ecdc4', '#45b7d1', '#96ceb4', '#feca57', '#ff9ff3'];
+      ctx.strokeStyle = contrastingColors[i % contrastingColors.length];
+      ctx.lineWidth = 3 + (config.intensity * 2);
+      ctx.globalAlpha = 0.9 + (config.intensity * 0.1);
       ctx.stroke();
       ctx.globalAlpha = 1;
     }
@@ -296,9 +300,10 @@ const DreamArt: React.FC<DreamArtProps> = ({ className = '', onArtReady }) => {
         ctx.lineTo(x, y);
       }
       
-      ctx.strokeStyle = config.colors[i % config.colors.length];
-      ctx.lineWidth = 2 + (config.intensity * 1.5);
-      ctx.globalAlpha = 0.6 + (config.intensity * 0.3);
+      const contrastingColors = ['#ff6b6b', '#4ecdc4', '#45b7d1', '#96ceb4', '#feca57', '#ff9ff3'];
+      ctx.strokeStyle = contrastingColors[i % contrastingColors.length];
+      ctx.lineWidth = 3 + (config.intensity * 1.5);
+      ctx.globalAlpha = 0.8 + (config.intensity * 0.2);
       ctx.stroke();
       ctx.globalAlpha = 1;
     }
@@ -318,9 +323,10 @@ const DreamArt: React.FC<DreamArtProps> = ({ className = '', onArtReady }) => {
         ctx.lineTo(x, y);
       }
       
-      ctx.strokeStyle = config.colors[i % config.colors.length];
-      ctx.lineWidth = 2 + (config.intensity * 2);
-      ctx.globalAlpha = 0.6 + (config.intensity * 0.2);
+      const contrastingColors = ['#ff6b6b', '#4ecdc4', '#45b7d1', '#96ceb4', '#feca57', '#ff9ff3'];
+      ctx.strokeStyle = contrastingColors[i % contrastingColors.length];
+      ctx.lineWidth = 3 + (config.intensity * 2);
+      ctx.globalAlpha = 0.8 + (config.intensity * 0.2);
       ctx.stroke();
       ctx.globalAlpha = 1;
     }
@@ -344,8 +350,9 @@ const DreamArt: React.FC<DreamArtProps> = ({ className = '', onArtReady }) => {
       
       ctx.beginPath();
       ctx.arc(x, y, baseSize * (1 + mouseInfluence * 0.5), 0, Math.PI * 2);
-      ctx.fillStyle = config.colors[i % config.colors.length];
-      ctx.globalAlpha = 0.8 + (twinkle * 0.2) + (mouseInfluence * 0.2);
+      const contrastingColors = ['#ff6b6b', '#4ecdc4', '#45b7d1', '#96ceb4', '#feca57', '#ff9ff3'];
+      ctx.fillStyle = contrastingColors[i % contrastingColors.length];
+      ctx.globalAlpha = 0.9 + (twinkle * 0.1) + (mouseInfluence * 0.1);
       ctx.fill();
       ctx.globalAlpha = 1;
     }
