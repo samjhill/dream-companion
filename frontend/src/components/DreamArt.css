@@ -40,7 +40,7 @@
   height: 100%;
   display: block;
   border-radius: 24px;
-  background: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%);
+  /* Remove CSS background - let the canvas draw its own background */
   cursor: crosshair;
   transition: all 0.3s ease;
 }
@@ -217,7 +217,7 @@
 }
 
 [data-theme="dark"] .dream-art-canvas {
-  background: linear-gradient(135deg, #2c3e50 0%, #34495e 100%);
+  /* Remove CSS background - let the canvas draw its own background */
 }
 
 [data-theme="dark"] .dream-art-info {
