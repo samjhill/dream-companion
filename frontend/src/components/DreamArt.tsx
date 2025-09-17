@@ -234,14 +234,19 @@ const DreamArt: React.FC<DreamArtProps> = ({ className = '', onArtReady }) => {
 
   // Drawing functions for different patterns
   const drawCircles = (ctx: CanvasRenderingContext2D, config: ArtConfig, width: number, height: number, mouseX: number, mouseY: number) => {
-    const circleCount = Math.floor(config.complexity * 8) + 3; // Reduced count
+    const circleCount = Math.floor(config.complexity * 12) + 8; // More circles
     console.log('Drawing circles:', circleCount, 'complexity:', config.complexity);
     
     for (let i = 0; i < circleCount; i++) {
-      // More stable positioning with gentle movement
-      const x = (width / circleCount) * i + (Math.sin(Date.now() * 0.0003 + i) * 30); // Much slower
-      const y = height / 2 + (Math.cos(Date.now() * 0.0002 + i) * 20); // Gentle movement
-      const baseRadius = 15 + (config.intensity * 25);
+      // Mix of static and moving circles for better visibility
+      const isStatic = i % 3 === 0; // Every 3rd circle is static
+      const x = isStatic ? 
+        (width / circleCount) * i : 
+        (width / circleCount) * i + (Math.sin(Date.now() * 0.0003 + i) * 30);
+      const y = isStatic ? 
+        height / 2 + (i * 20) : 
+        height / 2 + (Math.cos(Date.now() * 0.0002 + i) * 20);
+      const baseRadius = 40 + (config.intensity * 50); // Even larger circles
       
       // Mouse interaction - circles grow when mouse is near
       const distanceToMouse = Math.sqrt((x - mouseX) ** 2 + (y - mouseY) ** 2);
@@ -255,7 +260,7 @@ const DreamArt: React.FC<DreamArtProps> = ({ className = '', onArtReady }) => {
       // Use contrasting colors that will be visible against the gradient
       const contrastingColors = ['#ff6b6b', '#4ecdc4', '#45b7d1', '#96ceb4', '#feca57', '#ff9ff3'];
       ctx.fillStyle = contrastingColors[i % contrastingColors.length];
-      ctx.globalAlpha = 0.8 + (config.intensity * 0.2) + (mouseInfluence * 0.2);
+      ctx.globalAlpha = 1.0; // Full opacity for maximum visibility
       console.log(`Drawing circle ${i}: x=${x}, y=${y}, radius=${baseRadius}, color=${contrastingColors[i % contrastingColors.length]}, alpha=${ctx.globalAlpha}`);
       ctx.fill();
       ctx.globalAlpha = 1;
