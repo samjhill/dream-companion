@@ -247,13 +247,23 @@ def get_dream(phone_number, dream_id):
             else:
                 print(f"DEBUG: Field '{field}' not found")
 
-        # Handle response field safely - it might be a list or string
+        # Handle response field safely - check multiple possible field names
         response_text = ""
-        if "response" in dream_content:
-            if isinstance(dream_content["response"], list):
-                response_text = " ".join(dream_content["response"])
+        analysis_fields = ["response", "analysis", "interpretation", "ai_response", "dream_analysis", "insights"]
+        
+        print(f"DEBUG: Checking analysis fields for dream {dream_id}:")
+        for field in analysis_fields:
+            if field in dream_content and dream_content[field]:
+                print(f"DEBUG: Found analysis field '{field}': {str(dream_content[field])[:100]}...")
+                if isinstance(dream_content[field], list):
+                    response_text = " ".join(dream_content[field])
+                else:
+                    response_text = str(dream_content[field])
+                break  # Use the first non-empty field found
             else:
-                response_text = str(dream_content["response"])
+                print(f"DEBUG: Analysis field '{field}' not found or empty")
+        
+        print(f"DEBUG: Final response_text: '{response_text[:100]}...'")
         
         # Handle createdAt field - it might be missing or have different names
         created_at = dream_content.get("createdAt") or dream_content.get("created_at") or dream_content.get("timestamp")
