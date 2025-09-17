@@ -195,6 +195,9 @@ const DreamArt: React.FC<DreamArtProps> = ({ className = '', onArtReady }) => {
     const width = canvas.width;
     const height = canvas.height;
     
+    console.log('Generating art with config:', config);
+    console.log('Canvas size:', width, 'x', height);
+    
     // Always draw background first to prevent black flashing
     const gradient = ctx.createLinearGradient(0, 0, width, height);
     gradient.addColorStop(0, config.colors[0]);
@@ -204,22 +207,27 @@ const DreamArt: React.FC<DreamArtProps> = ({ className = '', onArtReady }) => {
 
     // Add patterns based on configuration
     if (config.patterns.circles) {
+      console.log('Drawing circles');
       drawCircles(ctx, config, width, height, mouseX, mouseY);
     }
     
     if (config.patterns.lines) {
+      console.log('Drawing lines');
       drawLines(ctx, config, width, height, mouseX, mouseY);
     }
     
     if (config.patterns.spirals) {
+      console.log('Drawing spirals');
       drawSpirals(ctx, config, width, height, mouseX, mouseY);
     }
     
     if (config.patterns.waves) {
+      console.log('Drawing waves');
       drawWaves(ctx, config, width, height, mouseX, mouseY);
     }
     
     if (config.patterns.stars) {
+      console.log('Drawing stars');
       drawStars(ctx, config, width, height, mouseX, mouseY);
     }
   }, []);
@@ -227,6 +235,7 @@ const DreamArt: React.FC<DreamArtProps> = ({ className = '', onArtReady }) => {
   // Drawing functions for different patterns
   const drawCircles = (ctx: CanvasRenderingContext2D, config: ArtConfig, width: number, height: number, mouseX: number, mouseY: number) => {
     const circleCount = Math.floor(config.complexity * 8) + 3; // Reduced count
+    console.log('Drawing circles:', circleCount, 'complexity:', config.complexity);
     
     for (let i = 0; i < circleCount; i++) {
       // More stable positioning with gentle movement
@@ -244,7 +253,7 @@ const DreamArt: React.FC<DreamArtProps> = ({ className = '', onArtReady }) => {
       ctx.beginPath();
       ctx.arc(x, y, baseRadius * (1 + mouseInfluence * 0.8 + pulse * 0.2), 0, Math.PI * 2);
       ctx.fillStyle = config.colors[i % config.colors.length];
-      ctx.globalAlpha = 0.2 + (config.intensity * 0.3) + (mouseInfluence * 0.4);
+      ctx.globalAlpha = 0.6 + (config.intensity * 0.3) + (mouseInfluence * 0.3);
       ctx.fill();
       ctx.globalAlpha = 1;
     }
@@ -263,8 +272,8 @@ const DreamArt: React.FC<DreamArtProps> = ({ className = '', onArtReady }) => {
       ctx.moveTo(startX, startY);
       ctx.lineTo(endX, endY);
       ctx.strokeStyle = config.colors[i % config.colors.length];
-      ctx.lineWidth = 1.5 + (config.intensity * 2);
-      ctx.globalAlpha = 0.3 + (config.intensity * 0.2);
+      ctx.lineWidth = 2 + (config.intensity * 2);
+      ctx.globalAlpha = 0.7 + (config.intensity * 0.2);
       ctx.stroke();
       ctx.globalAlpha = 1;
     }
@@ -288,8 +297,8 @@ const DreamArt: React.FC<DreamArtProps> = ({ className = '', onArtReady }) => {
       }
       
       ctx.strokeStyle = config.colors[i % config.colors.length];
-      ctx.lineWidth = 1 + (config.intensity * 1.5);
-      ctx.globalAlpha = 0.2 + (config.intensity * 0.3);
+      ctx.lineWidth = 2 + (config.intensity * 1.5);
+      ctx.globalAlpha = 0.6 + (config.intensity * 0.3);
       ctx.stroke();
       ctx.globalAlpha = 1;
     }
@@ -310,8 +319,8 @@ const DreamArt: React.FC<DreamArtProps> = ({ className = '', onArtReady }) => {
       }
       
       ctx.strokeStyle = config.colors[i % config.colors.length];
-      ctx.lineWidth = 1.5 + (config.intensity * 2);
-      ctx.globalAlpha = 0.3 + (config.intensity * 0.2);
+      ctx.lineWidth = 2 + (config.intensity * 2);
+      ctx.globalAlpha = 0.6 + (config.intensity * 0.2);
       ctx.stroke();
       ctx.globalAlpha = 1;
     }
@@ -336,7 +345,7 @@ const DreamArt: React.FC<DreamArtProps> = ({ className = '', onArtReady }) => {
       ctx.beginPath();
       ctx.arc(x, y, baseSize * (1 + mouseInfluence * 0.5), 0, Math.PI * 2);
       ctx.fillStyle = config.colors[i % config.colors.length];
-      ctx.globalAlpha = 0.4 + (twinkle * 0.2) + (mouseInfluence * 0.3);
+      ctx.globalAlpha = 0.8 + (twinkle * 0.2) + (mouseInfluence * 0.2);
       ctx.fill();
       ctx.globalAlpha = 1;
     }
