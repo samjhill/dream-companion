@@ -386,7 +386,10 @@ const DreamArt: React.FC<DreamArtProps> = ({ className = '', onArtReady }) => {
   // Animation loop with frame rate limiting for gentler animation
   const animate = useCallback((currentTime: number) => {
     const canvas = canvasRef.current;
-    if (!canvas || !artConfig) return;
+    if (!canvas || !artConfig) {
+      console.log('Animation: Missing canvas or artConfig', { canvas: !!canvas, artConfig: !!artConfig });
+      return;
+    }
 
     // Limit to ~30fps for gentler animation
     if (currentTime - lastFrameTime.current < 33) {
@@ -398,8 +401,12 @@ const DreamArt: React.FC<DreamArtProps> = ({ className = '', onArtReady }) => {
     lastFrameTime.current = currentTime;
 
     const ctx = canvas.getContext('2d');
-    if (!ctx) return;
+    if (!ctx) {
+      console.log('Animation: Failed to get canvas context');
+      return;
+    }
 
+    console.log('Animation: Calling generateArt');
     generateArt(ctx, artConfig, mousePos.x, mousePos.y);
     
     const id = requestAnimationFrame(animate);
@@ -459,8 +466,11 @@ const DreamArt: React.FC<DreamArtProps> = ({ className = '', onArtReady }) => {
   // Start animation when art config is ready
   useEffect(() => {
     if (artConfig && !animationId) {
+      console.log('Starting animation with artConfig:', artConfig);
       const id = requestAnimationFrame(animate);
       setAnimationId(id);
+    } else {
+      console.log('Not starting animation:', { artConfig: !!artConfig, animationId });
     }
   }, [artConfig, animate, animationId]);
 
@@ -474,6 +484,24 @@ const DreamArt: React.FC<DreamArtProps> = ({ className = '', onArtReady }) => {
     if (dreams.length >= 0) { // Include empty state
       const config = analyzeDreamsForArt(dreams);
       setArtConfig(config);
+      
+      // Test immediate drawing
+      const canvas = canvasRef.current;
+      if (canvas) {
+        const ctx = canvas.getContext('2d');
+        if (ctx) {
+          console.log('Testing immediate canvas drawing');
+          // Draw a simple test shape immediately
+          ctx.beginPath();
+          ctx.arc(100, 100, 30, 0, Math.PI * 2);
+          ctx.fillStyle = '#00ff00'; // Bright green
+          ctx.globalAlpha = 1.0;
+          ctx.fill();
+          ctx.globalAlpha = 1;
+          console.log('Drew immediate test circle');
+        }
+      }
+      
       // Notify parent component when art is ready
       if (onArtReady) {
         onArtReady(config, dreams.length, canvasRef);
