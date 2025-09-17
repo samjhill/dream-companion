@@ -46,6 +46,7 @@ const DreamArt: React.FC<DreamArtProps> = ({ className = '', onArtReady }) => {
   const [artConfig, setArtConfig] = useState<ArtConfig | null>(null);
   const [animationId, setAnimationId] = useState<number | null>(null);
   const [mousePos, setMousePos] = useState({ x: 0, y: 0 });
+  const lastFrameTime = useRef<number>(0);
 
   // Fetch user's dreams for art generation
   const fetchDreams = useCallback(async () => {
@@ -194,8 +195,7 @@ const DreamArt: React.FC<DreamArtProps> = ({ className = '', onArtReady }) => {
     const width = canvas.width;
     const height = canvas.height;
     
-    // Clear canvas with gradient background (no black flashing)
-    ctx.clearRect(0, 0, width, height);
+    // Always draw background first to prevent black flashing
     const gradient = ctx.createLinearGradient(0, 0, width, height);
     gradient.addColorStop(0, config.colors[0]);
     gradient.addColorStop(1, config.colors[config.colors.length - 1]);
@@ -342,21 +342,27 @@ const DreamArt: React.FC<DreamArtProps> = ({ className = '', onArtReady }) => {
     }
   };
 
-  // Animation loop with reduced frame rate for gentler animation
-  const animate = useCallback(() => {
+  // Animation loop with frame rate limiting for gentler animation
+  const animate = useCallback((currentTime: number) => {
     const canvas = canvasRef.current;
     if (!canvas || !artConfig) return;
+
+    // Limit to ~30fps for gentler animation
+    if (currentTime - lastFrameTime.current < 33) {
+      const id = requestAnimationFrame(animate);
+      setAnimationId(id);
+      return;
+    }
+    
+    lastFrameTime.current = currentTime;
 
     const ctx = canvas.getContext('2d');
     if (!ctx) return;
 
     generateArt(ctx, artConfig, mousePos.x, mousePos.y);
     
-    // Reduce frame rate to ~30fps instead of 60fps for gentler animation
-    setTimeout(() => {
-      const id = requestAnimationFrame(animate);
-      setAnimationId(id);
-    }, 33); // ~30fps
+    const id = requestAnimationFrame(animate);
+    setAnimationId(id);
   }, [artConfig, mousePos, generateArt]);
 
   // Handle mouse movement
@@ -382,6 +388,16 @@ const DreamArt: React.FC<DreamArtProps> = ({ className = '', onArtReady }) => {
         const rect = container.getBoundingClientRect();
         canvas.width = rect.width;
         canvas.height = rect.height;
+        
+        // Draw initial background to prevent black flash
+        const ctx = canvas.getContext('2d');
+        if (ctx && artConfig) {
+          const gradient = ctx.createLinearGradient(0, 0, canvas.width, canvas.height);
+          gradient.addColorStop(0, artConfig.colors[0]);
+          gradient.addColorStop(1, artConfig.colors[artConfig.colors.length - 1]);
+          ctx.fillStyle = gradient;
+          ctx.fillRect(0, 0, canvas.width, canvas.height);
+        }
       }
     };
 
@@ -397,12 +413,13 @@ const DreamArt: React.FC<DreamArtProps> = ({ className = '', onArtReady }) => {
         cancelAnimationFrame(animationId);
       }
     };
-  }, [animationId]);
+  }, [animationId, artConfig]);
 
   // Start animation when art config is ready
   useEffect(() => {
     if (artConfig && !animationId) {
-      animate();
+      const id = requestAnimationFrame(animate);
+      setAnimationId(id);
     }
   }, [artConfig, animate, animationId]);
 

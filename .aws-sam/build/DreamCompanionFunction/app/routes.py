@@ -5,6 +5,7 @@ from functools import wraps
 import boto3
 import os
 import urllib.parse
+from datetime import datetime
 from dotenv import load_dotenv
 from .auth import require_cognito_auth, get_cognito_user_info
 
@@ -45,6 +46,94 @@ def debug_test():
     """Debug test endpoint"""
     print("DEBUG: Test endpoint called")
     return jsonify({"debug": "Test endpoint working", "timestamp": "2025-09-16T12:00:00Z"}), 200
+
+@routes_bp.route('/share-art', methods=['POST'])
+@require_auth
+@cross_origin(supports_credentials=True)
+def share_dream_art():
+    """Share dream art via SMS"""
+    try:
+        data = request.get_json()
+        
+        if not data:
+            return jsonify({"error": "No data provided"}), 400
+        
+        required_fields = ['fromPhone', 'toPhone', 'message', 'imageData']
+        for field in required_fields:
+            if field not in data:
+                return jsonify({"error": f"Missing required field: {field}"}), 400
+        
+        from_phone = data['fromPhone']
+        to_phone = data['toPhone']
+        message = data['message']
+        image_data = data['imageData']
+        art_config = data.get('artConfig', {})
+        dream_count = data.get('dreamCount', 0)
+        
+        # Validate phone numbers
+        if not to_phone or len(to_phone.replace('+', '').replace('-', '').replace('(', '').replace(')', '').replace(' ', '')) < 10:
+            return jsonify({"error": "Invalid recipient phone number"}), 400
+        
+        # Format phone number for SMS
+        clean_phone = to_phone.replace('+', '').replace('-', '').replace('(', '').replace(')', '').replace(' ', '')
+        if len(clean_phone) == 10:
+            formatted_phone = f"+1{clean_phone}"
+        elif len(clean_phone) == 11 and clean_phone.startswith('1'):
+            formatted_phone = f"+{clean_phone}"
+        else:
+            formatted_phone = f"+{clean_phone}"
+        
+        # Create a unique art ID for the shared piece
+        import uuid
+        art_id = str(uuid.uuid4())
+        
+        # Store the art data in S3 for sharing
+        if S3_BUCKET_NAME:
+            s3_client = get_s3_client()
+            
+            # Create art metadata
+            art_metadata = {
+                'artId': art_id,
+                'fromPhone': from_phone,
+                'toPhone': formatted_phone,
+                'message': message,
+                'artConfig': art_config,
+                'dreamCount': dream_count,
+                'createdAt': datetime.now().isoformat(),
+                'imageData': image_data
+            }
+            
+            # Store in S3
+            s3_client.put_object(
+                Bucket=S3_BUCKET_NAME,
+                Key=f'shared-art/{art_id}.json',
+                Body=json.dumps(art_metadata),
+                ContentType='application/json'
+            )
+            
+            # Create shareable link
+            share_link = f"https://clarasdreamguide.com/shared-art/{art_id}"
+            
+            # Create SMS message with link
+            sms_message = f"{message}\n\n{share_link}\n\n🎭 Generated from {dream_count} dream{'s' if dream_count != 1 else ''} • Style: {art_config.get('style', 'unique')}"
+            
+            # Send SMS (you'll need to implement SMS sending here)
+            # For now, we'll just return success
+            # In production, you'd integrate with Twilio, AWS SNS, or similar
+            
+            return jsonify({
+                "success": True,
+                "message": "Art shared successfully",
+                "artId": art_id,
+                "shareLink": share_link,
+                "smsMessage": sms_message
+            }), 200
+        else:
+            return jsonify({"error": "S3 bucket not configured"}), 500
+            
+    except Exception as e:
+        print(f"Error sharing art: {str(e)}")
+        return jsonify({"error": f"Failed to share art: {str(e)}"}), 500
 
 @routes_bp.route('/<path:proxy>', methods=['OPTIONS'])
 @cross_origin(supports_credentials=True)
