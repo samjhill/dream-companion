@@ -82,12 +82,24 @@ const DreamContent: React.FC<DreamContentProps> = ({ dream }) => {
             <p>{dream.dream_content}</p>
           </div>
           
-          {(dream.response || dream.analysis || dream.interpretation || dream.ai_response || dream.dream_analysis || dream.insights) && (
-            <div className='dream-analysis'>
-              <h4>Analysis:</h4>
-              <p>{dream.response || dream.analysis || dream.interpretation || dream.ai_response || dream.dream_analysis || dream.insights}</p>
-            </div>
-          )}
+          {(() => {
+            const analysisText = dream.response || dream.analysis || dream.interpretation || dream.ai_response || dream.dream_analysis || dream.insights;
+            console.log(`DEBUG: Dream ${dream.id} analysis check:`, {
+              response: dream.response,
+              analysis: dream.analysis,
+              interpretation: dream.interpretation,
+              ai_response: dream.ai_response,
+              dream_analysis: dream.dream_analysis,
+              insights: dream.insights,
+              finalAnalysisText: analysisText
+            });
+            return analysisText && (
+              <div className='dream-analysis'>
+                <h4>Analysis:</h4>
+                <p>{analysisText}</p>
+              </div>
+            );
+          })()}
           
           {themes && (
             <div className='dream-themes'>
@@ -148,6 +160,17 @@ const DreamListOptimized: React.FC = () => {
       }
 
       const dreamData: Dream = await dreamResponse.json();
+      
+      // Debug logging to see what fields are present
+      console.log(`DEBUG: Dream data for ${dreamId}:`, dreamData);
+      console.log(`DEBUG: Available analysis fields:`, {
+        response: dreamData.response,
+        analysis: dreamData.analysis,
+        interpretation: dreamData.interpretation,
+        ai_response: dreamData.ai_response,
+        dream_analysis: dreamData.dream_analysis,
+        insights: dreamData.insights
+      });
       
       // Cache the result
       setDreamCache(prev => new Map(prev).set(cacheKey, dreamData));
