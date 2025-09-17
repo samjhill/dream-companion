@@ -387,8 +387,10 @@ const DreamArt: React.FC<DreamArtProps> = ({ className = '', onArtReady }) => {
   // Animation loop with frame rate limiting for gentler animation
   const animate = useCallback((currentTime: number) => {
     const canvas = canvasRef.current;
-    if (!canvas || !artConfig) {
-      console.log('Animation: Missing canvas or artConfig', { canvas: !!canvas, artConfig: !!artConfig });
+    const currentArtConfig = artConfig; // Get current art config
+    
+    if (!canvas || !currentArtConfig) {
+      console.log('Animation: Missing canvas or artConfig', { canvas: !!canvas, artConfig: !!currentArtConfig });
       return;
     }
 
@@ -407,12 +409,12 @@ const DreamArt: React.FC<DreamArtProps> = ({ className = '', onArtReady }) => {
       return;
     }
 
-    console.log('Animation: Calling generateArt');
-    generateArt(ctx, artConfig, mousePos.x, mousePos.y);
+    console.log('Animation: Calling generateArt with config:', currentArtConfig);
+    generateArt(ctx, currentArtConfig, mousePos.x, mousePos.y);
     
     const id = requestAnimationFrame(animate);
     animationIdRef.current = id;
-  }, []); // Remove dependencies to prevent re-renders
+  }, [artConfig, mousePos]); // Include dependencies to get current values
 
   // Handle mouse movement
   const handleMouseMove = useCallback((event: React.MouseEvent<HTMLCanvasElement>) => {
