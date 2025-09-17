@@ -224,48 +224,52 @@ const DreamArt: React.FC<DreamArtProps> = ({ className = '' }) => {
 
   // Drawing functions for different patterns
   const drawCircles = (ctx: CanvasRenderingContext2D, config: ArtConfig, width: number, height: number, mouseX: number, mouseY: number) => {
-    const circleCount = Math.floor(config.complexity * 20) + 5;
+    const circleCount = Math.floor(config.complexity * 8) + 3; // Reduced count
     
     for (let i = 0; i < circleCount; i++) {
-      const x = (width / circleCount) * i + (Math.sin(Date.now() * 0.001 + i) * 50);
-      const y = height / 2 + (Math.cos(Date.now() * 0.001 + i) * 30);
-      const radius = 20 + (config.intensity * 40) + (Math.sin(Date.now() * 0.002 + i) * 10);
+      // More stable positioning with gentle movement
+      const x = (width / circleCount) * i + (Math.sin(Date.now() * 0.0003 + i) * 30); // Much slower
+      const y = height / 2 + (Math.cos(Date.now() * 0.0002 + i) * 20); // Gentle movement
+      const baseRadius = 15 + (config.intensity * 25);
       
-      // Mouse interaction
+      // Mouse interaction - circles grow when mouse is near
       const distanceToMouse = Math.sqrt((x - mouseX) ** 2 + (y - mouseY) ** 2);
-      const mouseInfluence = Math.max(0, 1 - distanceToMouse / 200);
+      const mouseInfluence = Math.max(0, 1 - distanceToMouse / 150);
+      
+      // Very gentle pulsing
+      const pulse = Math.sin(Date.now() * 0.0008 + i) * 0.1 + 0.9; // Subtle pulse
       
       ctx.beginPath();
-      ctx.arc(x, y, radius * (1 + mouseInfluence * 0.5), 0, Math.PI * 2);
+      ctx.arc(x, y, baseRadius * (1 + mouseInfluence * 0.8 + pulse * 0.2), 0, Math.PI * 2);
       ctx.fillStyle = config.colors[i % config.colors.length];
-      ctx.globalAlpha = 0.3 + (config.intensity * 0.4) + (mouseInfluence * 0.2);
+      ctx.globalAlpha = 0.2 + (config.intensity * 0.3) + (mouseInfluence * 0.4);
       ctx.fill();
       ctx.globalAlpha = 1;
     }
   };
 
   const drawLines = (ctx: CanvasRenderingContext2D, config: ArtConfig, width: number, height: number, _mouseX: number, _mouseY: number) => {
-    const lineCount = Math.floor(config.complexity * 15) + 3;
+    const lineCount = Math.floor(config.complexity * 8) + 2; // Reduced count
     
     for (let i = 0; i < lineCount; i++) {
       const startX = (width / lineCount) * i;
-      const startY = height * 0.2 + (Math.sin(Date.now() * 0.001 + i) * 100);
-      const endX = startX + (Math.cos(Date.now() * 0.001 + i) * 200);
-      const endY = height * 0.8 + (Math.sin(Date.now() * 0.001 + i) * 100);
+      const startY = height * 0.3 + (Math.sin(Date.now() * 0.0002 + i) * 50); // Much slower
+      const endX = startX + (Math.cos(Date.now() * 0.0003 + i) * 100); // Slower movement
+      const endY = height * 0.7 + (Math.sin(Date.now() * 0.0002 + i) * 50);
       
       ctx.beginPath();
       ctx.moveTo(startX, startY);
       ctx.lineTo(endX, endY);
       ctx.strokeStyle = config.colors[i % config.colors.length];
-      ctx.lineWidth = 2 + (config.intensity * 3);
-      ctx.globalAlpha = 0.4 + (config.intensity * 0.3);
+      ctx.lineWidth = 1.5 + (config.intensity * 2);
+      ctx.globalAlpha = 0.3 + (config.intensity * 0.2);
       ctx.stroke();
       ctx.globalAlpha = 1;
     }
   };
 
   const drawSpirals = (ctx: CanvasRenderingContext2D, config: ArtConfig, width: number, height: number, _mouseX: number, _mouseY: number) => {
-    const spiralCount = Math.floor(config.complexity * 8) + 2;
+    const spiralCount = Math.floor(config.complexity * 4) + 1; // Reduced count
     
     for (let i = 0; i < spiralCount; i++) {
       const centerX = (width / spiralCount) * i + width / (spiralCount * 2);
@@ -274,66 +278,69 @@ const DreamArt: React.FC<DreamArtProps> = ({ className = '' }) => {
       ctx.beginPath();
       ctx.moveTo(centerX, centerY);
       
-      for (let angle = 0; angle < Math.PI * 4; angle += 0.1) {
-        const radius = angle * 2 + (Math.sin(Date.now() * 0.001 + i) * 20);
+      for (let angle = 0; angle < Math.PI * 3; angle += 0.15) { // Slower spiral
+        const radius = angle * 1.5 + (Math.sin(Date.now() * 0.0005 + i) * 10); // Much slower movement
         const x = centerX + Math.cos(angle) * radius;
         const y = centerY + Math.sin(angle) * radius;
         ctx.lineTo(x, y);
       }
       
       ctx.strokeStyle = config.colors[i % config.colors.length];
-      ctx.lineWidth = 1 + (config.intensity * 2);
-      ctx.globalAlpha = 0.3 + (config.intensity * 0.4);
+      ctx.lineWidth = 1 + (config.intensity * 1.5);
+      ctx.globalAlpha = 0.2 + (config.intensity * 0.3);
       ctx.stroke();
       ctx.globalAlpha = 1;
     }
   };
 
   const drawWaves = (ctx: CanvasRenderingContext2D, config: ArtConfig, width: number, height: number, _mouseX: number, _mouseY: number) => {
-    const waveCount = Math.floor(config.complexity * 6) + 2;
+    const waveCount = Math.floor(config.complexity * 3) + 1; // Reduced count
     
     for (let i = 0; i < waveCount; i++) {
       ctx.beginPath();
       ctx.moveTo(0, height / 2);
       
-      for (let x = 0; x < width; x += 5) {
+      for (let x = 0; x < width; x += 8) { // Larger steps for smoother waves
         const y = height / 2 + 
-          Math.sin((x * 0.01) + (Date.now() * 0.001 + i)) * (30 + config.intensity * 50) +
-          Math.sin((x * 0.02) + (Date.now() * 0.002 + i)) * (10 + config.intensity * 20);
+          Math.sin((x * 0.008) + (Date.now() * 0.0003 + i)) * (20 + config.intensity * 30) + // Much slower
+          Math.sin((x * 0.015) + (Date.now() * 0.0005 + i)) * (8 + config.intensity * 12);
         ctx.lineTo(x, y);
       }
       
       ctx.strokeStyle = config.colors[i % config.colors.length];
-      ctx.lineWidth = 2 + (config.intensity * 3);
-      ctx.globalAlpha = 0.4 + (config.intensity * 0.3);
+      ctx.lineWidth = 1.5 + (config.intensity * 2);
+      ctx.globalAlpha = 0.3 + (config.intensity * 0.2);
       ctx.stroke();
       ctx.globalAlpha = 1;
     }
   };
 
   const drawStars = (ctx: CanvasRenderingContext2D, config: ArtConfig, width: number, height: number, mouseX: number, mouseY: number) => {
-    const starCount = Math.floor(config.complexity * 25) + 10;
+    const starCount = Math.floor(config.complexity * 15) + 5; // Reduced count
     
     for (let i = 0; i < starCount; i++) {
-      const x = Math.random() * width;
-      const y = Math.random() * height;
-      const size = 2 + (config.intensity * 4) + (Math.sin(Date.now() * 0.003 + i) * 2);
+      // Use consistent positioning based on index for stable stars
+      const x = (width / starCount) * i + (Math.sin(Date.now() * 0.0005 + i) * 20); // Much slower movement
+      const y = height * 0.3 + (Math.cos(Date.now() * 0.0003 + i) * 15); // Gentle vertical drift
+      const baseSize = 1.5 + (config.intensity * 2);
       
-      // Mouse interaction - stars twinkle more when mouse is near
+      // Mouse interaction - stars respond to mouse proximity
       const distanceToMouse = Math.sqrt((x - mouseX) ** 2 + (y - mouseY) ** 2);
-      const twinkle = Math.sin(Date.now() * 0.005 + i) * 0.5 + 0.5;
-      const mouseInfluence = Math.max(0, 1 - distanceToMouse / 150);
+      const mouseInfluence = Math.max(0, 1 - distanceToMouse / 200); // Larger interaction radius
+      
+      // Very gentle twinkle - much slower
+      const twinkle = Math.sin(Date.now() * 0.001 + i) * 0.2 + 0.8; // Subtle twinkle
       
       ctx.beginPath();
-      ctx.arc(x, y, size * (1 + twinkle * 0.5 + mouseInfluence * 0.3), 0, Math.PI * 2);
+      ctx.arc(x, y, baseSize * (1 + mouseInfluence * 0.5), 0, Math.PI * 2);
       ctx.fillStyle = config.colors[i % config.colors.length];
-      ctx.globalAlpha = 0.6 + (twinkle * 0.4) + (mouseInfluence * 0.3);
+      ctx.globalAlpha = 0.4 + (twinkle * 0.2) + (mouseInfluence * 0.3);
       ctx.fill();
       ctx.globalAlpha = 1;
     }
   };
 
-  // Animation loop
+  // Animation loop with reduced frame rate for gentler animation
   const animate = useCallback(() => {
     const canvas = canvasRef.current;
     if (!canvas || !artConfig) return;
@@ -343,8 +350,11 @@ const DreamArt: React.FC<DreamArtProps> = ({ className = '' }) => {
 
     generateArt(ctx, artConfig, mousePos.x, mousePos.y);
     
-    const id = requestAnimationFrame(animate);
-    setAnimationId(id);
+    // Reduce frame rate to ~30fps instead of 60fps for gentler animation
+    setTimeout(() => {
+      const id = requestAnimationFrame(animate);
+      setAnimationId(id);
+    }, 33); // ~30fps
   }, [artConfig, mousePos, generateArt]);
 
   // Handle mouse movement
