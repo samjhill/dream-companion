@@ -42,6 +42,13 @@
   line-height: 1.7;
 }
 
+.profile-container {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  margin: var(--space-lg) 0;
+}
+
 .marketing-content {
   background: white;
   border-radius: var(--radius-lg);
