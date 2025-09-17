@@ -107,10 +107,10 @@ const DreamArt: React.FC<DreamArtProps> = ({ className = '', onArtReady }) => {
     if (dreams.length === 0) {
       return {
         style: 'minimal',
-        colors: ['#E8F4FD', '#B8E6FF', '#87CEEB'],
+        colors: ['#667eea', '#764ba2', '#f093fb'],
         patterns: { circles: true, lines: false, spirals: false, waves: false, stars: false },
-        intensity: 0.3,
-        complexity: 0.2
+        intensity: 0.6,
+        complexity: 0.5
       };
     }
 
@@ -140,31 +140,31 @@ const DreamArt: React.FC<DreamArtProps> = ({ className = '', onArtReady }) => {
 
     if (dreamCount < 5) {
       style = 'minimal';
-      colors = ['#F0F8FF', '#E6F3FF', '#CCE7FF'];
+      colors = ['#667eea', '#764ba2', '#f093fb'];
     } else if (dreamCount < 15) {
       style = 'flowing';
-      colors = ['#E8F4FD', '#B8E6FF', '#87CEEB', '#4682B4'];
+      colors = ['#4facfe', '#00f2fe', '#43e97b', '#38f9d7'];
     } else if (dreamCount < 30) {
       style = 'cosmic';
-      colors = ['#191970', '#4169E1', '#87CEEB', '#F0F8FF'];
+      colors = ['#667eea', '#764ba2', '#f093fb', '#f5576c'];
     } else {
       style = 'cosmic';
-      colors = ['#000080', '#4169E1', '#87CEEB', '#F0F8FF', '#FFD700'];
+      colors = ['#667eea', '#764ba2', '#f093fb', '#f5576c', '#4facfe'];
     }
 
     // Override style based on content themes
     if (hasWaterThemes) {
       style = 'ocean';
-      colors = ['#001F3F', '#0074D9', '#7FDBFF', '#E6F3FF'];
+      colors = ['#4facfe', '#00f2fe', '#43e97b', '#38f9d7'];
     } else if (hasFireThemes) {
       style = 'fire';
-      colors = ['#FF4500', '#FF6347', '#FFD700', '#FFF8DC'];
+      colors = ['#ff6b6b', '#ffa726', '#ffd54f', '#fff176'];
     } else if (hasNatureThemes) {
       style = 'forest';
-      colors = ['#228B22', '#32CD32', '#90EE90', '#F0FFF0'];
+      colors = ['#43e97b', '#38f9d7', '#4facfe', '#00f2fe'];
     } else if (hasSpaceThemes || hasFlyingThemes) {
       style = 'cosmic';
-      colors = ['#191970', '#4169E1', '#87CEEB', '#F0F8FF', '#FFD700'];
+      colors = ['#667eea', '#764ba2', '#f093fb', '#f5576c', '#4facfe'];
     }
 
     // Determine patterns based on dream characteristics
@@ -177,8 +177,8 @@ const DreamArt: React.FC<DreamArtProps> = ({ className = '', onArtReady }) => {
     };
 
     // Calculate intensity and complexity
-    const intensity = Math.min(0.2 + (dreamCount * 0.02), 1.0);
-    const complexity = Math.min(0.1 + (dreamCount * 0.015), 0.8);
+    const intensity = Math.min(0.6 + (dreamCount * 0.02), 1.0);
+    const complexity = Math.min(0.5 + (dreamCount * 0.015), 0.9);
 
     return {
       style,
