@@ -102,6 +102,18 @@ def get_dreams(phone_number):
             Prefix=f'{phone_number}/'
         )
         
+        # Debug logging to see what we found
+        new_count = len(new_response.get('Contents', []))
+        old_count = len(old_response.get('Contents', []))
+        print(f"DEBUG: Found {new_count} objects in new path ({phone_number}/dreams/)")
+        print(f"DEBUG: Found {old_count} objects in old path ({phone_number}/)")
+        
+        # Log some sample keys from each path
+        if new_response.get('Contents'):
+            print(f"DEBUG: Sample new path keys: {[obj['Key'] for obj in new_response['Contents'][:3]]}")
+        if old_response.get('Contents'):
+            print(f"DEBUG: Sample old path keys: {[obj['Key'] for obj in old_response['Contents'][:3]]}")
+        
         # Combine dreams from both locations, avoiding duplicates
         all_contents = []
         seen_keys = set()
@@ -129,9 +141,22 @@ def get_dreams(phone_number):
         
         # Create a mock response object with combined contents
         response = {'Contents': all_contents}
+        print(f"DEBUG: Combined total objects: {len(all_contents)}")
+        print(f"DEBUG: Sample combined keys: {[obj['Key'] for obj in all_contents[:5]]}")
 
         if 'Contents' in response:
-            # Filter out metadata and themes files, sort by creation date (newest first)
+            # Filter out metadata and themes files, sort by S3 LastModified (newest first)
+            # 
+            # IMPORTANT: Due to a backfill script that modified all dreams recently, S3 LastModified 
+            # timestamps reflect the backfill date, not the original creation dates. 
+            # 
+            # SOLUTION: A new backfill will be run to restore chronological order by updating
+            # S3 LastModified timestamps to match the original creation dates from the dream content.
+            # This approach is much more efficient than runtime fetching and avoids Lambda timeout issues.
+            # 
+            # Current approach uses S3 LastModified for sorting (efficient and reliable).
+            # After the chronological backfill, dreams will be displayed in correct order.
+            #
             dream_keys = []
             for obj in response['Contents']:
                 key = obj['Key']
@@ -141,8 +166,9 @@ def get_dreams(phone_number):
                         'lastModified': obj['LastModified']
                     })
 
-            # Sort by last modified date (newest first)
+            # Sort by S3 LastModified (newest first) - efficient and reliable
             dream_keys.sort(key=lambda x: x['lastModified'], reverse=True)
+            print(f"DEBUG: Using S3 LastModified for sorting (backfill-aware, efficient approach)")
 
             # Apply pagination
             total_dreams = len(dream_keys)
@@ -150,8 +176,17 @@ def get_dreams(phone_number):
 
             dream_keys = [{'key': dream['key']} for dream in paginated_dreams]
             print(f"DEBUG: Returning {len(dream_keys)} dreams for user {phone_number}")
-            for i, dream in enumerate(dream_keys):
-                print(f"DEBUG: Dream {i+1}: {dream['key']}")
+            print(f"DEBUG: Total dreams available: {total_dreams}")
+            print(f"DEBUG: Pagination: offset={offset}, limit={limit}")
+            
+            # Show first few and last few dreams to see the range
+            if len(paginated_dreams) > 0:
+                print(f"DEBUG: First dream modified: {paginated_dreams[0]['lastModified']}")
+                if len(paginated_dreams) > 1:
+                    print(f"DEBUG: Last dream modified: {paginated_dreams[-1]['lastModified']}")
+            
+            for i, dream in enumerate(paginated_dreams):
+                print(f"DEBUG: Dream {i+1}: {dream['key']} (modified: {dream['lastModified']})")
             
             return jsonify({
                 'dreams': dream_keys,
@@ -272,7 +307,11 @@ def get_dream(phone_number, dream_id):
                 "response": dream_content.get("response", "NOT_FOUND"),
                 "summary": dream_content.get("summary", "NOT_FOUND"),
                 "analysis": dream_content.get("analysis", "NOT_FOUND"),
-                "interpretation": dream_content.get("interpretation", "NOT_FOUND")
+                "interpretation": dream_content.get("interpretation", "NOT_FOUND"),
+                "title": dream_content.get("title", "NOT_FOUND"),
+                "ai_response": dream_content.get("ai_response", "NOT_FOUND"),
+                "dream_analysis": dream_content.get("dream_analysis", "NOT_FOUND"),
+                "insights": dream_content.get("insights", "NOT_FOUND")
             },
             "debug_final_dream_content": to_return['dream_content'][:200] if to_return['dream_content'] else "EMPTY",
             "debug_final_response": to_return['response'][:200] if to_return['response'] else "EMPTY"

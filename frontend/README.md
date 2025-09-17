@@ -1,187 +1,62 @@
 # Dream Companion Frontend
 
-A React TypeScript application for the Dream Companion App, providing an intuitive interface for users to track, analyze, and interpret their dreams.
+React TypeScript frontend for the Dream Companion App.
 
-## Features
+## Quick Start
 
-- **Dream Journal**: Record and view your dreams with AI-powered interpretations
-- **Theme Analysis**: Discover recurring patterns and themes in your dreams
-- **Lucid Dream Guide**: Learn techniques for lucid dreaming
-- **Waking Life Integration**: Connect dream insights to daily life
-- **Responsive Design**: Optimized for both desktop and mobile devices
-- **Authentication**: Secure user authentication with AWS Cognito
+```bash
+# Install dependencies
+npm install
+
+# Start development server
+npm run dev
+
+# Build for production
+npm run build
+
+# Run tests
+npm test
+```
 
 ## Technology Stack
 
-- **Framework**: React 18 with TypeScript
-- **Build Tool**: Vite
-- **Styling**: CSS with CSS Variables and modern layout techniques
-- **Authentication**: AWS Amplify
-- **State Management**: React Hooks
-- **Routing**: React Router DOM
-- **UI Components**: Custom components with accessibility features
-- **Date Handling**: date-fns library
-- **Animations**: Framer Motion
+- **React 18** with TypeScript
+- **Vite** for fast development and builds
+- **AWS Amplify** for authentication
+- **CSS** with modern layout techniques
+- **Vitest** for testing
 
-## Getting Started
+## Key Features
 
-### Prerequisites
+- Dream journaling interface
+- AI-powered dream analysis
+- Theme visualization and analysis
+- Lucid dream guidance
+- Responsive design with dark/light themes
+- Comprehensive accessibility support
 
-- Node.js 18+ 
-- npm or yarn
-- AWS account with Amplify configured
+## Development
 
-### Installation
-
-1. Clone the repository and navigate to the frontend directory:
-```bash
-cd frontend
-```
-
-2. Install dependencies:
-```bash
-npm install
-```
-
-3. Configure AWS Amplify:
-   - Copy your `aws-exports.js` file to the `src` directory
-   - Ensure your AWS Cognito user pool is properly configured
-
-4. Start the development server:
-```bash
-npm run dev
-```
-
-The application will be available at `http://localhost:5173`
-
-## Available Scripts
-
-- `npm run dev` - Start development server
-- `npm run build` - Build for production
-- `npm run lint` - Run ESLint
-- `npm run preview` - Preview production build
+See the main [Development Setup Guide](../docs/developer-guide/setup.md) for detailed setup instructions.
 
 ## Project Structure
 
 ```
 src/
-├── components/          # React components
-│   ├── DreamList.tsx   # Dream journal component
-│   ├── Greet.tsx       # Welcome component
-│   ├── Themes.tsx      # Dream themes component
-│   ├── HeatMap.tsx     # Dream frequency visualization
-│   └── ...             # Other components
-├── helpers/            # Utility functions
-│   ├── date.ts         # Date formatting utilities
-│   ├── numbers.ts      # Number utilities
-│   ├── user.ts         # User-related utilities
-│   └── process-dreams.ts # Dream processing utilities
-├── assets/             # Static assets (images, icons)
-├── App.tsx             # Main application component
-├── main.tsx            # Application entry point
-└── index.css           # Global styles
+├── components/     # React components
+├── helpers/        # Utility functions
+├── hooks/          # Custom React hooks
+├── services/       # API services
+├── assets/         # Static assets
+└── contexts/       # React contexts
 ```
 
-## Component Architecture
+## Documentation
 
-The application follows a component-based architecture with:
-
-- **Functional Components**: All components use React hooks and functional syntax
-- **TypeScript Interfaces**: Proper type definitions for all props and state
-- **Accessibility**: ARIA labels, keyboard navigation, and screen reader support
-- **Responsive Design**: Mobile-first approach with CSS Grid and Flexbox
-
-## Styling
-
-The application uses:
-- CSS Custom Properties (variables) for consistent theming
-- Modern CSS features like Grid, Flexbox, and CSS Variables
-- Responsive design principles
-- Smooth animations and transitions
-- Consistent spacing and typography system
-
-## State Management
-
-State is managed using React hooks:
-- `useState` for local component state
-- `useEffect` for side effects and API calls
-- Custom hooks for reusable logic
-
-## API Integration
-
-The frontend integrates with:
-- AWS Cognito for authentication
-- Custom backend API for dream data
-- S3 for file storage
-
-## Development Guidelines
-
-### Code Style
-- Use TypeScript for all new code
-- Follow ESLint rules and configurations
-- Use functional components with hooks
-- Implement proper error handling
-- Add accessibility features
-
-### Component Structure
-- One component per file
-- Export components as named exports
-- Use proper TypeScript interfaces
-- Implement proper prop validation
-
-### Error Handling
-- Implement try-catch blocks for async operations
-- Provide user-friendly error messages
-- Log errors for debugging
-- Implement retry mechanisms where appropriate
-
-## Testing
-
-Run the test suite:
-```bash
-npm test
-```
-
-## Building for Production
-
-```bash
-npm run build
-```
-
-The built files will be in the `dist` directory, ready for deployment.
-
-## Deployment
-
-The frontend is automatically deployed when pushing to the main branch. The build process:
-
-1. Compiles TypeScript to JavaScript
-2. Bundles all assets using Vite
-3. Optimizes and minifies the output
-4. Deploys to the configured hosting service
+- [User Guide](../docs/user-guide/) - Complete user documentation
+- [Developer Guide](../docs/developer-guide/) - Technical documentation
+- [API Reference](../docs/api-reference/) - API documentation
 
 ## Contributing
 
-1. Follow the established code style
-2. Add proper TypeScript types
-3. Include accessibility features
-4. Test your changes thoroughly
-5. Update documentation as needed
-
-## Troubleshooting
-
-### Common Issues
-
-- **Build Errors**: Ensure all dependencies are installed and TypeScript is properly configured
-- **Authentication Issues**: Verify AWS Amplify configuration and Cognito settings
-- **API Errors**: Check network connectivity and API endpoint configuration
-
-### Getting Help
-
-- Check the console for error messages
-- Verify environment variables and configuration
-- Review AWS Amplify documentation
-- Check the backend API status
-
-## License
-
-This project is part of the Dream Companion App and follows the same licensing terms.
+See [CONTRIBUTING.md](../CONTRIBUTING.md) for contribution guidelines.
