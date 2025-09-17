@@ -45,7 +45,8 @@ const DreamArt: React.FC<DreamArtProps> = ({ className = '', onArtReady }) => {
   const [error, setError] = useState<string | null>(null);
   const [artConfig, setArtConfig] = useState<ArtConfig | null>(null);
   const animationIdRef = useRef<number | null>(null);
-  const [mousePos, setMousePos] = useState({ x: 0, y: 0 });
+  const artConfigRef = useRef<ArtConfig | null>(null);
+  const mousePosRef = useRef({ x: 0, y: 0 });
   const lastFrameTime = useRef<number>(0);
   const initializedRef = useRef<boolean>(false);
 
@@ -387,7 +388,7 @@ const DreamArt: React.FC<DreamArtProps> = ({ className = '', onArtReady }) => {
   // Animation loop with frame rate limiting for gentler animation
   const animate = useCallback((currentTime: number) => {
     const canvas = canvasRef.current;
-    const currentArtConfig = artConfig; // Get current art config
+    const currentArtConfig = artConfigRef.current; // Get current art config from ref
     
     if (!canvas || !currentArtConfig) {
       console.log('Animation: Missing canvas or artConfig', { canvas: !!canvas, artConfig: !!currentArtConfig });
@@ -410,11 +411,11 @@ const DreamArt: React.FC<DreamArtProps> = ({ className = '', onArtReady }) => {
     }
 
     console.log('Animation: Calling generateArt with config:', currentArtConfig);
-    generateArt(ctx, currentArtConfig, mousePos.x, mousePos.y);
+    generateArt(ctx, currentArtConfig, mousePosRef.current.x, mousePosRef.current.y);
     
     const id = requestAnimationFrame(animate);
     animationIdRef.current = id;
-  }, [artConfig, mousePos]); // Include dependencies to get current values
+  }, []); // No dependencies - uses refs for current values
 
   // Handle mouse movement
   const handleMouseMove = useCallback((event: React.MouseEvent<HTMLCanvasElement>) => {
@@ -424,7 +425,7 @@ const DreamArt: React.FC<DreamArtProps> = ({ className = '', onArtReady }) => {
     const rect = canvas.getBoundingClientRect();
     const x = event.clientX - rect.left;
     const y = event.clientY - rect.top;
-    setMousePos({ x, y });
+    mousePosRef.current = { x, y }; // Update ref
   }, []);
 
   // Fetch dreams on mount
@@ -468,6 +469,7 @@ const DreamArt: React.FC<DreamArtProps> = ({ className = '', onArtReady }) => {
       // Generate art config and start animation
       const config = analyzeDreamsForArt(dreams);
       setArtConfig(config);
+      artConfigRef.current = config; // Update ref as well
       
       // Notify parent component when art is ready
       if (onArtReady) {
