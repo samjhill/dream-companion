@@ -44,7 +44,7 @@ const DreamArt: React.FC<DreamArtProps> = ({ className = '', onArtReady }) => {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const [artConfig, setArtConfig] = useState<ArtConfig | null>(null);
-  const [animationId, setAnimationId] = useState<number | null>(null);
+  const animationIdRef = useRef<number | null>(null);
   const [mousePos, setMousePos] = useState({ x: 0, y: 0 });
   const lastFrameTime = useRef<number>(0);
 
@@ -394,7 +394,7 @@ const DreamArt: React.FC<DreamArtProps> = ({ className = '', onArtReady }) => {
     // Limit to ~30fps for gentler animation
     if (currentTime - lastFrameTime.current < 33) {
       const id = requestAnimationFrame(animate);
-      setAnimationId(id);
+      animationIdRef.current = id;
       return;
     }
     
@@ -410,7 +410,7 @@ const DreamArt: React.FC<DreamArtProps> = ({ className = '', onArtReady }) => {
     generateArt(ctx, artConfig, mousePos.x, mousePos.y);
     
     const id = requestAnimationFrame(animate);
-    setAnimationId(id);
+    animationIdRef.current = id;
   }, []); // Remove dependencies to prevent re-renders
 
   // Handle mouse movement
@@ -457,20 +457,20 @@ const DreamArt: React.FC<DreamArtProps> = ({ className = '', onArtReady }) => {
 
     return () => {
       window.removeEventListener('resize', resizeCanvas);
-      if (animationId) {
-        cancelAnimationFrame(animationId);
+      if (animationIdRef.current) {
+        cancelAnimationFrame(animationIdRef.current);
       }
     };
-  }, [animationId, artConfig]);
+  }, [artConfig]);
 
   // Start animation when art config is ready
   useEffect(() => {
-    if (artConfig && !animationId) {
+    if (artConfig && !animationIdRef.current) {
       console.log('Starting animation with artConfig:', artConfig);
       const id = requestAnimationFrame(animate);
-      setAnimationId(id);
+      animationIdRef.current = id;
     } else {
-      console.log('Not starting animation:', { artConfig: !!artConfig, animationId });
+      console.log('Not starting animation:', { artConfig: !!artConfig, animationId: animationIdRef.current });
     }
   }, [artConfig]); // Remove animate and animationId dependencies
 
