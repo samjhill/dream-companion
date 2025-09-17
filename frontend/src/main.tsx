@@ -9,6 +9,7 @@ import '@aws-amplify/ui-react/styles.css';
 import './index.css';
 import { MarketingPage } from './components/MarketingPage';
 import { SmsConsent } from './components/SmsConsent';
+import SharedDreamArt from './components/SharedDreamArt';
 
 Amplify.configure(awsExports);
 
@@ -23,9 +24,10 @@ root.render(
   <Authenticator.Provider>
     <Router>
       <Routes>
-        {/* Public route for marketing page */}
+        {/* Public routes */}
         <Route path="/" element={<MarketingPage />} />
         <Route path="/sms-consent" element={<SmsConsent />} />
+        <Route path="/shared-art/:artId" element={<SharedDreamArt />} />
         {/* Authenticated routes */}
         <Route
           path="/app"

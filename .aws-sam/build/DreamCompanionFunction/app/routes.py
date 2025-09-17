@@ -154,6 +154,34 @@ def share_dream_art():
         print(f"Error sharing art: {str(e)}")
         return jsonify({"error": f"Failed to share art: {str(e)}"}), 500
 
+@routes_bp.route('/shared-art/<art_id>', methods=['GET'])
+@cross_origin(supports_credentials=True)
+def get_shared_art(art_id):
+    """Get shared dream art data (public endpoint)"""
+    try:
+        if not S3_BUCKET_NAME:
+            return jsonify({"error": "S3 bucket not configured"}), 500
+
+        s3_client = get_s3_client()
+        
+        # Get the shared art data from S3
+        try:
+            response = s3_client.get_object(
+                Bucket=S3_BUCKET_NAME,
+                Key=f'shared-art/{art_id}.json'
+            )
+        except s3_client.exceptions.NoSuchKey:
+            return jsonify({"error": "Shared art not found"}), 404
+
+        art_data = json.loads(response['Body'].read().decode('utf-8'))
+        
+        # Return the art data (no authentication required for public sharing)
+        return jsonify(art_data), 200
+        
+    except Exception as e:
+        print(f"Error retrieving shared art: {str(e)}")
+        return jsonify({"error": f"Failed to retrieve shared art: {str(e)}"}), 500
+
 @routes_bp.route('/<path:proxy>', methods=['OPTIONS'])
 @cross_origin(supports_credentials=True)
 def handle_options(proxy):
