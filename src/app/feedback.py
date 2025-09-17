@@ -15,57 +15,14 @@ dynamodb = boto3.resource('dynamodb')
 feedback_table_name = os.getenv('FEEDBACK_TABLE_NAME', 'dream-companion-feedback')
 
 def get_feedback_table():
-    """Get or create the feedback table"""
+    """Get the feedback table"""
     try:
         table = dynamodb.Table(feedback_table_name)
         table.load()
         return table
-    except:
-        # Create table if it doesn't exist
-        table = dynamodb.create_table(
-            TableName=feedback_table_name,
-            KeySchema=[
-                {
-                    'AttributeName': 'feedback_id',
-                    'KeyType': 'HASH'
-                }
-            ],
-            AttributeDefinitions=[
-                {
-                    'AttributeName': 'feedback_id',
-                    'AttributeType': 'S'
-                },
-                {
-                    'AttributeName': 'user_id',
-                    'AttributeType': 'S'
-                },
-                {
-                    'AttributeName': 'created_at',
-                    'AttributeType': 'S'
-                }
-            ],
-            GlobalSecondaryIndexes=[
-                {
-                    'IndexName': 'user-feedback-index',
-                    'KeySchema': [
-                        {
-                            'AttributeName': 'user_id',
-                            'KeyType': 'HASH'
-                        },
-                        {
-                            'AttributeName': 'created_at',
-                            'KeyType': 'RANGE'
-                        }
-                    ],
-                    'Projection': {
-                        'ProjectionType': 'ALL'
-                    }
-                }
-            ],
-            BillingMode='PAY_PER_REQUEST'
-        )
-        table.wait_until_exists()
-        return table
+    except Exception as e:
+        print(f"Error accessing table {feedback_table_name}: {str(e)}")
+        raise e
 
 def validate_user_access(user_id):
     """Validate that the user_id matches the authenticated user's phone number"""
