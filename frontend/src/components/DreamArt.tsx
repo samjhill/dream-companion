@@ -113,7 +113,6 @@ const DreamArt: React.FC<DreamArtProps> = ({ className = '' }) => {
     }
 
     const dreamCount = dreams.length;
-    const now = new Date();
     const dreamTimes = dreams.map(dream => new Date(dream.createdAt));
     
     // Analyze timing patterns
@@ -122,9 +121,7 @@ const DreamArt: React.FC<DreamArtProps> = ({ className = '' }) => {
       hourDistribution[time.getHours()]++;
     });
     
-    const mostActiveHour = hourDistribution.indexOf(Math.max(...hourDistribution));
-    const isNightOwl = mostActiveHour >= 22 || mostActiveHour <= 6;
-    const isEarlyBird = mostActiveHour >= 5 && mostActiveHour <= 9;
+    // const mostActiveHour = hourDistribution.indexOf(Math.max(...hourDistribution));
     
     // Analyze content themes
     const allContent = dreams.map(d => `${d.dream_content} ${d.summary}`).join(' ').toLowerCase();
@@ -247,7 +244,7 @@ const DreamArt: React.FC<DreamArtProps> = ({ className = '' }) => {
     }
   };
 
-  const drawLines = (ctx: CanvasRenderingContext2D, config: ArtConfig, width: number, height: number, mouseX: number, mouseY: number) => {
+  const drawLines = (ctx: CanvasRenderingContext2D, config: ArtConfig, width: number, height: number, _mouseX: number, _mouseY: number) => {
     const lineCount = Math.floor(config.complexity * 15) + 3;
     
     for (let i = 0; i < lineCount; i++) {
@@ -267,7 +264,7 @@ const DreamArt: React.FC<DreamArtProps> = ({ className = '' }) => {
     }
   };
 
-  const drawSpirals = (ctx: CanvasRenderingContext2D, config: ArtConfig, width: number, height: number, mouseX: number, mouseY: number) => {
+  const drawSpirals = (ctx: CanvasRenderingContext2D, config: ArtConfig, width: number, height: number, _mouseX: number, _mouseY: number) => {
     const spiralCount = Math.floor(config.complexity * 8) + 2;
     
     for (let i = 0; i < spiralCount; i++) {
@@ -292,7 +289,7 @@ const DreamArt: React.FC<DreamArtProps> = ({ className = '' }) => {
     }
   };
 
-  const drawWaves = (ctx: CanvasRenderingContext2D, config: ArtConfig, width: number, height: number, mouseX: number, mouseY: number) => {
+  const drawWaves = (ctx: CanvasRenderingContext2D, config: ArtConfig, width: number, height: number, _mouseX: number, _mouseY: number) => {
     const waveCount = Math.floor(config.complexity * 6) + 2;
     
     for (let i = 0; i < waveCount; i++) {
