@@ -49,6 +49,9 @@ export const ShareDreamArt: React.FC<ShareDreamArtProps> = ({
       // Capture canvas as image
       const canvas = canvasRef.current;
       const imageDataUrl = canvas.toDataURL('image/png', 0.8);
+      console.log('Canvas dimensions:', canvas.width, 'x', canvas.height);
+      console.log('Image data URL length:', imageDataUrl.length);
+      console.log('Image data URL preview:', imageDataUrl.substring(0, 100) + '...');
       
       // Create share message
       const defaultMessage = `Check out my unique dream art! 🎭 Generated from ${dreamCount} dream${dreamCount === 1 ? '' : 's'} I've shared. Style: ${artConfig.style}. View it at:`;
