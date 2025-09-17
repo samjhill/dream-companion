@@ -197,6 +197,7 @@ const DreamArt: React.FC<DreamArtProps> = ({ className = '', onArtReady }) => {
     
     console.log('Generating art with config:', config);
     console.log('Canvas size:', width, 'x', height);
+    console.log('Mouse position:', mouseX, mouseY);
     
     // Always draw background first to prevent black flashing
     const gradient = ctx.createLinearGradient(0, 0, width, height);
@@ -205,30 +206,49 @@ const DreamArt: React.FC<DreamArtProps> = ({ className = '', onArtReady }) => {
     ctx.fillStyle = gradient;
     ctx.fillRect(0, 0, width, height);
 
+    // Draw a test circle to verify canvas is working
+    ctx.beginPath();
+    ctx.arc(width / 2, height / 2, 50, 0, Math.PI * 2);
+    ctx.fillStyle = '#ff0000'; // Bright red
+    ctx.globalAlpha = 1.0;
+    ctx.fill();
+    ctx.globalAlpha = 1;
+    console.log('Drew test circle at center');
+
     // Add patterns based on configuration
     if (config.patterns.circles) {
-      console.log('Drawing circles');
+      console.log('Drawing circles - patterns.circles is true');
       drawCircles(ctx, config, width, height, mouseX, mouseY);
+    } else {
+      console.log('Skipping circles - patterns.circles is false');
     }
     
     if (config.patterns.lines) {
-      console.log('Drawing lines');
+      console.log('Drawing lines - patterns.lines is true');
       drawLines(ctx, config, width, height, mouseX, mouseY);
+    } else {
+      console.log('Skipping lines - patterns.lines is false');
     }
     
     if (config.patterns.spirals) {
-      console.log('Drawing spirals');
+      console.log('Drawing spirals - patterns.spirals is true');
       drawSpirals(ctx, config, width, height, mouseX, mouseY);
+    } else {
+      console.log('Skipping spirals - patterns.spirals is false');
     }
     
     if (config.patterns.waves) {
-      console.log('Drawing waves');
+      console.log('Drawing waves - patterns.waves is true');
       drawWaves(ctx, config, width, height, mouseX, mouseY);
+    } else {
+      console.log('Skipping waves - patterns.waves is false');
     }
     
     if (config.patterns.stars) {
-      console.log('Drawing stars');
+      console.log('Drawing stars - patterns.stars is true');
       drawStars(ctx, config, width, height, mouseX, mouseY);
+    } else {
+      console.log('Skipping stars - patterns.stars is false');
     }
   }, []);
 
