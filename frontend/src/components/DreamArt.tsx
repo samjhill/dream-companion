@@ -193,7 +193,8 @@ const DreamArt: React.FC<DreamArtProps> = ({ className = '' }) => {
     const width = canvas.width;
     const height = canvas.height;
     
-    // Clear canvas with gradient background
+    // Clear canvas with gradient background (no black flashing)
+    ctx.clearRect(0, 0, width, height);
     const gradient = ctx.createLinearGradient(0, 0, width, height);
     gradient.addColorStop(0, config.colors[0]);
     gradient.addColorStop(1, config.colors[config.colors.length - 1]);
