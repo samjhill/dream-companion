@@ -12,8 +12,13 @@ interface Dream {
   id: string;
   createdAt: string;
   dream_content: string;
-  response: string;
-  summary: string;
+  response?: string;
+  summary?: string;
+  analysis?: string;
+  interpretation?: string;
+  ai_response?: string;
+  dream_analysis?: string;
+  insights?: string;
 }
 
 interface DreamContentProps {
@@ -77,10 +82,10 @@ const DreamContent: React.FC<DreamContentProps> = ({ dream }) => {
             <p>{dream.dream_content}</p>
           </div>
           
-          {dream.response && (
+          {(dream.response || dream.analysis || dream.interpretation || dream.ai_response || dream.dream_analysis || dream.insights) && (
             <div className='dream-analysis'>
               <h4>Analysis:</h4>
-              <p>{dream.response}</p>
+              <p>{dream.response || dream.analysis || dream.interpretation || dream.ai_response || dream.dream_analysis || dream.insights}</p>
             </div>
           )}
           
@@ -248,8 +253,8 @@ const DreamListOptimized: React.FC = () => {
       id: dream.id,
       createdAt: dream.createdAt,
       dream_content: dream.dream_content,
-      response: dream.response,
-      summary: dream.summary
+      response: dream.response || dream.analysis || dream.interpretation || dream.ai_response || dream.dream_analysis || dream.insights || '',
+      summary: dream.summary || ''
     }));
   }, [dreams]);
 

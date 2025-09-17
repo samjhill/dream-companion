@@ -9,8 +9,13 @@ interface Dream {
   id: string;
   createdAt: string;
   dream_content: string;
-  response: string;
-  summary: string;
+  response?: string;
+  summary?: string;
+  analysis?: string;
+  interpretation?: string;
+  ai_response?: string;
+  dream_analysis?: string;
+  insights?: string;
 }
 
 interface DreamArtProps {

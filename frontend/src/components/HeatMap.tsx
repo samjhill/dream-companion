@@ -23,6 +23,11 @@ interface Dream {
   dream_content?: string;
   summary?: string;
   response?: string;
+  analysis?: string;
+  interpretation?: string;
+  ai_response?: string;
+  dream_analysis?: string;
+  insights?: string;
 }
 
 /**
