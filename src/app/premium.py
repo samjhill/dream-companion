@@ -8,6 +8,13 @@ from .auth import require_cognito_auth, get_cognito_user_info
 
 premium_bp = Blueprint('premium_bp', __name__)
 
+@premium_bp.route('/<path:proxy>', methods=['OPTIONS'])
+@cross_origin(supports_credentials=True)
+def handle_premium_options(proxy):
+    """Handle OPTIONS requests for CORS preflight"""
+    response = jsonify({"status": "OK"})
+    return response, 200
+
 # Initialize DynamoDB client for premium user management
 dynamodb = boto3.resource('dynamodb')
 premium_table_name = os.getenv('PREMIUM_TABLE_NAME', 'dream-companion-premium-users')

@@ -43,6 +43,17 @@ export const usePremiumStatus = (): PremiumStatusHook => {
       );
 
       if (!response.ok) {
+        if (response.status === 404) {
+          // Premium endpoint doesn't exist yet, return default free status
+          setPremiumStatus({
+            has_premium: false,
+            subscription_type: null,
+            subscription_end: null,
+            days_remaining: 0,
+            features: []
+          });
+          return;
+        }
         throw new Error(`Failed to fetch premium status: ${response.status}`);
       }
 
