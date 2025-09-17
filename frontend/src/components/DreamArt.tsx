@@ -45,9 +45,9 @@ const DreamArt: React.FC<DreamArtProps> = ({ className = '', onArtReady }) => {
   const [error, setError] = useState<string | null>(null);
   const [artConfig, setArtConfig] = useState<ArtConfig | null>(null);
   const animationIdRef = useRef<number | null>(null);
-  const animationStartedRef = useRef<boolean>(false);
   const [mousePos, setMousePos] = useState({ x: 0, y: 0 });
   const lastFrameTime = useRef<number>(0);
+  const initializedRef = useRef<boolean>(false);
 
   // Fetch user's dreams for art generation
   const fetchDreams = useCallback(async () => {
@@ -425,65 +425,42 @@ const DreamArt: React.FC<DreamArtProps> = ({ className = '', onArtReady }) => {
     setMousePos({ x, y });
   }, []);
 
-  // Initialize canvas and start animation
+  // Single initialization effect
   useEffect(() => {
-    const canvas = canvasRef.current;
-    if (!canvas) return;
+    if (initializedRef.current) return;
+    initializedRef.current = true;
 
-    // Set canvas size
-    const resizeCanvas = () => {
-      const container = canvas.parentElement;
-      if (container) {
-        const rect = container.getBoundingClientRect();
-        canvas.width = rect.width;
-        canvas.height = rect.height;
-        
-        // Draw initial background to prevent black flash
-        const ctx = canvas.getContext('2d');
-        if (ctx && artConfig) {
-          const gradient = ctx.createLinearGradient(0, 0, canvas.width, canvas.height);
-          gradient.addColorStop(0, artConfig.colors[0]);
-          gradient.addColorStop(1, artConfig.colors[artConfig.colors.length - 1]);
-          ctx.fillStyle = gradient;
-          ctx.fillRect(0, 0, canvas.width, canvas.height);
-        }
-      }
-    };
-
-    // Initial resize
-    resizeCanvas();
+    console.log('Initializing Dream Art component');
     
-    // Add resize listener
-    window.addEventListener('resize', resizeCanvas);
-
-    return () => {
-      window.removeEventListener('resize', resizeCanvas);
-      if (animationIdRef.current) {
-        cancelAnimationFrame(animationIdRef.current);
+    // Fetch dreams first
+    fetchDreams().then(() => {
+      console.log('Dreams fetched, setting up canvas');
+      
+      // Set up canvas
+      const canvas = canvasRef.current;
+      if (!canvas) {
+        console.log('Canvas not available');
+        return;
       }
-    };
-  }, [artConfig]);
 
-  // Start animation when art config is ready
-  useEffect(() => {
-    if (artConfig && !animationStartedRef.current) {
-      console.log('Starting animation with artConfig:', artConfig);
-      animationStartedRef.current = true;
-      const id = requestAnimationFrame(animate);
-      animationIdRef.current = id;
-    } else {
-      console.log('Not starting animation:', { artConfig: !!artConfig, animationStarted: animationStartedRef.current });
-    }
-  }, [artConfig]); // Remove animate and animationId dependencies
+      // Set canvas size
+      const resizeCanvas = () => {
+        const container = canvas.parentElement;
+        if (container) {
+          const rect = container.getBoundingClientRect();
+          canvas.width = rect.width;
+          canvas.height = rect.height;
+          console.log('Canvas resized to:', canvas.width, 'x', canvas.height);
+        }
+      };
 
-  // Fetch dreams and generate art config
-  useEffect(() => {
-    fetchDreams();
-  }, [fetchDreams]);
+      // Initial resize
+      resizeCanvas();
+      
+      // Add resize listener
+      window.addEventListener('resize', resizeCanvas);
 
-  // Update art config when dreams change
-  useEffect(() => {
-    if (dreams.length >= 0) { // Include empty state
+      // Generate art config and start animation
       const config = analyzeDreamsForArt(dreams);
       setArtConfig(config);
       
@@ -491,8 +468,20 @@ const DreamArt: React.FC<DreamArtProps> = ({ className = '', onArtReady }) => {
       if (onArtReady) {
         onArtReady(config, dreams.length, canvasRef);
       }
-    }
-  }, [dreams]); // Remove analyzeDreamsForArt and onArtReady dependencies
+
+      // Start animation
+      console.log('Starting animation with config:', config);
+      const id = requestAnimationFrame(animate);
+      animationIdRef.current = id;
+
+      return () => {
+        window.removeEventListener('resize', resizeCanvas);
+        if (animationIdRef.current) {
+          cancelAnimationFrame(animationIdRef.current);
+        }
+      };
+    });
+  }, []); // Empty dependency array - run only once
 
   if (loading) {
     console.log('DreamArt: Loading state');
