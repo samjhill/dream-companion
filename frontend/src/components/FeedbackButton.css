@@ -1,0 +1,248 @@
+/* Floating Feedback Button */
+.feedback-button.floating {
+  position: fixed;
+  z-index: 1000;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 12px 16px;
+  background: var(--primary-color, #3b82f6);
+  color: white;
+  border: none;
+  border-radius: 25px;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+  cursor: pointer;
+  transition: all 0.3s ease;
+  font-size: 0.9rem;
+  font-weight: 500;
+}
+
+.feedback-button.floating:hover {
+  background: var(--primary-dark, #2563eb);
+  transform: translateY(-2px);
+  box-shadow: 0 6px 16px rgba(0, 0, 0, 0.2);
+}
+
+.feedback-button.floating.bottom-right {
+  bottom: 20px;
+  right: 20px;
+}
+
+.feedback-button.floating.bottom-left {
+  bottom: 20px;
+  left: 20px;
+}
+
+.feedback-button.floating.top-right {
+  top: 20px;
+  right: 20px;
+}
+
+.feedback-button.floating.top-left {
+  top: 20px;
+  left: 20px;
+}
+
+/* Minimal Feedback Button */
+.feedback-button.minimal {
+  background: transparent;
+  border: 1px solid var(--border-color, #e5e7eb);
+  color: var(--text-secondary, #6b7280);
+  padding: 8px;
+  border-radius: 50%;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 40px;
+  height: 40px;
+}
+
+.feedback-button.minimal:hover {
+  background: var(--background-hover, #f9fafb);
+  border-color: var(--primary-color, #3b82f6);
+  color: var(--primary-color, #3b82f6);
+}
+
+/* Inline Feedback Button */
+.feedback-button.inline {
+  display: inline-block;
+}
+
+.feedback-trigger {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 8px 12px;
+  background: transparent;
+  border: 1px solid var(--border-color, #e5e7eb);
+  color: var(--text-secondary, #6b7280);
+  border-radius: 6px;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  font-size: 0.9rem;
+}
+
+.feedback-trigger:hover {
+  background: var(--background-hover, #f9fafb);
+  border-color: var(--primary-color, #3b82f6);
+  color: var(--primary-color, #3b82f6);
+}
+
+.feedback-inline-container {
+  margin-top: 16px;
+  border: 1px solid var(--border-color, #e5e7eb);
+  border-radius: 8px;
+  background: var(--card-background, #ffffff);
+  padding: 16px;
+}
+
+/* Common styles */
+.feedback-icon {
+  font-size: 1.2rem;
+  line-height: 1;
+}
+
+.feedback-text {
+  font-weight: 500;
+}
+
+/* Modal Overlay */
+.feedback-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: rgba(0, 0, 0, 0.5);
+  z-index: 1001;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 20px;
+}
+
+.feedback-modal {
+  background: var(--card-background, #ffffff);
+  border-radius: 12px;
+  max-width: 600px;
+  width: 100%;
+  max-height: 90vh;
+  overflow-y: auto;
+  box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.1), 0 10px 10px -5px rgba(0, 0, 0, 0.04);
+}
+
+.feedback-modal-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 20px 24px 0 24px;
+  border-bottom: 1px solid var(--border-color, #e5e7eb);
+  margin-bottom: 20px;
+}
+
+.feedback-modal-header h3 {
+  margin: 0;
+  color: var(--text-primary, #1f2937);
+  font-size: 1.25rem;
+  font-weight: 600;
+}
+
+.feedback-close-btn {
+  background: none;
+  border: none;
+  color: var(--text-secondary, #6b7280);
+  cursor: pointer;
+  padding: 4px;
+  border-radius: 4px;
+  font-size: 1.2rem;
+  line-height: 1;
+  transition: all 0.2s ease;
+}
+
+.feedback-close-btn:hover {
+  background: var(--background-hover, #f9fafb);
+  color: var(--text-primary, #1f2937);
+}
+
+/* Responsive design */
+@media (max-width: 640px) {
+  .feedback-button.floating {
+    padding: 10px 14px;
+    font-size: 0.85rem;
+  }
+  
+  .feedback-button.floating.bottom-right,
+  .feedback-button.floating.bottom-left {
+    bottom: 16px;
+  }
+  
+  .feedback-button.floating.bottom-right {
+    right: 16px;
+  }
+  
+  .feedback-button.floating.bottom-left {
+    left: 16px;
+  }
+  
+  .feedback-overlay {
+    padding: 16px;
+  }
+  
+  .feedback-modal {
+    max-height: 95vh;
+  }
+  
+  .feedback-modal-header {
+    padding: 16px 20px 0 20px;
+  }
+}
+
+/* Dark theme support */
+@media (prefers-color-scheme: dark) {
+  .feedback-button.floating {
+    --primary-color: #60a5fa;
+    --primary-dark: #3b82f6;
+  }
+  
+  .feedback-modal {
+    --card-background: #1f2937;
+    --border-color: #374151;
+    --text-primary: #f9fafb;
+    --text-secondary: #d1d5db;
+    --background-hover: #374151;
+  }
+  
+  .feedback-overlay {
+    background: rgba(0, 0, 0, 0.7);
+  }
+}
+
+/* Animation for modal */
+.feedback-modal {
+  animation: feedbackModalSlideIn 0.3s ease-out;
+}
+
+@keyframes feedbackModalSlideIn {
+  from {
+    opacity: 0;
+    transform: scale(0.95) translateY(-10px);
+  }
+  to {
+    opacity: 1;
+    transform: scale(1) translateY(0);
+  }
+}
+
+/* Hide feedback button on very small screens if needed */
+@media (max-width: 320px) {
+  .feedback-button.floating .feedback-text {
+    display: none;
+  }
+  
+  .feedback-button.floating {
+    padding: 12px;
+    border-radius: 50%;
+  }
+}

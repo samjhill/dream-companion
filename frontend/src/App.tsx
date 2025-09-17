@@ -15,6 +15,7 @@ import { useNavigate, useLocation } from 'react-router-dom';
 import { clearUserAttributesCache } from './helpers/user';
 import { ThemeProvider } from './contexts/ThemeContext';
 import { ThemeToggle } from './components/ThemeToggle';
+import { FeedbackButton } from './components/FeedbackButton';
 
 // Constants
 interface NavigationItem {
@@ -148,6 +149,9 @@ function App() {
 
   return (
     <div className="App">
+      {/* Floating Feedback Button */}
+      <FeedbackButton variant="floating" position="bottom-right" />
+      
       {/* Header */}
       <header className="app-header">
         <div className="header-content">
@@ -156,6 +160,7 @@ function App() {
             Clara's Dream Guide
           </h1>
           <div className="header-actions">
+            <FeedbackButton variant="minimal" />
             <ThemeToggle />
             <button
               className="btn btn-ghost sign-out-btn"
