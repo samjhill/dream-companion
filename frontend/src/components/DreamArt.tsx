@@ -45,6 +45,7 @@ const DreamArt: React.FC<DreamArtProps> = ({ className = '', onArtReady }) => {
   const [error, setError] = useState<string | null>(null);
   const [artConfig, setArtConfig] = useState<ArtConfig | null>(null);
   const animationIdRef = useRef<number | null>(null);
+  const animationStartedRef = useRef<boolean>(false);
   const [mousePos, setMousePos] = useState({ x: 0, y: 0 });
   const lastFrameTime = useRef<number>(0);
 
@@ -465,12 +466,13 @@ const DreamArt: React.FC<DreamArtProps> = ({ className = '', onArtReady }) => {
 
   // Start animation when art config is ready
   useEffect(() => {
-    if (artConfig && !animationIdRef.current) {
+    if (artConfig && !animationStartedRef.current) {
       console.log('Starting animation with artConfig:', artConfig);
+      animationStartedRef.current = true;
       const id = requestAnimationFrame(animate);
       animationIdRef.current = id;
     } else {
-      console.log('Not starting animation:', { artConfig: !!artConfig, animationId: animationIdRef.current });
+      console.log('Not starting animation:', { artConfig: !!artConfig, animationStarted: animationStartedRef.current });
     }
   }, [artConfig]); // Remove animate and animationId dependencies
 
@@ -490,7 +492,7 @@ const DreamArt: React.FC<DreamArtProps> = ({ className = '', onArtReady }) => {
         onArtReady(config, dreams.length, canvasRef);
       }
     }
-  }, [dreams, analyzeDreamsForArt, onArtReady]);
+  }, [dreams]); // Remove analyzeDreamsForArt and onArtReady dependencies
 
   if (loading) {
     console.log('DreamArt: Loading state');
