@@ -7,4 +7,4 @@ region = "us-east-1"
 capabilities = "CAPABILITY_IAM"
 parameter_overrides = "JWTSecret=\"\""
 image_repositories = []
-confirm_changeset = true
+confirm_changeset = false

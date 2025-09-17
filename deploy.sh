@@ -1,28 +1,12 @@
 #!/bin/bash
 
-# Dream Companion App - Deployment Script
-# This script deploys your app using AWS SAM
+# Dream Companion App Deployment Script
+# This script builds and deploys the backend without asking for confirmation
 
-echo "🚀 Dream Companion App - Deployment"
-echo "===================================="
+echo "🚀 Starting Dream Companion App deployment..."
 
-# Check if SAM CLI is installed
-if ! command -v sam &> /dev/null; then
-    echo "❌ AWS SAM CLI is not installed. Please install it first:"
-    echo "   https://docs.aws.amazon.com/serverless-application-model/latest/developerguide/install-sam-cli.html"
-    exit 1
-fi
-
-# Check if AWS credentials are configured
-if ! aws sts get-caller-identity &> /dev/null; then
-    echo "❌ AWS credentials not configured. Please run 'aws configure' first."
-    exit 1
-fi
-
-echo ""
-echo "✅ Building application..."
-
-# Build the application
+# Build the SAM application
+echo "📦 Building SAM application..."
 sam build
 
 if [ $? -ne 0 ]; then
@@ -30,18 +14,23 @@ if [ $? -ne 0 ]; then
     exit 1
 fi
 
-echo "✅ Build successful! Deploying..."
+# Deploy without confirmation
+echo "🚀 Deploying to AWS..."
+sam deploy 2>&1 | tee deploy_output.log
 
-# Deploy (no parameters needed since we're using Secrets Manager)
-sam deploy
+deploy_exit_code=${PIPESTATUS[0]}
 
-if [ $? -eq 0 ]; then
-    echo ""
-    echo "🎉 Deployment successful!"
-    echo ""
-    echo "📝 Your Stripe secrets are loaded from AWS Secrets Manager"
-    echo "🔗 Check the STRIPE_SETUP.md file for detailed instructions"
+if [ $deploy_exit_code -eq 0 ]; then
+    echo "✅ Deployment successful!"
+    echo "🌐 API Gateway URL: https://jj1rq9vx9l.execute-api.us-east-1.amazonaws.com/Prod"
+elif grep -q "No changes to deploy" deploy_output.log; then
+    echo "✅ Stack is already up to date - no changes needed!"
+    echo "🌐 API Gateway URL: https://jj1rq9vx9l.execute-api.us-east-1.amazonaws.com/Prod"
 else
     echo "❌ Deployment failed!"
+    cat deploy_output.log
     exit 1
 fi
+
+# Clean up log file
+rm -f deploy_output.log
