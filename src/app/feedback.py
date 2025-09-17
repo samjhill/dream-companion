@@ -59,8 +59,7 @@ def get_feedback_table():
                     ],
                     'Projection': {
                         'ProjectionType': 'ALL'
-                    },
-                    'BillingMode': 'PAY_PER_REQUEST'
+                    }
                 }
             ],
             BillingMode='PAY_PER_REQUEST'
