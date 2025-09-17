@@ -250,7 +250,7 @@ const DreamArt: React.FC<DreamArtProps> = ({ className = '', onArtReady }) => {
     } else {
       console.log('Skipping stars - patterns.stars is false');
     }
-  }, []);
+  }, []); // Remove dependencies to prevent re-renders
 
   // Drawing functions for different patterns
   const drawCircles = (ctx: CanvasRenderingContext2D, config: ArtConfig, width: number, height: number, mouseX: number, mouseY: number) => {
@@ -411,7 +411,7 @@ const DreamArt: React.FC<DreamArtProps> = ({ className = '', onArtReady }) => {
     
     const id = requestAnimationFrame(animate);
     setAnimationId(id);
-  }, [artConfig, mousePos, generateArt]);
+  }, []); // Remove dependencies to prevent re-renders
 
   // Handle mouse movement
   const handleMouseMove = useCallback((event: React.MouseEvent<HTMLCanvasElement>) => {
@@ -472,7 +472,7 @@ const DreamArt: React.FC<DreamArtProps> = ({ className = '', onArtReady }) => {
     } else {
       console.log('Not starting animation:', { artConfig: !!artConfig, animationId });
     }
-  }, [artConfig, animate, animationId]);
+  }, [artConfig]); // Remove animate and animationId dependencies
 
   // Fetch dreams and generate art config
   useEffect(() => {
@@ -484,23 +484,6 @@ const DreamArt: React.FC<DreamArtProps> = ({ className = '', onArtReady }) => {
     if (dreams.length >= 0) { // Include empty state
       const config = analyzeDreamsForArt(dreams);
       setArtConfig(config);
-      
-      // Test immediate drawing
-      const canvas = canvasRef.current;
-      if (canvas) {
-        const ctx = canvas.getContext('2d');
-        if (ctx) {
-          console.log('Testing immediate canvas drawing');
-          // Draw a simple test shape immediately
-          ctx.beginPath();
-          ctx.arc(100, 100, 30, 0, Math.PI * 2);
-          ctx.fillStyle = '#00ff00'; // Bright green
-          ctx.globalAlpha = 1.0;
-          ctx.fill();
-          ctx.globalAlpha = 1;
-          console.log('Drew immediate test circle');
-        }
-      }
       
       // Notify parent component when art is ready
       if (onArtReady) {
