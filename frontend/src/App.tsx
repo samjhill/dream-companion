@@ -20,7 +20,7 @@ import { FeedbackButton } from './components/FeedbackButton';
 
 // Constants
 interface NavigationItem {
-  id: 'overview' | 'dreams' | 'themes' | 'analysis' | 'guide' | 'waking' | 'premium'; // 'memory' temporarily removed
+  id: 'overview' | 'dreams' | 'themes' | 'analysis' | 'guide' | 'waking' | 'art' | 'premium'; // 'memory' temporarily removed
   label: string;
   icon: string;
   premium?: boolean;
@@ -33,6 +33,7 @@ const NAVIGATION_ITEMS: NavigationItem[] = [
   { id: 'analysis', label: 'Advanced Analysis', icon: '🔍', premium: true },
   { id: 'guide', label: 'Lucid Guide', icon: '✨' },
   { id: 'waking', label: 'Waking Life', icon: '🌅' },
+  { id: 'art', label: 'Dream Art', icon: '🎭' },
   // { id: 'memory', label: 'Memory Management', icon: '🧠', premium: true }, // Temporarily hidden
   { id: 'premium', label: 'Premium', icon: '💎' }
 ];
@@ -90,6 +91,19 @@ function App() {
         return <LucidDreamGuide />;
       case 'waking':
         return <WakingLife />;
+      case 'art':
+        return (
+          <div className="dream-art-page">
+            <div className="page-header">
+              <h2>Dream Art</h2>
+              <p className="page-description">
+                Your unique generative art piece that evolves with every dream you share. 
+                Move your mouse over the canvas to interact with your personal dreamscape.
+              </p>
+            </div>
+            <DreamArt />
+          </div>
+        );
       // case 'memory': // Temporarily hidden
       //   return (
       //     <PremiumGate feature="Personal Memory Management">
@@ -102,11 +116,10 @@ function App() {
         return (
           <div className="overview-section">
             <Greet />
-            <DreamArt />
             <div className="overview-footer">
               <p className="overview-description">
-                Your unique dream art evolves with every dream you share. 
-                Move your mouse over the canvas to interact with your personal dreamscape.
+                Welcome to your dream journey dashboard. 
+                Use the navigation above to explore your dreams, themes, and insights.
               </p>
             </div>
           </div>

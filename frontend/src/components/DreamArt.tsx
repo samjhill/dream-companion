@@ -445,7 +445,6 @@ const DreamArt: React.FC<DreamArtProps> = ({ className = '' }) => {
   return (
     <div className={`dream-art-container ${className}`}>
       <div className="dream-art-info">
-        <h3>Your Dream Canvas</h3>
         <p>
           {dreams.length === 0 
             ? "Your canvas awaits your first dream..."
