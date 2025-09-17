@@ -14,6 +14,8 @@
 - **🤖 AI-Powered Analysis**: Get personalized dream interpretations and insights
 - **📊 Pattern Recognition**: Discover recurring themes and symbols in your dreams
 - **🗓️ Dream Heatmap**: Visualize your dream frequency over time
+- **🎨 Dream Art**: Unique generative art that evolves with your dreams
+- **📱 SMS Sharing**: Share your dream art with friends via text message
 - **✨ Lucid Dream Guide**: Learn techniques for conscious dreaming
 - **🌅 Waking Life Integration**: Connect dream insights to daily life
 
@@ -151,8 +153,11 @@ cd src && pytest
 ### Production Deployment
 
 ```bash
-# Deploy backend
+# Deploy backend (automated, no confirmation prompts)
 ./deploy.sh
+
+# Build frontend for production
+./deploy-frontend.sh
 
 # Deploy frontend (if using Amplify)
 cd frontend && npx amplify publish
@@ -185,10 +190,11 @@ We welcome contributions! Please see our [Contributing Guide](CONTRIBUTING.md) f
 ## 📊 Project Status
 
 - ✅ **Core Features**: Dream journaling, AI analysis, theme recognition
+- ✅ **Dream Art**: Generative art system with SMS sharing
 - ✅ **Authentication**: AWS Cognito integration
 - ✅ **Premium System**: Stripe payment integration
 - ✅ **Testing**: Comprehensive test suite
-- ✅ **Deployment**: AWS SAM deployment pipeline
+- ✅ **Deployment**: Automated AWS SAM deployment pipeline
 - ✅ **Documentation**: Complete user and developer guides
 - 🔄 **Active Development**: Regular updates and improvements
 

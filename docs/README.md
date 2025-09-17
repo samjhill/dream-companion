@@ -9,6 +9,7 @@ For end users who want to understand and use the Dream Companion App.
 
 - **[Getting Started](user-guide/getting-started.md)** - Your first steps with the app
 - **[Features Overview](user-guide/features.md)** - Complete feature explanations
+- **[Dream Art Guide](user-guide/dream-art.md)** - Generative art system and sharing
 - **[Premium Features](user-guide/premium.md)** - Premium subscription benefits
 - **[FAQ](user-guide/faq.md)** - Frequently asked questions
 - **[Troubleshooting](user-guide/troubleshooting.md)** - Common issues and solutions
@@ -18,6 +19,7 @@ For developers who want to understand, contribute to, or extend the Dream Compan
 
 - **[Development Setup](developer-guide/setup.md)** - Local development environment
 - **[Architecture Overview](developer-guide/architecture.md)** - System design and patterns
+- **[Dream Art System](developer-guide/dream-art-system.md)** - Technical implementation of generative art
 - **[API Reference](api-reference/)** - Complete API documentation
 - **[Testing Guide](developer-guide/testing.md)** - Testing setup and guidelines
 - **[Contributing](developer-guide/contributing.md)** - How to contribute to the project
@@ -43,12 +45,14 @@ Everything needed to deploy and maintain the Dream Companion App.
 ### For Users
 - **New to the app?** → [Getting Started](user-guide/getting-started.md)
 - **Want to understand features?** → [Features Overview](user-guide/features.md)
+- **Interested in Dream Art?** → [Dream Art Guide](user-guide/dream-art.md)
 - **Having issues?** → [Troubleshooting](user-guide/troubleshooting.md)
 - **Questions?** → [FAQ](user-guide/faq.md)
 
 ### For Developers
 - **Setting up development?** → [Development Setup](developer-guide/setup.md)
 - **Understanding the code?** → [Architecture Overview](developer-guide/architecture.md)
+- **Working with Dream Art?** → [Dream Art System](developer-guide/dream-art-system.md)
 - **Working with APIs?** → [API Reference](api-reference/)
 - **Adding tests?** → [Testing Guide](developer-guide/testing.md)
 - **Contributing code?** → [Contributing](developer-guide/contributing.md)

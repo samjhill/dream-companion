@@ -8,6 +8,12 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ## [Unreleased]
 
 ### Added
+- **Dream Art System**: Unique generative art that evolves with user dreams
+- **SMS Sharing**: Share dream art with friends via text message
+- **Automated Deployment**: Scripts for seamless backend and frontend deployment
+- **Public Art Sharing**: Public URLs for shared dream art (no login required)
+- **Art Style Detection**: Automatic style selection based on dream themes
+- **Interactive Canvas**: Mouse-responsive generative art elements
 - Comprehensive feedback system with thumbs up/down ratings
 - User feedback history and admin analytics
 - Floating and inline feedback buttons
@@ -15,11 +21,19 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Responsive feedback form with dark theme support
 
 ### Changed
+- **Deployment Process**: Automated deployment with no confirmation prompts
+- **Dream Art Visibility**: Enhanced shape visibility with contrasting colors
+- **Canvas Rendering**: Fixed CSS background conflicts with drawn content
 - Improved documentation structure and organization
 - Enhanced README with comprehensive project overview
 - Reorganized documentation into logical sections
 
 ### Fixed
+- **Dream Art Rendering**: Resolved CSS background covering canvas content
+- **CORS Issues**: Fixed cross-origin requests for premium endpoints
+- **Lambda Syntax Errors**: Corrected Python syntax in routes.py
+- **Premium Endpoint**: Graceful handling of missing premium features
+- **Canvas Visibility**: Made generative art shapes clearly visible
 - Documentation links and navigation
 - Missing documentation for new features
 
