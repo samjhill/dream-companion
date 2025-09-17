@@ -425,23 +425,26 @@ const DreamArt: React.FC<DreamArtProps> = ({ className = '', onArtReady }) => {
     setMousePos({ x, y });
   }, []);
 
-  // Single initialization effect
+  // Fetch dreams on mount
   useEffect(() => {
-    if (initializedRef.current) return;
-    initializedRef.current = true;
+    fetchDreams();
+  }, []);
 
-    console.log('Initializing Dream Art component');
+  // Initialize when dreams are loaded and canvas is available
+  useEffect(() => {
+    if (initializedRef.current || loading || !dreams.length) return;
     
-    // Fetch dreams first
-    fetchDreams().then(() => {
-      console.log('Dreams fetched, setting up canvas');
-      
-      // Set up canvas
+    // Wait for canvas to be available
+    const setupCanvas = () => {
       const canvas = canvasRef.current;
       if (!canvas) {
-        console.log('Canvas not available');
+        console.log('Canvas not available yet, retrying...');
+        setTimeout(setupCanvas, 100);
         return;
       }
+
+      console.log('Canvas available, setting up');
+      initializedRef.current = true;
 
       // Set canvas size
       const resizeCanvas = () => {
@@ -480,8 +483,10 @@ const DreamArt: React.FC<DreamArtProps> = ({ className = '', onArtReady }) => {
           cancelAnimationFrame(animationIdRef.current);
         }
       };
-    });
-  }, []); // Empty dependency array - run only once
+    };
+
+    setupCanvas();
+  }, [dreams, loading]); // Run when dreams are loaded and not loading
 
   if (loading) {
     console.log('DreamArt: Loading state');
