@@ -91,14 +91,23 @@ const DreamContent: React.FC<DreamContentProps> = ({ dream }) => {
               ai_response: dream.ai_response,
               dream_analysis: dream.dream_analysis,
               insights: dream.insights,
-              finalAnalysisText: analysisText
+              finalAnalysisText: analysisText,
+              isAnalysisTextTruthy: !!analysisText,
+              analysisTextLength: analysisText ? analysisText.length : 0
             });
-            return analysisText && (
-              <div className='dream-analysis'>
-                <h4>Analysis:</h4>
-                <p>{analysisText}</p>
-              </div>
-            );
+            
+            if (analysisText) {
+              console.log(`DEBUG: Rendering analysis for dream ${dream.id}:`, analysisText.substring(0, 100) + '...');
+              return (
+                <div className='dream-analysis'>
+                  <h4>Analysis:</h4>
+                  <p>{analysisText}</p>
+                </div>
+              );
+            } else {
+              console.log(`DEBUG: No analysis text found for dream ${dream.id}`);
+              return null;
+            }
           })()}
           
           {themes && (
